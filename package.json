@@ -1,13 +1,13 @@
 {
-  "name": "pi-explorer",
+  "name": "piexplorer.pi",
   "description": "Block explorer for the Pi Network",
   "version": "1.4.0",
   "license": "Apache-2.0",
   "author": "Chris Hatch <hatch@tuta.io>",
-  "repository": "pi-apps/pi-explorer",
-  "homepage": "https://minepi.com/blockexplorer",
+  "repository": "piexplorerpi/piexplorerpi.github.io",
+  "homepage": "piexplorerpi.github.io",
   "bugs": {
-    "url": "https://github.com/pi-apps/pi-explorer/issues"
+    "url": "https://github.com/piexplorerpi/piexplorerpi.github.io/issues"
   },
   "keywords": [
     "pi",
