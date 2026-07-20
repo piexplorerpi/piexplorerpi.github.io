@@ -1,8 +1,8 @@
 # Pi Explorer
 
-A block explorer for the [Pi Blockchain](https://minepi.com) based on Chris Hatch' repository.
+A block explorer for the [Pi Explorer](https://piexplorerpi.github.io) based on Chris Hatch' repository.
 
-To use it, visit the Pi App [pi://blockchain.pi](pi://blockchain.pi) on the [Pi Browser](https://developers.minepi.com) or visit https://minepi.com/blockexplorer
+To use it, visit the Pi App [pi://piexplorerpi.github.io](pi://piexplorerpi.github.io) on the [Pi Dev](https://developers.minepi.com) or visit https://minepi.com/blockexplorer
 
 
 ## Exploring Private / Local Development Networks<a name="private-networks"></a>
@@ -45,7 +45,7 @@ npm i && npm run build
 Use the language selector in the top right corner to change the language.
 
 Translation files are here:
-https://github.com/pi-apps/pi-explorer/tree/master/src/languages
+https://github.com/piexplorerpi/piexplorerpi.github.io/src/languages
 
 Submit pull requests with new languages or languages fixes if you like.
 
