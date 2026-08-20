@@ -1,14 +1,21 @@
 // frontend/src/lib/axiosClient.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
+const API_BASE_URL =
+  (import.meta.env.VITE_API_URL || 'https://pidao.bonto.run/api').replace(
+    /\/+$/,
+    ''
+  );
+
 const axiosClient = axios.create({
-  // استفاده از URL محیطی؛ اگر نبود از آدرس پیش‌فرض استفاده کن
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  // Production fallback must point to the real backend, not localhost.
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  // اضافه کردن تایم‌اوت برای جلوگیری از معلق ماندن درخواست‌ها
-  timeout: 10000, 
+
+  // Bonto/Render-like servers may be cold-started, so 10s can be too short.
+  timeout: 30000,
 });
 
 /**
@@ -18,10 +25,11 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token');
-    
+
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => {
@@ -36,39 +44,37 @@ axiosClient.interceptors.request.use(
 axiosClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError<any>) => {
-    // ۱. مدیریت خطای عدم دسترسی یا انقضای توکن (401)
     if (error.response) {
       const status = error.response.status;
 
       if (status === 401) {
         console.warn('Unauthorized! Cleaning up session...');
-        
-        // پاکسازی حافظه
+
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        
-        // IMPORTANT: با HashRouter باید از hash استفاده کنیم، نه path مستقیم
-        // در GitHub Pages /jugl می‌شود 404، ولی /#/login همیشه کار می‌کند
+
+        // IMPORTANT:
+        // اگر از HashRouter استفاده می‌کنی، باید hash عوض شود.
         const currentHash = window.location.hash || '#/';
+
         if (!currentHash.includes('/login')) {
-          window.location.hash = '#/login'; 
+          window.location.hash = '#/login';
         }
-      } 
-      else if (status === 500) {
+      } else if (status === 403) {
+        console.error('Forbidden:', error.response.data);
+      } else if (status === 404) {
+        console.error('API route not found:', error.config?.url);
+      } else if (status === 500) {
         console.error('Server Error: Something went wrong on the backend.');
       }
-    } 
-    // ۲. مدیریت خطای شبکه (وقتی سرور اصلاً پاسخ نمی‌دهد - بسیار مهم!)
-    else if (error.request) {
-      // این بخش زمانی اجرا می‌شود که درخواست فرستاده شده اما پاسخی دریافت نشده (مثلاً سرور خاموش است)
-      console.error('Network Error: Cannot connect to the server. Please check your internet or server status.');
-      // اینجا می‌توانید یک پیام کاربرپسند نشان دهید (مثلاً با استفاده از یک Toast)
-    } 
-    // ۳. مدیریت خطاهای دیگر
-    else {
+    } else if (error.request) {
+      console.error(
+        'Network Error: Cannot connect to the server. Please check VITE_API_URL, CORS, internet, or backend status.'
+      );
+    } else {
       console.error('Error:', error.message);
     }
-    
+
     return Promise.reject(error);
   }
 );
