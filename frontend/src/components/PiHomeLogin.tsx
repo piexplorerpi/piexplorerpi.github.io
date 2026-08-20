@@ -21,7 +21,7 @@ const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
 
 /**
  * Mainnet by default.
- * If you want Sandbox/Testnet, set:
+ * برای Sandbox/Testnet در env بگذار:
  * VITE_PI_SANDBOX=true
  */
 const PI_SANDBOX = parseBooleanEnv(import.meta.env.VITE_PI_SANDBOX, false);
@@ -30,10 +30,10 @@ const PiHomeLogin: React.FC = () => {
   const auth = useAuth();
   const { t } = useI18n();
 
-  const [status, setStatus] = useState<string>('Initializing Pi SDK...');
+  const [status, setStatus] = useState<string>(t('initializingPiSdk'));
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const networkLabel = PI_SANDBOX ? 'Testnet' : 'Mainnet';
+  const networkLabel = PI_SANDBOX ? t('testnet') : t('mainnet');
 
   useEffect(() => {
     console.log('PiHomeLogin User Agent:', navigator.userAgent);
@@ -43,7 +43,7 @@ const PiHomeLogin: React.FC = () => {
     console.log('PiHomeLogin PI_SANDBOX:', PI_SANDBOX);
 
     if (!window.Pi) {
-      setStatus('Pi SDK not found. Please open this app inside Pi Browser.');
+      setStatus(t('piSdkNotFound'));
       return;
     }
 
@@ -67,28 +67,26 @@ const PiHomeLogin: React.FC = () => {
         });
       }
 
-      setStatus(`Pi SDK ready. Network: ${networkLabel}`);
+      setStatus(`${t('piSdkReady')} ${t('network')}: ${networkLabel}`);
     } catch (error: any) {
       console.error('Pi SDK init error:', error);
       setStatus('Pi SDK error: ' + (error?.message || String(error)));
     }
-  }, []);
+  }, [t, networkLabel]);
 
   const onIncompletePaymentFound = (payment: any) => {
     console.log('Incomplete payment found:', payment);
-    setStatus(
-      'Incomplete payment found. Please complete or cancel it inside Pi Browser.'
-    );
+    setStatus(t('incompletePaymentFound'));
   };
 
   const handleLogin = async () => {
     if (!auth) {
-      setStatus('Auth context is missing.');
+      setStatus(t('authContextMissing'));
       return;
     }
 
     if (!window.Pi) {
-      setStatus('Pi SDK not found. Please open this app inside Pi Browser.');
+      setStatus(t('piSdkNotFound'));
       return;
     }
 
@@ -99,7 +97,7 @@ const PiHomeLogin: React.FC = () => {
 
     try {
       setIsLoading(true);
-      setStatus('Authenticating with Pi...');
+      setStatus(t('authenticating'));
 
       const authResult = await window.Pi.authenticate(
         ['username', 'payments'],
@@ -131,12 +129,12 @@ const PiHomeLogin: React.FC = () => {
 
       await auth.login(String(piUserId), String(username), accessToken);
 
-      setStatus(`Login successful. Welcome @${username}`);
+      setStatus(`${t('loginSuccess')} @${username}`);
     } catch (error: any) {
       console.error('Pi login error:', error);
 
       setStatus(
-        'Login failed: ' +
+        `${t('loginFailed')} ` +
           (
             error?.response?.data?.message ||
             error?.message ||
@@ -150,7 +148,7 @@ const PiHomeLogin: React.FC = () => {
 
   const handleLogout = () => {
     auth?.logout();
-    setStatus(`Pi SDK ready. Network: ${networkLabel}`);
+    setStatus(`${t('piSdkReady')} ${t('network')}: ${networkLabel}`);
   };
 
   const isAuthenticated = auth?.isAuthenticated;
@@ -190,7 +188,7 @@ const PiHomeLogin: React.FC = () => {
           fontWeight: 700,
         }}
       >
-        Network: {networkLabel}
+        {t('network')}: {networkLabel}
       </div>
 
       {!isAuthenticated ? (
@@ -210,12 +208,13 @@ const PiHomeLogin: React.FC = () => {
             fontWeight: 700,
           }}
         >
-          {isLoading ? 'Please wait...' : 'Login with Pi'}
+          {isLoading ? t('pleaseWait') : t('loginWithPi')}
         </button>
       ) : (
         <>
           <p style={{ color: '#333', marginTop: '10px' }}>
-            Welcome, <strong>@{user?.username || 'Pi User'}</strong>
+            {t('welcome')},{' '}
+            <strong>@{user?.username || 'Pi User'}</strong>
           </p>
 
           <button
@@ -231,7 +230,7 @@ const PiHomeLogin: React.FC = () => {
               fontWeight: 600,
             }}
           >
-            Logout
+            {t('logout')}
           </button>
         </>
       )}
