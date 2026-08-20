@@ -26,8 +26,8 @@
 
     <!--
       Pi Browser Guard
-      اگر دامنه tiraxturumuz1.github.io خارج از Pi Browser باز شود،
-      اپلیکیشن React اجرا نمی‌شود و پیام راهنما نمایش داده می‌شود.
+      If tiraxturumuz1.github.io is opened outside Pi Browser,
+      the React app will be blocked and a guide page will be shown.
     -->
     <script>
       (function () {
@@ -77,7 +77,7 @@
               justify-content: center;
               padding: 24px;
               text-align: center;
-              direction: rtl;
+              direction: ltr;
             }
 
             .pi-browser-guard-box {
@@ -155,17 +155,6 @@
               color: #ffffff;
             }
 
-            .pi-browser-guard-url {
-              margin-top: 18px;
-              padding: 12px;
-              border-radius: 12px;
-              background: rgba(255, 255, 255, 0.06);
-              direction: ltr;
-              word-break: break-all;
-              color: #93c5fd;
-              font-size: 13px;
-            }
-
             .pi-browser-guard-note {
               margin-top: 16px;
               font-size: 13px;
@@ -178,11 +167,12 @@
             <section class="pi-browser-guard-box">
               <div class="pi-browser-guard-logo">π</div>
 
-              <h1>برای ادامه، برنامه را در Pi Browser باز کنید</h1>
+              <h1>To continue, open the app in Pi Browser.</h1>
 
               <p>
-                این برنامه مخصوص Pi Network است و برای ورود، پرداخت و امکانات مربوط به Pi
-                باید داخل <strong>Pi Browser</strong> اجرا شود.
+                This app is built for Pi Network and must be opened inside
+                <strong>Pi Browser</strong>
+                to use Pi login, payments, and Pi features.
               </p>
 
               <div class="pi-browser-guard-actions">
@@ -190,7 +180,7 @@
                   class="pi-browser-guard-link pi-browser-guard-primary"
                   href="${piDeepLink}"
                 >
-                  باز کردن در Pi Browser
+                  Open in Pi Browser
                 </a>
 
                 <button
@@ -198,15 +188,12 @@
                   class="pi-browser-guard-button pi-browser-guard-secondary"
                   type="button"
                 >
-                  کپی کردن آدرس برنامه
+                  Copy app address
                 </button>
               </div>
 
-              <div class="pi-browser-guard-url">${appUrl}</div>
-
               <div class="pi-browser-guard-note">
-                اگر دکمه بالا Pi Browser را باز نکرد، آدرس برنامه را کپی کنید و داخل
-                Pi Browser وارد نمایید.
+                If the button does not open Pi Browser, copy the app address and open it manually inside Pi Browser.
               </div>
             </section>
           </main>
@@ -220,13 +207,13 @@
               navigator.clipboard
                 .writeText(appUrl)
                 .then(function () {
-                  copyButton.textContent = 'آدرس کپی شد';
+                  copyButton.textContent = 'App address copied';
                 })
                 .catch(function () {
-                  copyButton.textContent = appUrl;
+                  copyButton.textContent = 'Copy failed';
                 });
             } else {
-              copyButton.textContent = appUrl;
+              copyButton.textContent = 'Copy not supported';
             }
           });
         }
