@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../i18n/I18nContext';
+import axiosClient from '../lib/axiosClient';
 
 declare global {
   interface Window {
@@ -12,7 +13,10 @@ declare global {
 }
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || 'https://pidao.bonto.run/api';
+  (import.meta.env.VITE_API_URL || 'https://pidao.bonto.run/api').replace(
+    /\/+$/,
+    ''
+  );
 
 const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
   if (value === undefined || value === null || value === '') {
@@ -39,11 +43,11 @@ function getHealthUrl() {
   return API_BASE_URL.replace(/\/api\/?$/, '') + '/health';
 }
 
-const PiTestnetPayment: React.FC = () => {
+const PiPaymentPanel: React.FC = () => {
   const auth = useAuth();
   const { t } = useI18n();
 
-  const [status, setStatus] = useState<string>(t('initializingPiSdk'));
+  const [status, setStatus] = useState<string>('Initializing Pi SDK...');
   const [username, setUsername] = useState<string>('');
   const [isPaying, setIsPaying] = useState<boolean>(false);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
@@ -70,6 +74,10 @@ const PiTestnetPayment: React.FC = () => {
 
         window.__PI_SDK_INITIALIZED__ = true;
         window.__PI_SDK_SANDBOX__ = PI_SANDBOX;
+
+        console.log('Pi SDK initialized from PiPaymentPanel.', {
+          sandbox: PI_SANDBOX,
+        });
       } else if (window.__PI_SDK_SANDBOX__ !== PI_SANDBOX) {
         console.warn(
           'Pi SDK was already initialized with a different sandbox value.',
@@ -83,9 +91,9 @@ const PiTestnetPayment: React.FC = () => {
       setStatus(`${t('piSdkReady')} ${t('network')}: ${networkLabel}`);
     } catch (error: any) {
       console.error('Pi SDK init error:', error);
-      setStatus('Pi SDK init error: ' + (error?.message || error));
+      setStatus('Pi SDK init error: ' + (error?.message || String(error)));
     }
-  }, [t, networkLabel]);
+  }, []);
 
   useEffect(() => {
     if (auth?.user?.username) {
@@ -134,33 +142,14 @@ const PiTestnetPayment: React.FC = () => {
       setIsLoggingIn(true);
       setStatus(t('authenticating'));
 
-      const authResult = await window.Pi.authenticate(
-        ['username', 'payments'],
-        onIncompletePaymentFound
-      );
-
-      console.log('Pi auth result:', authResult);
-
-      const piUserId =
-        authResult?.user?.uid ||
-        authResult?.user?.id ||
-        authResult?.user?._id;
-
-      const piUsername = authResult?.user?.username;
-
-      if (!piUserId || !piUsername) {
-        throw new Error('Invalid Pi user data received.');
-      }
-
       /**
-       * Important:
-       * This calls backend /api/auth/pi-login and stores JWT in localStorage.
-       * Poll voting depends on this token.
+       * از AuthContext استفاده می‌کنیم تا Pi.authenticate و backend login
+       * در یک مسیر واحد و تمیز انجام شود.
        */
-      await auth.login(piUserId, piUsername, authResult?.accessToken);
+      const loggedInUser = await auth.loginWithPi();
 
-      setUsername(piUsername);
-      setStatus(`${t('loginSuccess')} @${piUsername}`);
+      setUsername(loggedInUser.username || 'Pi User');
+      setStatus(`${t('loginSuccess')} @${loggedInUser.username || 'Pi User'}`);
     } catch (error: any) {
       console.error('Pi auth error:', error);
       setStatus(
@@ -221,57 +210,41 @@ const PiTestnetPayment: React.FC = () => {
     orderId: string,
     paymentAmount: number
   ) => {
-    if (!API_BASE_URL) {
-      throw new Error('VITE_API_URL is not set.');
-    }
-
-    const url = `${API_BASE_URL}/pi/approve`;
-    const token = localStorage.getItem('token');
-
-    console.log('Calling approve endpoint:', url, {
+    console.log('Calling approve endpoint:', '/pi/approve', {
       paymentId,
       orderId,
       amount: paymentAmount,
       network: networkValue,
     });
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify({
+    try {
+      const response = await axiosClient.post('/pi/approve', {
         paymentId,
         orderId,
         amount: paymentAmount,
         network: networkValue,
         pageUrl: window.location.href,
         pageOrigin: window.location.origin,
-      }),
-    });
+      });
 
-    const text = await response.text();
+      console.log('Approve response:', response.status, response.data);
 
-    let data: any;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = { raw: text };
-    }
+      if (!response.data?.success) {
+        throw new Error(response.data?.message || 'Server approval failed');
+      }
 
-    console.log('Approve response:', response.status, data);
+      return response.data;
+    } catch (error: any) {
+      console.error('Approve request failed:', error?.response?.data || error);
 
-    if (!response.ok || !data.success) {
       throw new Error(
-        data?.message ||
-          data?.error?.message ||
-          data?.error ||
+        error?.response?.data?.message ||
+          error?.response?.data?.error?.message ||
+          error?.response?.data?.error ||
+          error?.message ||
           'Server approval failed'
       );
     }
-
-    return data;
   };
 
   const completePaymentOnServer = async (
@@ -280,14 +253,7 @@ const PiTestnetPayment: React.FC = () => {
     orderId: string,
     paymentAmount: number
   ) => {
-    if (!API_BASE_URL) {
-      throw new Error('VITE_API_URL is not set.');
-    }
-
-    const url = `${API_BASE_URL}/pi/complete`;
-    const token = localStorage.getItem('token');
-
-    console.log('Calling complete endpoint:', url, {
+    console.log('Calling complete endpoint:', '/pi/complete', {
       paymentId,
       txid,
       orderId,
@@ -295,13 +261,8 @@ const PiTestnetPayment: React.FC = () => {
       network: networkValue,
     });
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify({
+    try {
+      const response = await axiosClient.post('/pi/complete', {
         paymentId,
         txid,
         orderId,
@@ -309,30 +270,26 @@ const PiTestnetPayment: React.FC = () => {
         network: networkValue,
         pageUrl: window.location.href,
         pageOrigin: window.location.origin,
-      }),
-    });
+      });
 
-    const text = await response.text();
+      console.log('Complete response:', response.status, response.data);
 
-    let data: any;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = { raw: text };
-    }
+      if (!response.data?.success) {
+        throw new Error(response.data?.message || 'Server completion failed');
+      }
 
-    console.log('Complete response:', response.status, data);
+      return response.data;
+    } catch (error: any) {
+      console.error('Complete request failed:', error?.response?.data || error);
 
-    if (!response.ok || !data.success) {
       throw new Error(
-        data?.message ||
-          data?.error?.message ||
-          data?.error ||
+        error?.response?.data?.message ||
+          error?.response?.data?.error?.message ||
+          error?.response?.data?.error ||
+          error?.message ||
           'Server completion failed'
       );
     }
-
-    return data;
   };
 
   const createPiPayment = async () => {
@@ -608,4 +565,5 @@ const PiTestnetPayment: React.FC = () => {
   );
 };
 
-export default PiTestnetPayment;
+export default PiPaymentPanel;
+    
