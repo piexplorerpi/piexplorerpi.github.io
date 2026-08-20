@@ -1,229 +1,199 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+<script>
+  (function () {
+    var requiredHost = 'tiraxturumuz1.github.io';
+    var appUrl = 'https://tiraxturumuz1.github.io';
+    var piDeepLink = 'pi://browser?url=' + encodeURIComponent(appUrl);
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+    var userAgent = navigator.userAgent || '';
+    var isPiBrowser = /PiBrowser|Pi Browser|MinePi/i.test(userAgent);
+    var isRequiredHost = window.location.hostname === requiredHost;
 
-    <meta
-      name="description"
-      content="Pi DAO - Decentralized international Government powered by Pi Network"
-    />
+    var shouldBlock = isRequiredHost && !isPiBrowser;
 
-    <meta name="theme-color" content="#673ab7" />
+    window.__PI_BROWSER_REQUIRED_BLOCKED__ = shouldBlock;
 
-    <!-- Pi Domain Validation -->
-    <link rel="pi-domain-validation" href="/validation-key.txt" />
+    if (!shouldBlock) {
+      return;
+    }
 
-    <title>Pi DAO - Decentralized International Government</title>
-  </head>
+    var root = document.getElementById('root');
 
-  <body>
-    <div id="root"></div>
+    if (!root) {
+      return;
+    }
 
-    <!--
-      Pi Browser Guard
-      If tiraxturumuz1.github.io is opened outside Pi Browser,
-      the React app will be blocked and a guide page will be shown.
-    -->
-    <script>
-      (function () {
-        var requiredHost = 'tiraxturumuz1.github.io';
-        var appUrl = 'https://tiraxturumuz1.github.io';
-        var piDeepLink =
-          'pi://browser?url=' + encodeURIComponent(appUrl);
-
-        var userAgent = navigator.userAgent || '';
-        var isPiBrowser = /PiBrowser|Pi Browser|MinePi/i.test(userAgent);
-        var isRequiredHost = window.location.hostname === requiredHost;
-
-        var shouldBlock = isRequiredHost && !isPiBrowser;
-
-        window.__PI_BROWSER_REQUIRED_BLOCKED__ = shouldBlock;
-
-        if (!shouldBlock) {
-          return;
+    root.innerHTML = `
+      <style>
+        * {
+          box-sizing: border-box;
         }
 
-        var root = document.getElementById('root');
-
-        if (!root) {
-          return;
+        body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+          background:
+            radial-gradient(circle at top, rgba(103, 58, 183, 0.45), transparent 35%),
+            linear-gradient(135deg, #111827, #1f2937);
+          color: #ffffff;
+          min-height: 100vh;
         }
 
-        root.innerHTML = `
-          <style>
-            * {
-              box-sizing: border-box;
-            }
-
-            body {
-              margin: 0;
-              font-family: Arial, sans-serif;
-              background:
-                radial-gradient(circle at top, rgba(103, 58, 183, 0.45), transparent 35%),
-                linear-gradient(135deg, #111827, #1f2937);
-              color: #ffffff;
-              min-height: 100vh;
-            }
-
-            .pi-browser-guard-page {
-              min-height: 100vh;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              padding: 24px;
-              text-align: center;
-              direction: ltr;
-            }
-
-            .pi-browser-guard-box {
-              width: 100%;
-              max-width: 560px;
-              background: rgba(17, 24, 39, 0.92);
-              border: 1px solid rgba(255, 255, 255, 0.12);
-              border-radius: 24px;
-              padding: 32px 24px;
-              box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-              backdrop-filter: blur(10px);
-            }
-
-            .pi-browser-guard-logo {
-              width: 76px;
-              height: 76px;
-              border-radius: 50%;
-              margin: 0 auto 18px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              background: linear-gradient(135deg, #fbbf24, #a855f7);
-              color: #111827;
-              font-size: 34px;
-              font-weight: 900;
-            }
-
-            .pi-browser-guard-box h1 {
-              margin: 0 0 14px;
-              font-size: 24px;
-              line-height: 1.5;
-              color: #ffffff;
-            }
-
-            .pi-browser-guard-box p {
-              margin: 0 0 18px;
-              color: #d1d5db;
-              font-size: 15px;
-              line-height: 1.9;
-            }
-
-            .pi-browser-guard-actions {
-              margin-top: 24px;
-              display: grid;
-              gap: 12px;
-            }
-
-            .pi-browser-guard-button,
-            .pi-browser-guard-link {
-              display: block;
-              width: 100%;
-              border: 0;
-              border-radius: 14px;
-              padding: 14px 18px;
-              font-size: 16px;
-              font-weight: 700;
-              text-decoration: none;
-              cursor: pointer;
-              transition: transform 0.15s ease, opacity 0.15s ease;
-            }
-
-            .pi-browser-guard-button:hover,
-            .pi-browser-guard-link:hover {
-              transform: translateY(-1px);
-              opacity: 0.92;
-            }
-
-            .pi-browser-guard-primary {
-              background: #fbbf24;
-              color: #111827;
-            }
-
-            .pi-browser-guard-secondary {
-              background: #374151;
-              color: #ffffff;
-            }
-
-            .pi-browser-guard-note {
-              margin-top: 16px;
-              font-size: 13px;
-              color: #9ca3af;
-              line-height: 1.8;
-            }
-          </style>
-
-          <main class="pi-browser-guard-page">
-            <section class="pi-browser-guard-box">
-              <div class="pi-browser-guard-logo">π</div>
-
-              <h1>To continue, open the app in Pi Browser.</h1>
-
-              <p>
-                This app is built for Pi Network and must be opened inside
-                <strong>Pi Browser</strong>
-                to use Pi login, payments, and Pi features.
-              </p>
-
-              <div class="pi-browser-guard-actions">
-                <a
-                  class="pi-browser-guard-link pi-browser-guard-primary"
-                  href="${piDeepLink}"
-                >
-                  Open in Pi Browser
-                </a>
-
-                <button
-                  id="copyPiAppUrlButton"
-                  class="pi-browser-guard-button pi-browser-guard-secondary"
-                  type="button"
-                >
-                  Copy app address
-                </button>
-              </div>
-
-              <div class="pi-browser-guard-note">
-                If the button does not open Pi Browser, copy the app address and open it manually inside Pi Browser.
-              </div>
-            </section>
-          </main>
-        `;
-
-        var copyButton = document.getElementById('copyPiAppUrlButton');
-
-        if (copyButton) {
-          copyButton.addEventListener('click', function () {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-              navigator.clipboard
-                .writeText(appUrl)
-                .then(function () {
-                  copyButton.textContent = 'App address copied';
-                })
-                .catch(function () {
-                  copyButton.textContent = 'Copy failed';
-                });
-            } else {
-              copyButton.textContent = 'Copy not supported';
-            }
-          });
+        .pi-browser-guard-page {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          text-align: center;
+          direction: ltr;
         }
-      })();
-    </script>
 
-    <!-- Pi Network SDK must be loaded before React app -->
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+        .pi-browser-guard-box {
+          width: 100%;
+          max-width: 560px;
+          background: rgba(17, 24, 39, 0.92);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 24px;
+          padding: 32px 24px;
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+          backdrop-filter: blur(10px);
+        }
 
-    <!-- React/Vite entry -->
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+        .pi-browser-guard-logo {
+          width: 76px;
+          height: 76px;
+          border-radius: 50%;
+          margin: 0 auto 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #fbbf24, #a855f7);
+          color: #111827;
+          font-size: 34px;
+          font-weight: 900;
+        }
+
+        .pi-browser-guard-box h1 {
+          margin: 0 0 14px;
+          font-size: 24px;
+          line-height: 1.5;
+          color: #ffffff;
+        }
+
+        .pi-browser-guard-box p {
+          margin: 0 0 18px;
+          color: #d1d5db;
+          font-size: 15px;
+          line-height: 1.9;
+        }
+
+        .pi-browser-guard-actions {
+          margin-top: 24px;
+          display: grid;
+          gap: 12px;
+        }
+
+        .pi-browser-guard-button {
+          display: block;
+          width: 100%;
+          border: 0;
+          border-radius: 14px;
+          padding: 14px 18px;
+          font-size: 16px;
+          font-weight: 700;
+          text-decoration: none;
+          cursor: pointer;
+          transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        .pi-browser-guard-button:hover {
+          transform: translateY(-1px);
+          opacity: 0.92;
+        }
+
+        .pi-browser-guard-primary {
+          background: #fbbf24;
+          color: #111827;
+        }
+
+        .pi-browser-guard-secondary {
+          background: #374151;
+          color: #ffffff;
+        }
+
+        .pi-browser-guard-note {
+          margin-top: 16px;
+          font-size: 13px;
+          color: #9ca3af;
+          line-height: 1.8;
+        }
+      </style>
+
+      <main class="pi-browser-guard-page">
+        <section class="pi-browser-guard-box">
+          <div class="pi-browser-guard-logo">π</div>
+
+          <h1>To continue, open the app in Pi Browser.</h1>
+
+          <p>
+            This app is built for Pi Network and must be opened inside
+            <strong>Pi Browser</strong>
+            to use Pi login, payments, and Pi features.
+          </p>
+
+          <div class="pi-browser-guard-actions">
+            <button
+              id="openPiBrowserButton"
+              class="pi-browser-guard-button pi-browser-guard-primary"
+              type="button"
+            >
+              Open in Pi Browser
+            </button>
+
+            <button
+              id="copyPiAppUrlButton"
+              class="pi-browser-guard-button pi-browser-guard-secondary"
+              type="button"
+            >
+              Copy app address
+            </button>
+          </div>
+
+          <div class="pi-browser-guard-note">
+            If the button does not open Pi Browser, copy the app address and open it manually inside Pi Browser.
+          </div>
+        </section>
+      </main>
+    `;
+
+    var openButton = document.getElementById('openPiBrowserButton');
+    var copyButton = document.getElementById('copyPiAppUrlButton');
+
+    if (openButton) {
+      openButton.addEventListener('click', function () {
+        window.location.href = piDeepLink;
+
+        setTimeout(function () {
+          openButton.textContent = 'If Pi Browser did not open, copy the app address below';
+        }, 1800);
+      });
+    }
+
+    if (copyButton) {
+      copyButton.addEventListener('click', function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(appUrl)
+            .then(function () {
+              copyButton.textContent = 'App address copied';
+            })
+            .catch(function () {
+              copyButton.textContent = 'Copy failed';
+            });
+        } else {
+          copyButton.textContent = 'Copy not supported';
+        }
+      });
+    }
+  })();
+</script>
