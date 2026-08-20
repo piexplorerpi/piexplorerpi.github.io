@@ -9,6 +9,48 @@ import { I18nProvider } from './i18n/I18nContext';
 declare global {
   interface Window {
     __PI_BROWSER_REQUIRED_BLOCKED__?: boolean;
+    Pi?: {
+      init: (config: { version: string; sandbox: boolean }) => void;
+      authenticate: any;
+      createPayment: any;
+    };
+    __PI_SDK_INITIALIZED__?: boolean;
+  }
+}
+
+/**
+ * Initialize Pi SDK once.
+ * Pi SDK is loaded in frontend/index.html:
+ * <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+ */
+function initializePiSdk() {
+  if (window.__PI_SDK_INITIALIZED__) {
+    return;
+  }
+
+  if (!window.Pi) {
+    console.warn(
+      'Pi SDK is not available on window.Pi. Make sure pi-sdk.js is loaded before React.'
+    );
+    return;
+  }
+
+  try {
+    window.Pi.init({
+      version: '2.0',
+
+      /**
+       * اگر اپلیکیشن را در Sandbox تست می‌کنی true بگذار.
+       * اگر Production/Mainnet است false بماند.
+       */
+      sandbox: false,
+    });
+
+    window.__PI_SDK_INITIALIZED__ = true;
+
+    console.log('Pi SDK initialized successfully.');
+  } catch (error) {
+    console.error('Failed to initialize Pi SDK:', error);
   }
 }
 
@@ -19,6 +61,8 @@ if (window.__PI_BROWSER_REQUIRED_BLOCKED__) {
     'Pi Browser is required. React app rendering has been blocked outside Pi Browser.'
   );
 } else {
+  initializePiSdk();
+
   // پیدا کردن عنصر ریشه با استفاده از TypeScript برای جلوگیری از خطای null
   const rootElement = document.getElementById('root');
 
