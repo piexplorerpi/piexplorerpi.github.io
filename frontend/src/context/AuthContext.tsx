@@ -8,6 +8,21 @@ import React, {
 } from 'react';
 import axiosClient from '../lib/axiosClient';
 
+declare global {
+  interface Window {
+    Pi?: {
+      init?: (config: { version: string; sandbox: boolean }) => void;
+      authenticate: (
+        scopes: string[],
+        onIncompletePaymentFound: (payment: any) => void
+      ) => Promise<any>;
+      createPayment?: any;
+    };
+    __PI_SDK_INITIALIZED__?: boolean;
+    __PI_SDK_SANDBOX__?: boolean;
+  }
+}
+
 export interface User {
   id: string;
   username: string;
@@ -20,17 +35,31 @@ interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+
   login: (
     pi_user_id: string,
     username: string,
     accessToken?: string
-  ) => Promise<void>;
+  ) => Promise<User>;
+
+  loginWithPi: () => Promise<User>;
+
   logout: () => void;
   refreshAuth: () => Promise<void>;
   clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
+  if (value === undefined || value === null || value === '') {
+    return defaultValue;
+  }
+
+  return String(value).trim().toLowerCase() === 'true';
+};
+
+const PI_SANDBOX = parseBooleanEnv(import.meta.env.VITE_PI_SANDBOX, false);
 
 /**
  * نرمال‌سازی اطلاعات کاربر
@@ -82,6 +111,34 @@ const getSavedUser = (): User | null => {
   }
 };
 
+const ensurePiSdkInitialized = () => {
+  if (!window.Pi) {
+    throw new Error(
+      'Pi SDK is not loaded. Please open this app inside Pi Browser.'
+    );
+  }
+
+  if (window.__PI_SDK_INITIALIZED__) {
+    return;
+  }
+
+  if (typeof window.Pi.init !== 'function') {
+    throw new Error('Pi SDK init function is not available.');
+  }
+
+  window.Pi.init({
+    version: '2.0',
+    sandbox: PI_SANDBOX,
+  });
+
+  window.__PI_SDK_INITIALIZED__ = true;
+  window.__PI_SDK_SANDBOX__ = PI_SANDBOX;
+
+  console.log('Pi SDK initialized from AuthContext.', {
+    sandbox: PI_SANDBOX,
+  });
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => getSavedUser());
 
@@ -95,7 +152,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const persistAuth = (token: string, userData: any) => {
+  const persistAuth = (token: string, userData: any): User => {
     const normalizedUser = normalizeUser(userData);
 
     if (!token || !normalizedUser.id) {
@@ -107,6 +164,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     setUser(normalizedUser);
     setIsAuthenticated(true);
+
+    return normalizedUser;
   };
 
   const clearAuth = () => {
@@ -155,7 +214,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     pi_user_id: string,
     username: string,
     accessToken?: string
-  ) => {
+  ): Promise<User> => {
     setLoading(true);
     setError(null);
 
@@ -174,11 +233,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const responseUser = response.data?.user;
       const success = response.data?.success;
 
-      if ((success && responseToken && responseUser) || (responseToken && responseUser)) {
-        persistAuth(responseToken, responseUser);
-      } else {
-        throw new Error(response.data?.message || 'Login failed');
+      if (
+        (success && responseToken && responseUser) ||
+        (responseToken && responseUser)
+      ) {
+        return persistAuth(responseToken, responseUser);
       }
+
+      throw new Error(response.data?.message || 'Login failed');
     } catch (err: any) {
       const message =
         err?.response?.data?.message ||
@@ -189,6 +251,69 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       clearAuth();
 
       console.error('Login Error:', err?.response?.data || err);
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginWithPi = async (): Promise<User> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      ensurePiSdkInitialized();
+
+      if (!window.Pi) {
+        throw new Error(
+          'Pi SDK is not loaded. Please open this app inside Pi Browser.'
+        );
+      }
+
+      const onIncompletePaymentFound = function (payment: any) {
+        console.warn('Incomplete payment found during Pi login:', payment);
+      };
+
+      const authResult = await window.Pi.authenticate(
+        ['username', 'payments'],
+        onIncompletePaymentFound
+      );
+
+      console.log('Pi auth result:', authResult);
+
+      const piUserId =
+        authResult?.user?.uid ||
+        authResult?.user?.id ||
+        authResult?.user?._id ||
+        authResult?.uid ||
+        authResult?.id;
+
+      const piUsername =
+        authResult?.user?.username ||
+        authResult?.username ||
+        'Pi User';
+
+      const accessToken =
+        authResult?.accessToken ||
+        authResult?.access_token ||
+        authResult?.token;
+
+      if (!piUserId) {
+        throw new Error('Pi authentication did not return a valid user id.');
+      }
+
+      return await login(String(piUserId), String(piUsername), accessToken);
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        'Pi login failed';
+
+      setError(message);
+      clearAuth();
+
+      console.error('Pi Login Error:', err?.response?.data || err);
 
       throw err;
     } finally {
@@ -213,6 +338,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         loading,
         error,
         login,
+        loginWithPi,
         logout,
         refreshAuth,
         clearError,
