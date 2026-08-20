@@ -10,17 +10,18 @@ const API_BASE_URL =
 const axiosClient = axios.create({
   // Production fallback must point to the real backend, not localhost.
   baseURL: API_BASE_URL,
+
   headers: {
     'Content-Type': 'application/json',
   },
 
-  // Bonto/Render-like servers may be cold-started, so 10s can be too short.
+  // Bonto/server cold start may take more than 10 seconds.
   timeout: 30000,
 });
 
 /**
  * Request Interceptor
- * اضافه کردن توکن به تمام درخواست‌ها
+ * Add JWT token to all authenticated requests.
  */
 axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -39,7 +40,7 @@ axiosClient.interceptors.request.use(
 
 /**
  * Response Interceptor
- * مدیریت هوشمند خطاها برای جلوگیری از صفحه سفید
+ * Handle errors safely to avoid white screen.
  */
 axiosClient.interceptors.response.use(
   (response) => response,
@@ -54,7 +55,7 @@ axiosClient.interceptors.response.use(
         localStorage.removeItem('user');
 
         // IMPORTANT:
-        // اگر از HashRouter استفاده می‌کنی، باید hash عوض شود.
+        // If you use HashRouter, use hash navigation.
         const currentHash = window.location.hash || '#/';
 
         if (!currentHash.includes('/login')) {
@@ -65,14 +66,20 @@ axiosClient.interceptors.response.use(
       } else if (status === 404) {
         console.error('API route not found:', error.config?.url);
       } else if (status === 500) {
-        console.error('Server Error: Something went wrong on the backend.');
+        console.error('Server Error:', error.response.data);
+      } else {
+        console.error('API Error:', {
+          status,
+          data: error.response.data,
+          url: error.config?.url,
+        });
       }
     } else if (error.request) {
       console.error(
         'Network Error: Cannot connect to the server. Please check VITE_API_URL, CORS, internet, or backend status.'
       );
     } else {
-      console.error('Error:', error.message);
+      console.error('Axios Error:', error.message);
     }
 
     return Promise.reject(error);
