@@ -15,10 +15,168 @@ dotenv.config();
 const app = express();
 const prisma = new PrismaClient();
 
-const APP_VERSION = 'poll-enabled-v5-db-health';
+const APP_VERSION = 'poll-enabled-v6-pi-browser-guard';
 
 // اگر پشت reverse-proxy یا Bonto proxy هستی
 app.set('trust proxy', 1);
+
+// -------------------------
+// Pi Browser Guard Config
+// -------------------------
+
+const REQUIRED_PI_BROWSER_DOMAIN = 'tiraxturumuz1.github.io';
+const REQUIRED_PI_BROWSER_APP_URL = `https://${REQUIRED_PI_BROWSER_DOMAIN}`;
+const PI_BROWSER_DEEP_LINK = `pi://browser?url=${encodeURIComponent(
+  REQUIRED_PI_BROWSER_APP_URL
+)}`;
+
+function isPiBrowserRequest(req) {
+  const userAgent = req.headers['user-agent'] || '';
+
+  return /PiBrowser|Pi Browser|MinePi/i.test(userAgent);
+}
+
+function getRequestSourceHost(req) {
+  const origin = req.headers.origin;
+  const referer = req.headers.referer || req.headers.referrer;
+
+  try {
+    if (origin) {
+      return new URL(origin).hostname;
+    }
+
+    if (referer) {
+      return new URL(referer).hostname;
+    }
+  } catch {
+    return null;
+  }
+
+  return req.hostname || null;
+}
+
+function isFromRequiredGithubDomain(req) {
+  const sourceHost = getRequestSourceHost(req);
+
+  return sourceHost === REQUIRED_PI_BROWSER_DOMAIN;
+}
+
+function sendPiBrowserGuide(req, res) {
+  const accept = req.headers.accept || '';
+  const wantsHtml = accept.includes('text/html');
+
+  if (!wantsHtml || req.path.startsWith('/api')) {
+    return res.status(426).json({
+      success: false,
+      code: 'PI_BROWSER_REQUIRED',
+      message: 'Please open this app inside Pi Browser.',
+      messageFa: 'لطفاً این برنامه را داخل Pi Browser باز کنید.',
+      appUrl: REQUIRED_PI_BROWSER_APP_URL,
+      piBrowserDeepLink: PI_BROWSER_DEEP_LINK,
+      version: APP_VERSION,
+      time: new Date().toISOString(),
+    });
+  }
+
+  return res.status(426).send(`
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Open in Pi Browser</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111827;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 24px;
+    }
+    .box {
+      max-width: 520px;
+      background: #1f2937;
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.35);
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 24px;
+    }
+    p {
+      line-height: 1.8;
+      color: #d1d5db;
+    }
+    a {
+      display: block;
+      margin-top: 14px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .primary {
+      background: #fbbf24;
+      color: #111827;
+    }
+    .secondary {
+      background: #374151;
+      color: #fff;
+    }
+    .url {
+      direction: ltr;
+      word-break: break-all;
+      color: #93c5fd;
+      font-size: 13px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>برای ادامه، برنامه را در Pi Browser باز کنید</h1>
+    <p>
+      این برنامه مخصوص Pi Network است و برای ورود، پرداخت و امکانات Pi باید داخل
+      <strong>Pi Browser</strong>
+      اجرا شود.
+    </p>
+
+    <a class="primary" href="${PI_BROWSER_DEEP_LINK}">
+      باز کردن در Pi Browser
+    </a>
+
+    <a class="secondary" href="${REQUIRED_PI_BROWSER_APP_URL}">
+      باز کردن آدرس برنامه
+    </a>
+
+    <p class="url">${REQUIRED_PI_BROWSER_APP_URL}</p>
+  </div>
+</body>
+</html>
+  `);
+}
+
+function requirePiBrowserForGithubDomain(req, res, next) {
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+
+  if (!isFromRequiredGithubDomain(req)) {
+    return next();
+  }
+
+  if (isPiBrowserRequest(req)) {
+    return next();
+  }
+
+  return sendPiBrowserGuide(req, res);
+}
 
 // -------------------------
 // Security & Parsers
@@ -89,6 +247,41 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
 // -------------------------
+// Pi Browser Check Route
+// -------------------------
+
+app.get('/api/pi-browser-check', (req, res) => {
+  const sourceHost = getRequestSourceHost(req);
+  const isRequiredDomain = sourceHost === REQUIRED_PI_BROWSER_DOMAIN;
+  const isPiBrowser = isPiBrowserRequest(req);
+
+  return res.status(200).json({
+    success: true,
+    requiredDomain: REQUIRED_PI_BROWSER_DOMAIN,
+    sourceHost,
+    isRequiredDomain,
+    isPiBrowser,
+    mustOpenInPiBrowser: isRequiredDomain && !isPiBrowser,
+    appUrl: REQUIRED_PI_BROWSER_APP_URL,
+    piBrowserDeepLink: PI_BROWSER_DEEP_LINK,
+    message:
+      isRequiredDomain && !isPiBrowser
+        ? 'Please open this app inside Pi Browser.'
+        : 'OK',
+    messageFa:
+      isRequiredDomain && !isPiBrowser
+        ? 'لطفاً برنامه را داخل Pi Browser باز کنید.'
+        : 'OK',
+    version: APP_VERSION,
+    time: new Date().toISOString(),
+  });
+});
+
+// این middleware بعد از CORS و بعد از check route قرار می‌گیرد
+// تا درخواست‌های API از دامنه GitHub خارج از Pi Browser محدود شوند.
+app.use(requirePiBrowserForGithubDomain);
+
+// -------------------------
 // Routes
 // -------------------------
 
@@ -125,6 +318,8 @@ app.get('/', (req, res) => {
     message: 'Pi DAO backend is running',
     version: APP_VERSION,
     api: process.env.PUBLIC_API_URL || null,
+    appUrl: REQUIRED_PI_BROWSER_APP_URL,
+    piBrowserDeepLink: PI_BROWSER_DEEP_LINK,
     time: new Date().toISOString(),
   });
 });
@@ -205,6 +400,8 @@ const envCheckHandler = (req, res) => {
     PI_REQUIRE_ACCESS_TOKEN: process.env.PI_REQUIRE_ACCESS_TOKEN || null,
 
     allowedOrigins,
+    requiredPiBrowserDomain: REQUIRED_PI_BROWSER_DOMAIN,
+    piBrowserAppUrl: REQUIRED_PI_BROWSER_APP_URL,
     version: APP_VERSION,
     time: new Date().toISOString(),
   });
@@ -274,6 +471,7 @@ const server = app.listen(PORT, () => {
   console.log('   - GET  /api/db-health');
   console.log('   - GET  /env-check');
   console.log('   - GET  /api/env-check');
+  console.log('   - GET  /api/pi-browser-check');
   console.log('   - POST /api/auth/pi-login');
   console.log('   - GET  /api/auth/me');
   console.log('   - POST /api/pi/approve');
