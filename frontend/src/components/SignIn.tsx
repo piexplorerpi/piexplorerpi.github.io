@@ -22,7 +22,7 @@ const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
 
 /**
  * Mainnet by default.
- * If you want Sandbox/Testnet, set:
+ * برای Sandbox/Testnet در env بگذار:
  * VITE_PI_SANDBOX=true
  */
 const PI_SANDBOX = parseBooleanEnv(import.meta.env.VITE_PI_SANDBOX, false);
@@ -32,10 +32,10 @@ const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useI18n();
 
-  const [status, setStatus] = useState<string>('Initializing Pi SDK...');
+  const [status, setStatus] = useState<string>(t('initializingPiSdk'));
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const networkLabel = PI_SANDBOX ? 'Testnet' : 'Mainnet';
+  const networkLabel = PI_SANDBOX ? t('testnet') : t('mainnet');
 
   useEffect(() => {
     console.log('SignIn User Agent:', navigator.userAgent);
@@ -45,7 +45,7 @@ const SignIn: React.FC = () => {
     console.log('SignIn PI_SANDBOX:', PI_SANDBOX);
 
     if (!window.Pi) {
-      setStatus('Pi SDK not found. Please open this app inside Pi Browser.');
+      setStatus(t('piSdkNotFound'));
       return;
     }
 
@@ -75,28 +75,26 @@ const SignIn: React.FC = () => {
         );
       }
 
-      setStatus(`Pi SDK ready. Network: ${networkLabel}`);
+      setStatus(`${t('piSdkReady')} ${t('network')}: ${networkLabel}`);
     } catch (error: any) {
       console.error('Pi SDK init error:', error);
       setStatus('Pi SDK init error: ' + (error?.message || String(error)));
     }
-  }, []);
+  }, [t, networkLabel]);
 
   const onIncompletePaymentFound = (payment: any) => {
     console.log('Incomplete payment found:', payment);
-    setStatus(
-      'Incomplete payment found. Please complete or cancel it inside Pi Browser.'
-    );
+    setStatus(t('incompletePaymentFound'));
   };
 
   const handlePiLogin = async () => {
     if (!auth) {
-      setStatus('Auth context is missing.');
+      setStatus(t('authContextMissing'));
       return;
     }
 
     if (!window.Pi) {
-      setStatus('Pi SDK not found. Please open this app inside Pi Browser.');
+      setStatus(t('piSdkNotFound'));
       return;
     }
 
@@ -107,7 +105,7 @@ const SignIn: React.FC = () => {
 
     try {
       setIsLoading(true);
-      setStatus('Authenticating with Pi...');
+      setStatus(t('authenticating'));
 
       const authResult = await window.Pi.authenticate(
         ['username', 'payments'],
@@ -139,13 +137,13 @@ const SignIn: React.FC = () => {
 
       await auth.login(String(piUserId), String(username), accessToken);
 
-      setStatus('Login successful. Redirecting...');
+      setStatus(`${t('loginSuccess')} ${t('redirecting')}`);
       navigate('/', { replace: true });
     } catch (error: any) {
       console.error('Pi login error:', error);
 
       setStatus(
-        'Login failed: ' +
+        `${t('loginFailed')} ` +
           (
             error?.response?.data?.message ||
             error?.message ||
@@ -213,7 +211,7 @@ const SignIn: React.FC = () => {
             fontWeight: 700,
           }}
         >
-          Network: {networkLabel}
+          {t('network')}: {networkLabel}
         </div>
 
         <button
@@ -231,7 +229,7 @@ const SignIn: React.FC = () => {
             fontWeight: 700,
           }}
         >
-          {isLoading ? 'Please wait...' : 'Login with Pi'}
+          {isLoading ? t('pleaseWait') : t('loginWithPi')}
         </button>
 
         <div
@@ -256,7 +254,7 @@ const SignIn: React.FC = () => {
             fontSize: '12px',
           }}
         >
-          Please use Pi Browser to login and use Pi features.
+          {t('pleaseUsePiBrowser')}
         </p>
       </div>
     </div>
