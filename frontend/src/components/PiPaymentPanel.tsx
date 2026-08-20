@@ -28,7 +28,7 @@ const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
 
 /**
  * Mainnet by default.
- * Set VITE_PI_SANDBOX=true only when you really want Sandbox/Testnet.
+ * Set VITE_PI_SANDBOX=true only for Sandbox/Testnet.
  */
 const PI_SANDBOX = parseBooleanEnv(import.meta.env.VITE_PI_SANDBOX, false);
 
@@ -56,12 +56,19 @@ const PiPaymentPanel: React.FC = () => {
   const isAuthenticated = Boolean(auth?.isAuthenticated);
   const currentUsername = auth?.user?.username || username;
 
-  const networkLabel = PI_SANDBOX ? t('testnet') : t('mainnet');
+  // English fixed labels to prevent showing Persian text like:
+  // آماده است. شبکه: مین‌نت
+  const networkLabel = PI_SANDBOX ? 'Testnet' : 'Mainnet';
   const networkValue = PI_SANDBOX ? 'testnet' : 'mainnet';
 
   useEffect(() => {
+    console.log('User Agent:', navigator.userAgent);
+    console.log('window.Pi:', window.Pi);
+    console.log('Current URL:', window.location.href);
+    console.log('Current Origin:', window.location.origin);
+
     if (!window.Pi) {
-      setStatus(t('piSdkNotFound'));
+      setStatus('Pi SDK not found. Please open this app inside Pi Browser.');
       return;
     }
 
@@ -88,7 +95,7 @@ const PiPaymentPanel: React.FC = () => {
         );
       }
 
-      setStatus(`${t('piSdkReady')} ${t('network')}: ${networkLabel}`);
+      setStatus(`Pi SDK ready. Network: ${networkLabel}`);
     } catch (error: any) {
       console.error('Pi SDK init error:', error);
       setStatus('Pi SDK init error: ' + (error?.message || String(error)));
@@ -100,11 +107,6 @@ const PiPaymentPanel: React.FC = () => {
       setUsername(auth.user.username);
     }
   }, [auth?.user?.username]);
-
-  const onIncompletePaymentFound = (payment: any) => {
-    console.log('Incomplete payment found:', payment);
-    setStatus(t('incompletePaymentFound'));
-  };
 
   const warmUpBackend = async () => {
     if (!API_BASE_URL) {
@@ -129,31 +131,34 @@ const PiPaymentPanel: React.FC = () => {
 
   const loginWithPi = async () => {
     if (!auth) {
-      setStatus(t('authContextMissing'));
+      setStatus('Auth context is missing.');
       return;
     }
 
     if (!window.Pi) {
-      setStatus(t('piSdkNotFound'));
+      setStatus('Pi SDK not found. Please open this app inside Pi Browser.');
       return;
     }
 
     try {
       setIsLoggingIn(true);
-      setStatus(t('authenticating'));
+      setStatus('Authenticating with Pi...');
 
       /**
-       * از AuthContext استفاده می‌کنیم تا Pi.authenticate و backend login
-       * در یک مسیر واحد و تمیز انجام شود.
+       * This requires AuthContext.tsx to have loginWithPi().
+       * It runs:
+       * Pi.authenticate(['username', 'payments'])
+       * then backend /api/auth/pi-login
        */
       const loggedInUser = await auth.loginWithPi();
 
       setUsername(loggedInUser.username || 'Pi User');
-      setStatus(`${t('loginSuccess')} @${loggedInUser.username || 'Pi User'}`);
+      setStatus(`Login successful. Welcome @${loggedInUser.username || 'Pi User'}`);
     } catch (error: any) {
       console.error('Pi auth error:', error);
+
       setStatus(
-        `${t('loginFailed')} ` +
+        'Login failed: ' +
           (
             error?.response?.data?.message ||
             error?.message ||
@@ -168,7 +173,7 @@ const PiPaymentPanel: React.FC = () => {
   const handleLogout = () => {
     auth?.logout();
     setUsername('');
-    setStatus(`${t('piSdkReady')} ${t('network')}: ${networkLabel}`);
+    setStatus(`Pi SDK ready. Network: ${networkLabel}`);
   };
 
   const validateAmount = () => {
@@ -294,12 +299,12 @@ const PiPaymentPanel: React.FC = () => {
 
   const createPiPayment = async () => {
     if (!window.Pi) {
-      setStatus(t('piSdkNotFound'));
+      setStatus('Pi SDK not found. Please open this app inside Pi Browser.');
       return;
     }
 
     if (!isAuthenticated) {
-      setStatus(t('pollLoginRequired'));
+      setStatus('Please login with Pi first.');
       return;
     }
 
@@ -440,7 +445,7 @@ const PiPaymentPanel: React.FC = () => {
           fontWeight: 700,
         }}
       >
-        {t('network')}: {networkLabel}
+        Network: {networkLabel}
       </div>
 
       {!isAuthenticated ? (
@@ -458,13 +463,12 @@ const PiPaymentPanel: React.FC = () => {
             fontWeight: 600,
           }}
         >
-          {isLoggingIn ? t('pleaseWait') : t('loginWithPi')}
+          {isLoggingIn ? 'Please wait...' : 'Login with Pi'}
         </button>
       ) : (
         <>
           <p style={{ marginTop: '15px', color: '#333' }}>
-            {t('welcome')}{' '}
-            <strong>@{currentUsername || 'Pi User'}</strong>
+            Welcome <strong>@{currentUsername || 'Pi User'}</strong>
           </p>
 
           <button
@@ -481,7 +485,7 @@ const PiPaymentPanel: React.FC = () => {
               fontWeight: 700,
             }}
           >
-            {t('logout')}
+            Logout
           </button>
 
           <div style={{ marginTop: '15px', marginBottom: '15px' }}>
@@ -542,7 +546,7 @@ const PiPaymentPanel: React.FC = () => {
               fontWeight: 700,
             }}
           >
-            {isPaying ? t('processing') : `Pay ${amount || '0'} Pi`}
+            {isPaying ? 'Processing...' : `Pay ${amount || '0'} Pi`}
           </button>
         </>
       )}
@@ -566,4 +570,3 @@ const PiPaymentPanel: React.FC = () => {
 };
 
 export default PiPaymentPanel;
-    
