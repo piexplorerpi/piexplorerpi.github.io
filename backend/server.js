@@ -26,6 +26,7 @@ app.set('trust proxy', 1);
 
 const REQUIRED_PI_BROWSER_DOMAIN = 'tiraxturumuz1.github.io';
 const REQUIRED_PI_BROWSER_APP_URL = `https://${REQUIRED_PI_BROWSER_DOMAIN}`;
+
 const PI_BROWSER_DEEP_LINK = `pi://browser?url=${encodeURIComponent(
   REQUIRED_PI_BROWSER_APP_URL
 )}`;
@@ -80,7 +81,7 @@ function sendPiBrowserGuide(req, res) {
 
   return res.status(426).send(`
 <!doctype html>
-<html lang="fa" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -129,33 +130,35 @@ function sendPiBrowserGuide(req, res) {
       background: #374151;
       color: #fff;
     }
-    .url {
-      direction: ltr;
-      word-break: break-all;
-      color: #93c5fd;
-      font-size: 13px;
+    .note {
       margin-top: 16px;
+      font-size: 13px;
+      color: #9ca3af;
+      line-height: 1.8;
     }
   </style>
 </head>
 <body>
   <div class="box">
-    <h1>برای ادامه، برنامه را در Pi Browser باز کنید</h1>
+    <h1>To continue, open the app in Pi Browser.</h1>
+
     <p>
-      این برنامه مخصوص Pi Network است و برای ورود، پرداخت و امکانات Pi باید داخل
+      This app is built for Pi Network and must be opened inside
       <strong>Pi Browser</strong>
-      اجرا شود.
+      to use Pi login, payments, and Pi features.
     </p>
 
     <a class="primary" href="${PI_BROWSER_DEEP_LINK}">
-      باز کردن در Pi Browser
+      Open in Pi Browser
     </a>
 
     <a class="secondary" href="${REQUIRED_PI_BROWSER_APP_URL}">
-      باز کردن آدرس برنامه
+      Open the app address
     </a>
 
-    <p class="url">${REQUIRED_PI_BROWSER_APP_URL}</p>
+    <p class="note">
+      If the button does not open Pi Browser, please open Pi Browser manually and open this app from there.
+    </p>
   </div>
 </body>
 </html>
@@ -402,6 +405,7 @@ const envCheckHandler = (req, res) => {
     allowedOrigins,
     requiredPiBrowserDomain: REQUIRED_PI_BROWSER_DOMAIN,
     piBrowserAppUrl: REQUIRED_PI_BROWSER_APP_URL,
+    piBrowserDeepLink: PI_BROWSER_DEEP_LINK,
     version: APP_VERSION,
     time: new Date().toISOString(),
   });
