@@ -1,7 +1,6 @@
 // frontend/src/components/PiPaymentPanel.tsx
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useI18n } from '../i18n/I18nContext';
 import axiosClient from '../lib/axiosClient';
 
 declare global {
@@ -28,14 +27,13 @@ const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
 
 /**
  * Mainnet by default.
- * Set VITE_PI_SANDBOX=true only for Sandbox/Testnet.
+ * For Sandbox/Testnet set:
+ * VITE_PI_SANDBOX=true
  */
 const PI_SANDBOX = parseBooleanEnv(import.meta.env.VITE_PI_SANDBOX, false);
 
 const DEFAULT_AMOUNT = import.meta.env.VITE_DEFAULT_PI_AMOUNT || '0.01';
-
 const MIN_AMOUNT = Number(import.meta.env.VITE_MIN_PI_AMOUNT || '0.001');
-
 const MAX_AMOUNT = Number(import.meta.env.VITE_MAX_PI_AMOUNT || '100');
 
 function getHealthUrl() {
@@ -45,7 +43,6 @@ function getHealthUrl() {
 
 const PiPaymentPanel: React.FC = () => {
   const auth = useAuth();
-  const { t } = useI18n();
 
   const [status, setStatus] = useState<string>('Initializing Pi SDK...');
   const [username, setUsername] = useState<string>('');
@@ -56,8 +53,6 @@ const PiPaymentPanel: React.FC = () => {
   const isAuthenticated = Boolean(auth?.isAuthenticated);
   const currentUsername = auth?.user?.username || username;
 
-  // English fixed labels to prevent showing Persian text like:
-  // آماده است. شبکه: مین‌نت
   const networkLabel = PI_SANDBOX ? 'Testnet' : 'Mainnet';
   const networkValue = PI_SANDBOX ? 'testnet' : 'mainnet';
 
@@ -66,6 +61,8 @@ const PiPaymentPanel: React.FC = () => {
     console.log('window.Pi:', window.Pi);
     console.log('Current URL:', window.location.href);
     console.log('Current Origin:', window.location.origin);
+    console.log('API_BASE_URL:', API_BASE_URL);
+    console.log('PI_SANDBOX:', PI_SANDBOX);
 
     if (!window.Pi) {
       setStatus('Pi SDK not found. Please open this app inside Pi Browser.');
@@ -82,17 +79,14 @@ const PiPaymentPanel: React.FC = () => {
         window.__PI_SDK_INITIALIZED__ = true;
         window.__PI_SDK_SANDBOX__ = PI_SANDBOX;
 
-        console.log('Pi SDK initialized from PiPaymentPanel.', {
+        console.log('Pi SDK initialized successfully.', {
           sandbox: PI_SANDBOX,
         });
       } else if (window.__PI_SDK_SANDBOX__ !== PI_SANDBOX) {
-        console.warn(
-          'Pi SDK was already initialized with a different sandbox value.',
-          {
-            initializedSandbox: window.__PI_SDK_SANDBOX__,
-            currentSandbox: PI_SANDBOX,
-          }
-        );
+        console.warn('Pi SDK was already initialized with another sandbox value.', {
+          initializedSandbox: window.__PI_SDK_SANDBOX__,
+          currentSandbox: PI_SANDBOX,
+        });
       }
 
       setStatus(`Pi SDK ready. Network: ${networkLabel}`);
@@ -108,6 +102,11 @@ const PiPaymentPanel: React.FC = () => {
     }
   }, [auth?.user?.username]);
 
+  const onIncompletePaymentFound = (payment: any) => {
+    console.log('Incomplete payment found:', payment);
+    setStatus('Incomplete payment found. Please complete or cancel it in Pi Browser.');
+  };
+
   const warmUpBackend = async () => {
     if (!API_BASE_URL) {
       throw new Error('VITE_API_URL is not set.');
@@ -115,7 +114,9 @@ const PiPaymentPanel: React.FC = () => {
 
     const healthUrl = getHealthUrl();
 
-    if (!healthUrl) return;
+    if (!healthUrl) {
+      return;
+    }
 
     console.log('Warming up backend:', healthUrl);
     setStatus('Warming up backend...');
@@ -140,20 +141,51 @@ const PiPaymentPanel: React.FC = () => {
       return;
     }
 
+    if (typeof window.Pi.authenticate !== 'function') {
+      setStatus('Pi authenticate function is not available.');
+      return;
+    }
+
     try {
       setIsLoggingIn(true);
       setStatus('Authenticating with Pi...');
 
-      /**
-       * This requires AuthContext.tsx to have loginWithPi().
-       * It runs:
-       * Pi.authenticate(['username', 'payments'])
-       * then backend /api/auth/pi-login
-       */
-      const loggedInUser = await auth.loginWithPi();
+      const authResult = await window.Pi.authenticate(
+        ['username', 'payments'],
+        onIncompletePaymentFound
+      );
 
-      setUsername(loggedInUser.username || 'Pi User');
-      setStatus(`Login successful. Welcome @${loggedInUser.username || 'Pi User'}`);
+      console.log('Pi auth result:', authResult);
+
+      const piUserId =
+        authResult?.user?.uid ||
+        authResult?.user?.id ||
+        authResult?.user?._id ||
+        authResult?.uid ||
+        authResult?.id;
+
+      const piUsername =
+        authResult?.user?.username ||
+        authResult?.username ||
+        'Pi User';
+
+      const accessToken =
+        authResult?.accessToken ||
+        authResult?.access_token ||
+        authResult?.token;
+
+      if (!piUserId) {
+        throw new Error('Invalid Pi user data received. Missing user id.');
+      }
+
+      /**
+       * سازگار با AuthContext قبلی تو:
+       * این تابع در فایل قبلی وجود داشت.
+       */
+      await auth.login(String(piUserId), String(piUsername), accessToken);
+
+      setUsername(String(piUsername));
+      setStatus(`Login successful. Welcome @${piUsername}`);
     } catch (error: any) {
       console.error('Pi auth error:', error);
 
@@ -300,6 +332,11 @@ const PiPaymentPanel: React.FC = () => {
   const createPiPayment = async () => {
     if (!window.Pi) {
       setStatus('Pi SDK not found. Please open this app inside Pi Browser.');
+      return;
+    }
+
+    if (typeof window.Pi.createPayment !== 'function') {
+      setStatus('Pi createPayment function is not available.');
       return;
     }
 
