@@ -10,7 +10,7 @@ import Dig from './pages/Dig';
 import Shop from './pages/Shop';
 import TasksPage from './pages/Engagement/TasksPage';
 import SignIn from './components/SignIn';
-import Payment from './components/Payment';
+import PiPaymentPanel from './components/PiPaymentPanel';
 import History from './components/History';
 import Success from './components/Success';
 import LanguageSwitcher from './components/LanguageSwitcher';
@@ -70,20 +70,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   return <React.Fragment>{children}</React.Fragment>;
 };
 
-const PaymentAny = Payment as any;
 const HistoryAny = History as any;
 
 const AppRouter: React.FC = () => {
   return (
     <Router>
       <Routes>
-        {/* صفحه اصلی */}
+        {/* Home */}
         <Route path="/" element={<Home />} />
 
-        {/* صفحه معرفی DIG / Manifesto */}
+        {/* DIG / Manifesto */}
         <Route path="/dig" element={<Dig />} />
 
-        {/* ورود با Pi */}
+        {/* Login with Pi */}
         <Route
           path="/login"
           element={
@@ -94,7 +93,7 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* صفحه موفقیت پرداخت */}
+        {/* Payment success */}
         <Route
           path="/success"
           element={
@@ -105,22 +104,17 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* پرداخت - محافظت‌شده */}
+        {/* Payment - protected */}
         <Route
           path="/payment"
           element={
             <ProtectedRoute>
-              <PaymentAny
-                transactionId=""
-                onReset={() => {}}
-                onPaymentSuccess={(txid: any) => console.log('Success:', txid)}
-                onPaymentError={(err: any) => console.error('Error:', err)}
-              />
+              <PiPaymentPanel />
             </ProtectedRoute>
           }
         />
 
-        {/* تاریخچه - محافظت‌شده */}
+        {/* History - protected */}
         <Route
           path="/history"
           element={
@@ -133,7 +127,7 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* فروشگاه - محافظت‌شده */}
+        {/* Shop - protected */}
         <Route
           path="/shop"
           element={
@@ -143,7 +137,7 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* تسک‌ها - محافظت‌شده */}
+        {/* Tasks - protected */}
         <Route
           path="/tasks"
           element={
@@ -153,7 +147,7 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* fallback */}
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
