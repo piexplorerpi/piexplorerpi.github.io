@@ -24,6 +24,215 @@
   <body>
     <div id="root"></div>
 
+    <!--
+      Pi Browser Guard
+      اگر دامنه tiraxturumuz1.github.io خارج از Pi Browser باز شود،
+      اپلیکیشن React اجرا نمی‌شود و پیام راهنما نمایش داده می‌شود.
+    -->
+    <script>
+      (function () {
+        var requiredHost = 'tiraxturumuz1.github.io';
+        var appUrl = 'https://tiraxturumuz1.github.io';
+        var piDeepLink =
+          'pi://browser?url=' + encodeURIComponent(appUrl);
+
+        var userAgent = navigator.userAgent || '';
+        var isPiBrowser = /PiBrowser|Pi Browser|MinePi/i.test(userAgent);
+        var isRequiredHost = window.location.hostname === requiredHost;
+
+        var shouldBlock = isRequiredHost && !isPiBrowser;
+
+        window.__PI_BROWSER_REQUIRED_BLOCKED__ = shouldBlock;
+
+        if (!shouldBlock) {
+          return;
+        }
+
+        var root = document.getElementById('root');
+
+        if (!root) {
+          return;
+        }
+
+        root.innerHTML = `
+          <style>
+            * {
+              box-sizing: border-box;
+            }
+
+            body {
+              margin: 0;
+              font-family: Arial, sans-serif;
+              background:
+                radial-gradient(circle at top, rgba(103, 58, 183, 0.45), transparent 35%),
+                linear-gradient(135deg, #111827, #1f2937);
+              color: #ffffff;
+              min-height: 100vh;
+            }
+
+            .pi-browser-guard-page {
+              min-height: 100vh;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 24px;
+              text-align: center;
+              direction: rtl;
+            }
+
+            .pi-browser-guard-box {
+              width: 100%;
+              max-width: 560px;
+              background: rgba(17, 24, 39, 0.92);
+              border: 1px solid rgba(255, 255, 255, 0.12);
+              border-radius: 24px;
+              padding: 32px 24px;
+              box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+              backdrop-filter: blur(10px);
+            }
+
+            .pi-browser-guard-logo {
+              width: 76px;
+              height: 76px;
+              border-radius: 50%;
+              margin: 0 auto 18px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background: linear-gradient(135deg, #fbbf24, #a855f7);
+              color: #111827;
+              font-size: 34px;
+              font-weight: 900;
+            }
+
+            .pi-browser-guard-box h1 {
+              margin: 0 0 14px;
+              font-size: 24px;
+              line-height: 1.5;
+              color: #ffffff;
+            }
+
+            .pi-browser-guard-box p {
+              margin: 0 0 18px;
+              color: #d1d5db;
+              font-size: 15px;
+              line-height: 1.9;
+            }
+
+            .pi-browser-guard-actions {
+              margin-top: 24px;
+              display: grid;
+              gap: 12px;
+            }
+
+            .pi-browser-guard-button,
+            .pi-browser-guard-link {
+              display: block;
+              width: 100%;
+              border: 0;
+              border-radius: 14px;
+              padding: 14px 18px;
+              font-size: 16px;
+              font-weight: 700;
+              text-decoration: none;
+              cursor: pointer;
+              transition: transform 0.15s ease, opacity 0.15s ease;
+            }
+
+            .pi-browser-guard-button:hover,
+            .pi-browser-guard-link:hover {
+              transform: translateY(-1px);
+              opacity: 0.92;
+            }
+
+            .pi-browser-guard-primary {
+              background: #fbbf24;
+              color: #111827;
+            }
+
+            .pi-browser-guard-secondary {
+              background: #374151;
+              color: #ffffff;
+            }
+
+            .pi-browser-guard-url {
+              margin-top: 18px;
+              padding: 12px;
+              border-radius: 12px;
+              background: rgba(255, 255, 255, 0.06);
+              direction: ltr;
+              word-break: break-all;
+              color: #93c5fd;
+              font-size: 13px;
+            }
+
+            .pi-browser-guard-note {
+              margin-top: 16px;
+              font-size: 13px;
+              color: #9ca3af;
+              line-height: 1.8;
+            }
+          </style>
+
+          <main class="pi-browser-guard-page">
+            <section class="pi-browser-guard-box">
+              <div class="pi-browser-guard-logo">π</div>
+
+              <h1>برای ادامه، برنامه را در Pi Browser باز کنید</h1>
+
+              <p>
+                این برنامه مخصوص Pi Network است و برای ورود، پرداخت و امکانات مربوط به Pi
+                باید داخل <strong>Pi Browser</strong> اجرا شود.
+              </p>
+
+              <div class="pi-browser-guard-actions">
+                <a
+                  class="pi-browser-guard-link pi-browser-guard-primary"
+                  href="${piDeepLink}"
+                >
+                  باز کردن در Pi Browser
+                </a>
+
+                <button
+                  id="copyPiAppUrlButton"
+                  class="pi-browser-guard-button pi-browser-guard-secondary"
+                  type="button"
+                >
+                  کپی کردن آدرس برنامه
+                </button>
+              </div>
+
+              <div class="pi-browser-guard-url">${appUrl}</div>
+
+              <div class="pi-browser-guard-note">
+                اگر دکمه بالا Pi Browser را باز نکرد، آدرس برنامه را کپی کنید و داخل
+                Pi Browser وارد نمایید.
+              </div>
+            </section>
+          </main>
+        `;
+
+        var copyButton = document.getElementById('copyPiAppUrlButton');
+
+        if (copyButton) {
+          copyButton.addEventListener('click', function () {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard
+                .writeText(appUrl)
+                .then(function () {
+                  copyButton.textContent = 'آدرس کپی شد';
+                })
+                .catch(function () {
+                  copyButton.textContent = appUrl;
+                });
+            } else {
+              copyButton.textContent = appUrl;
+            }
+          });
+        }
+      })();
+    </script>
+
     <!-- Pi Network SDK must be loaded before React app -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
