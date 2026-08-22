@@ -58,7 +58,7 @@ function initializePiSdk() {
       sandbox: PI_SANDBOX,
     });
 
-    window.__PI_SDK_INITIALIZED__ = false;
+    window.__PI_SDK_INITIALIZED__ = true;
     window.__PI_SDK_SANDBOX__ = PI_SANDBOX;
 
     console.log('Pi SDK initialized successfully from main.tsx.', {
