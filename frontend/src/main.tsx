@@ -26,7 +26,7 @@ const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
 /**
  * Mainnet by default.
  * For Sandbox/Testnet set:
- * VITE_PI_SANDBOX=true
+ * VITE_PI_SANDBOX=false
  */
 const PI_SANDBOX = parseBooleanEnv(import.meta.env.VITE_PI_SANDBOX, false);
 
@@ -58,7 +58,7 @@ function initializePiSdk() {
       sandbox: PI_SANDBOX,
     });
 
-    window.__PI_SDK_INITIALIZED__ = true;
+    window.__PI_SDK_INITIALIZED__ = false;
     window.__PI_SDK_SANDBOX__ = PI_SANDBOX;
 
     console.log('Pi SDK initialized successfully from main.tsx.', {
