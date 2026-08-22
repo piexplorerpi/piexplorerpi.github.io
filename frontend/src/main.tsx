@@ -26,7 +26,7 @@ const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
 /**
  * Mainnet by default.
  * For Sandbox/Testnet set:
- * VITE_PI_SANDBOX=false
+ * VITE_PI_SANDBOX=true
  */
 const PI_SANDBOX = parseBooleanEnv(import.meta.env.VITE_PI_SANDBOX, false);
 
