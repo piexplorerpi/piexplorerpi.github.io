@@ -4,29 +4,30 @@ import { useI18n } from '../i18n/I18nContext';
 import { roadmapTranslations } from '../i18n/translations/roadmap';
 
 const Roadmap = () => {
-  const { t, i18n } = useI18n();
+  const { i18n } = useI18n();
 
-  // تشخیص زبان فعلی (fa یا en) برای انتخاب آرایه صحیح از فایل ترجمه
-  const currentLang = i18n.language === 'fa' ? 'fa' : 'en';
-  
-  // استخراج مراحل بر اساس زبان فعلی
-  const steps = roadmapTranslations[currentLang].steps;
+  // تعیین زبان فعلی بر اساس تنظیمات i18n پروژه
+  const lang = i18n.language === 'fa' ? 'fa' : 
+               i18n.language === 'ar' ? 'ar' : 
+               i18n.language === 'tr' ? 'tr' : 
+               i18n.language === 'zh' ? 'zh' : 'en';
+
+  const { header, steps } = roadmapTranslations;
 
   return (
     <section id="roadmap" className="roadmap-section">
       <div className="container">
         <div className="roadmap-heading">
           <span className="roadmap-kicker">
-            {/* استفاده از t برای عنوان کوتاه پروژه یا مستقیم از فایل ترجمه */}
-            {roadmapTranslations[currentLang].kicker}
+            {header.kicker[lang]}
           </span>
 
           <h2 className="roadmap-title">
-            {t('roadmapTitle')}
+            {header.title[lang]}
           </h2>
 
           <p className="roadmap-intro">
-            {t('roadmapIntro')}
+            {header.intro[lang]}
           </p>
         </div>
 
@@ -42,11 +43,11 @@ const Roadmap = () => {
               </div>
 
               <h3>
-                {step.title}
+                {step.content.title[lang]}
               </h3>
 
               <p>
-                {step.description}
+                {step.content.description[lang]}
               </p>
             </div>
           ))}
