@@ -24,7 +24,7 @@ app.set('trust proxy', 1);
 // Pi Browser Guard Config
 // -------------------------
 
-const REQUIRED_PI_BROWSER_DOMAIN = 'tiraxturumuz1.github.io';
+const REQUIRED_PI_BROWSER_DOMAIN = 'https://piexplorerpi.github.io';
 const REQUIRED_PI_BROWSER_APP_URL = `https://${REQUIRED_PI_BROWSER_DOMAIN}`;
 
 const PI_BROWSER_DEEP_LINK = `pi://browser?url=${encodeURIComponent(
@@ -200,9 +200,9 @@ app.use((req, res, next) => {
 // -------------------------
 
 const defaultAllowedOrigins = [
-  'https://tiraxturumuz1.github.io',
-  'https://apppidaonkm2562.pinet.com',
-  'https://pidao.bonto.run',
+  'https://piexplorerpi.github.io',
+  'https://apppiexplorerrjk7732.pinet.com',
+  'https://piexplorer.bonto.run',
   'https://sandbox.minepi.com',
   'https://minepi.com',
   'http://localhost:5173',
@@ -318,7 +318,7 @@ try {
 app.get('/', (req, res) => {
   return res.status(200).json({
     success: true,
-    message: 'Pi DAO backend is running',
+    message: 'Pi EXPLORER backend is running',
     version: APP_VERSION,
     api: process.env.PUBLIC_API_URL || null,
     appUrl: REQUIRED_PI_BROWSER_APP_URL,
@@ -338,7 +338,7 @@ const healthHandler = (req, res) => {
     message: req.originalUrl.startsWith('/api')
       ? 'API is running'
       : 'Server is running',
-    service: 'Pi DAO Backend',
+    service: 'Pi EXPLORER Backend',
     version: APP_VERSION,
     time: new Date().toISOString(),
   });
