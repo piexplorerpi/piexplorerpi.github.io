@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
 import { appsCatalog, AppItem } from '../../data/appsCatalog';
 import './AppDetailsPage.css';
@@ -20,6 +20,7 @@ function pickLocalized(app: AppItem, lang: string) {
 
 const AppDetailsPage: React.FC = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { lang } = useI18n();
 
   const app = useMemo(() => appsCatalog.find((a) => a.id === id), [id]);
@@ -42,6 +43,19 @@ const AppDetailsPage: React.FC = () => {
 
   const { title, description } = pickLocalized(app, lang);
   const externalUrl = app.websiteUrl || app.demoUrl || app.githubUrl;
+
+  const handleBoost = () => {
+    // Send user to existing payment flow; keep old APIs intact.
+    // We pass app context via navigation state (safe, no persistence needed).
+    navigate('/payment', {
+      state: {
+        purpose: 'BOOST_APP',
+        appId: app.id,
+        appTitle: title,
+        // Future: amountPi, boostTier, metadata...
+      },
+    });
+  };
 
   return (
     <div className="app-details-page">
@@ -83,14 +97,13 @@ const AppDetailsPage: React.FC = () => {
                 </button>
               )}
 
-              {/* Boost will be wired to Pi payment in the next step */}
-              <button className="btn ghost" type="button" disabled title="Next step">
-                Boost with Pi (next step)
+              <button className="btn ghost" type="button" onClick={handleBoost}>
+                Boost with Pi
               </button>
             </div>
 
             <div className="app-details-note">
-              Next step: enable Boost with Pi using your existing payment flow (so APIs/login remain intact).
+              Boost uses Pi Explorer payment flow. You will be redirected to the payment panel.
             </div>
           </div>
         </div>
