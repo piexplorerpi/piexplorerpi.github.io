@@ -4,15 +4,14 @@ import './Navbar.css';
 import { useI18n } from '../i18n/I18nContext';
 import logo from '../assets/logo.png';
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const { t } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const scrollToSection = (sectionId) => {
+  const scrollToSection = (sectionId: string) => {
     const doScroll = () => {
       const element = document.getElementById(sectionId);
-
       if (element) {
         element.scrollIntoView({
           behavior: 'smooth',
@@ -25,6 +24,7 @@ const Navbar = () => {
 
     if (location.pathname !== '/') {
       navigate('/');
+      // تأخیر کوتاه برای اجازه دادن به بارگذاری صفحه اصلی
       setTimeout(() => doScroll(), 250);
     } else {
       doScroll();
@@ -50,12 +50,7 @@ const Navbar = () => {
             </Link>
           </li>
 
-          <li className="nav-item">
-            <Link to="/dig" className="nav-link">
-              {t('navDig')}
-            </Link>
-          </li>
-
+          {/* اگر بخش خاصی مثل Dig دیگر اولویت ندارد، می‌توانیم آن را به Apps منتقل کنیم */}
           <li className="nav-item">
             <button type="button" className="nav-link nav-button" onClick={() => scrollToSection('features')}>
               {t('features')}
@@ -82,7 +77,6 @@ const Navbar = () => {
 
           <li className="nav-item">
             <Link to="/apps" className="nav-link">
-              {/* اگر در ترجمه‌ها هنوز shop است، فعلاً می‌ماند؛ بعداً کلید را عوض می‌کنیم */}
               {t('shop')}
             </Link>
           </li>
