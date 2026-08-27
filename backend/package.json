@@ -1,7 +1,7 @@
 {
-  "name": "pidao-backend",
+  "name": "piexplorer-backend",
   "version": "1.0.0",
-  "description": "Backend for PiDao Project",
+  "description": "Backend for PiExplorer Project",
   "main": "server.js",
   "type": "commonjs",
   "license": "MIT",
