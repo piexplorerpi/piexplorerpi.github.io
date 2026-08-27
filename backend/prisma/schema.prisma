@@ -9,19 +9,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// نقش‌های کاربری
+// --- User & Auth Models ---
+
 enum UserRole {
   USER
   ADMIN
-}
-
-// وضعیت‌های تراکنش
-enum TransactionStatus {
-  PENDING
-  APPROVED
-  COMPLETED
-  FAILED
-  CANCELLED
 }
 
 model User {
@@ -34,6 +26,53 @@ model User {
   updatedAt       DateTime      @updatedAt
 
   transactions    Transaction[]
+}
+
+// --- App & Directory Models (The new part) ---
+
+model App {
+  id             String   @id @default(uuid())
+  category       String   // DeFi, NFT, Games, Tools, Social, Education
+  
+  // Multi-language support
+  title          String
+  titleFa        String?
+  titleTr        String?
+  titleAr        String?
+  titleZh        String?
+
+  description    String
+  descriptionFa  String?
+  descriptionTr  String?
+  descriptionAr  String?
+  descriptionZh  String?
+
+  image          String?
+  tags           String[]
+  
+  websiteUrl     String?
+  demoUrl        String?
+  githubUrl      String?
+
+  isVerified     Boolean  @default(false)
+
+  // Boost System fields
+  boostPricePi   Float?
+  piAppId        String?  @unique
+  ownerWallet    String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// --- Commerce & Transaction Models ---
+
+enum TransactionStatus {
+  PENDING
+  APPROVED
+  COMPLETED
+  FAILED
+  CANCELLED
 }
 
 model Product {
@@ -51,15 +90,9 @@ model Transaction {
   id        Int               @id @default(autoincrement())
   amount    Float
   orderId   String            @unique
-
-  // شناسه پرداخت Pi، اگر بعداً خواستی ذخیره کنی
   paymentId String?           @unique
-
-  // txid بعد از تأیید کیف پول
   txid      String?           @unique
-
   status    TransactionStatus @default(PENDING)
-
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 
