@@ -1,4 +1,3 @@
-// frontend/src/components/Footer.jsx
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Footer.css';
@@ -46,9 +45,7 @@ const Footer = () => {
             {t('digShortName')} · {t('digFullName')}
           </div>
 
-          <p className="footer-description">
-            {t('footerDescription')}
-          </p>
+          <p className="footer-description">{t('footerDescription')}</p>
         </div>
 
         <ul className="footer-links">
@@ -98,8 +95,9 @@ const Footer = () => {
             </button>
           </li>
 
+          {/* CHANGED: /shop -> /apps */}
           <li>
-            <Link to="/shop" className="footer-link">
+            <Link to="/apps" className="footer-link">
               {t('shop')}
             </Link>
           </li>
@@ -145,9 +143,7 @@ const Footer = () => {
         </div>
 
         <div className="footer-note">
-          <p>
-            {t('footerNote')}
-          </p>
+          <p>{t('footerNote')}</p>
         </div>
 
         <div className="copyright">
