@@ -1,0 +1,85 @@
+// backend/prisma/seed.ts
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+async function main() {
+  console.log('Starting seeding...');
+
+  // پاک کردن داده‌های قدیمی برای جلوگیری از تکرار (اختیاری)
+  await prisma.app.deleteMany();
+
+  // داده‌های منتقل شده از appsCatalog.ts
+  const appsToSeed = [
+    {
+      id: 'pi-explorer',
+      category: 'Tools',
+      title: 'Pi Explorer',
+      titleFa: 'پای اکسپلورر',
+      titleTr: 'Pi Explorer',
+      description: 'Explore Pi apps, boost projects, and discover new dApps.',
+      descriptionFa: 'اکوسیستم پای را کشف کن، پروژه‌ها را Boost کن و dAppهای جدید ببین.',
+      descriptionTr: 'Pi uygulamalarını keşfet, projeleri Boost et ve yeni dApp’leri bul.',
+      image: 'https://via.placeholder.com/1200x720',
+      tags: ['Directory', 'Explorer', 'Boost'],
+      websiteUrl: 'https://example.com',
+      isVerified: true,
+    },
+    {
+      id: 'pi-swap',
+      category: 'DeFi',
+      title: 'Pi Swap',
+      titleFa: 'پای سواپ',
+      titleTr: 'Pi Swap',
+      description: 'Swap tokens with a simple UI (demo listing).',
+      descriptionFa: 'سواپ توکن‌ها با رابط کاربری ساده (دمو).',
+      descriptionTr: 'Basit arayüz ile token swap (demo).',
+      image: 'https://via.placeholder.com/1200x720',
+      tags: ['Swap', 'DEX'],
+      demoUrl: 'https://example.com/demo',
+    },
+    {
+      id: 'pi-gallery',
+      category: 'NFT',
+      title: 'Pi Gallery',
+      titleFa: 'گالری پای',
+      titleTr: 'Pi Gallery',
+      description: 'NFT collections and artists (demo listing).',
+      descriptionFa: 'کالکشن‌های NFT و هنرمندان (دمو).',
+      descriptionTr: 'NFT koleksiyonları ve sanatçılar (demo).',
+      image: 'https://via.placeholder.com/1200x720',
+      tags: ['NFT', 'Marketplace'],
+    },
+    {
+      id: 'pi-academy',
+      category: 'Education',
+      title: 'Pi Academy',
+      titleFa: 'آکادمی پای',
+      titleTr: 'Pi Academy',
+      description: 'Learn Pi ecosystem concepts (demo listing).',
+      descriptionFa: 'آموزش مفاهیم اکوسیستم پای (دمو).',
+      descriptionTr: 'Pi ekosistemi kavramlarını öğren (demo).',
+      image: 'https://via.placeholder.com/1200x720',
+      tags: ['Learning', 'Guides'],
+    },
+  ];
+
+  for (const app of appsToSeed) {
+    await prisma.app.upsert({
+      where: { id: app.id },
+      update: app,
+      create: app,
+    });
+  }
+
+  console.log('Seeding finished successfully!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
