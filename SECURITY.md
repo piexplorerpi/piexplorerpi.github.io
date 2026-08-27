@@ -29,7 +29,7 @@ please report it privately.
 
 ### Contact
 
-**Email:** pinetworkcex@gmail.com
+**Email:** alladallod@gmail.com
 
 **Subject format:**
 
@@ -126,8 +126,8 @@ Only trusted frontend origins should be allowed.
 Examples:
 
 ```text
-https://tiraxturumuz1.github.io
-https://apppidaonkm2562.pinet.com
+https://piexplorerpi.github.io
+https://apppiexplorerrjk7732.pinet.com
 ```
 
 Avoid allowing all origins in production unless absolutely necessary.
