@@ -11,12 +11,8 @@ const Footer = () => {
   const scrollToSection = (sectionId) => {
     const doScroll = () => {
       const element = document.getElementById(sectionId);
-
       if (element) {
-        element.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else {
         console.warn(`Section not found: #${sectionId}`);
       }
@@ -24,10 +20,7 @@ const Footer = () => {
 
     if (location.pathname !== '/') {
       navigate('/');
-
-      setTimeout(() => {
-        doScroll();
-      }, 250);
+      setTimeout(() => doScroll(), 250);
     } else {
       doScroll();
     }
@@ -38,12 +31,10 @@ const Footer = () => {
       <div className="footer-inner">
         <div className="footer-brand">
           <Link to="/" className="footer-logo">
-            Pi<span>DAO</span>
+            Pi<span>Explorer</span>
           </Link>
 
-          <div className="footer-badge">
-            {t('digShortName')} · {t('digFullName')}
-          </div>
+          <div className="footer-badge">{t('digFullName')}</div>
 
           <p className="footer-description">{t('footerDescription')}</p>
         </div>
@@ -56,46 +47,29 @@ const Footer = () => {
           </li>
 
           <li>
-            <button
-              type="button"
-              onClick={() => scrollToSection('features')}
-              className="footer-link-button"
-            >
+            <button type="button" onClick={() => scrollToSection('features')} className="footer-link-button">
               {t('features')}
             </button>
           </li>
 
           <li>
-            <button
-              type="button"
-              onClick={() => scrollToSection('roadmap')}
-              className="footer-link-button"
-            >
+            <button type="button" onClick={() => scrollToSection('roadmap')} className="footer-link-button">
               {t('navRoadmap')}
             </button>
           </li>
 
           <li>
-            <button
-              type="button"
-              onClick={() => scrollToSection('poll')}
-              className="footer-link-button"
-            >
+            <button type="button" onClick={() => scrollToSection('poll')} className="footer-link-button">
               {t('governance')}
             </button>
           </li>
 
           <li>
-            <button
-              type="button"
-              onClick={() => scrollToSection('about')}
-              className="footer-link-button"
-            >
+            <button type="button" onClick={() => scrollToSection('about')} className="footer-link-button">
               {t('aboutUs')}
             </button>
           </li>
 
-          {/* CHANGED: /shop -> /apps */}
           <li>
             <Link to="/apps" className="footer-link">
               {t('shop')}
@@ -110,34 +84,19 @@ const Footer = () => {
         </ul>
 
         <div className="footer-legal-links">
-          <a
-            href="/privacy.html"
-            className="footer-legal-link"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href="/privacy.html" className="footer-legal-link" target="_blank" rel="noopener noreferrer">
             {t('privacyPolicy')}
           </a>
 
           <span className="footer-legal-separator">•</span>
 
-          <a
-            href="/terms.html"
-            className="footer-legal-link"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href="/terms.html" className="footer-legal-link" target="_blank" rel="noopener noreferrer">
             {t('termsOfService')}
           </a>
 
           <span className="footer-legal-separator">•</span>
 
-          <a
-            href="/whitepaper.html"
-            className="footer-legal-link"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href="/whitepaper.html" className="footer-legal-link" target="_blank" rel="noopener noreferrer">
             {t('whitepaper')}
           </a>
         </div>
@@ -147,9 +106,7 @@ const Footer = () => {
         </div>
 
         <div className="copyright">
-          <p>
-            &copy; {new Date().getFullYear()} PiDao. {t('footerRights')}
-          </p>
+          <p>&copy; {new Date().getFullYear()} Pi Explorer. {t('footerRights')}</p>
         </div>
       </div>
     </footer>
@@ -157,3 +114,4 @@ const Footer = () => {
 };
 
 export default Footer;
+            
