@@ -12,7 +12,7 @@ import History from './components/History';
 import Success from './components/Success';
 import LanguageSwitcher from './components/LanguageSwitcher';
 
-// NEW
+// Pi Explorer: Apps pages (NEW)
 import AppsPage from './pages/Apps/AppsPage';
 import AppDetailsPage from './pages/Apps/AppDetailsPage';
 
@@ -79,6 +79,7 @@ const AppRouter: React.FC = () => {
       <Routes>
         <Route path="/" element={<Home />} />
 
+        {/* You said Dig is separate; we can remove later */}
         <Route path="/dig" element={<Dig />} />
 
         <Route
@@ -101,6 +102,7 @@ const AppRouter: React.FC = () => {
           }
         />
 
+        {/* Payment - protected */}
         <Route
           path="/payment"
           element={
@@ -110,6 +112,7 @@ const AppRouter: React.FC = () => {
           }
         />
 
+        {/* History - protected */}
         <Route
           path="/history"
           element={
@@ -119,7 +122,7 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* Apps Directory + Details (protected) */}
+        {/* Pi Explorer: Apps Directory + Details (protected) */}
         <Route
           path="/apps"
           element={
@@ -140,6 +143,7 @@ const AppRouter: React.FC = () => {
         {/* Backward compatibility */}
         <Route path="/shop" element={<Navigate to="/apps" replace />} />
 
+        {/* Tasks - protected */}
         <Route
           path="/tasks"
           element={
