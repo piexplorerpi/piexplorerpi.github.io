@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    container_name: pidao-backend
+    container_name: piexplorer-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -29,7 +29,7 @@ services:
       start_period: 20s
 
   frontend:
-    container_name: pidao-frontend
+    container_name: piexplorer-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -45,13 +45,13 @@ services:
       - pi_network
 
   reverse-proxy:
-    container_name: pidao-reverse-proxy
+    container_name: piexplorer-reverse-proxy
     build:
       context: ./reverse-proxy
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      DOMAIN_NAME: apppidaonkm2562.pinet.com
+      DOMAIN_NAME: https://apppiexplorerrjk7732.pinet.com
     ports:
       - "80:80"
       - "443:443"
