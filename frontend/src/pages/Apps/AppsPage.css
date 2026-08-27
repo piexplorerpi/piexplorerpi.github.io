@@ -1,0 +1,240 @@
+.apps-page {
+  min-height: 100vh;
+  background: #0f0c29;
+  color: #fff;
+}
+
+.apps-container {
+  padding: 80px 20px 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.apps-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.apps-title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  background: linear-gradient(to right, #00d2ff, #3a7bd5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.apps-subtitle {
+  color: #b0b0b0;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.apps-controls {
+  display: grid;
+  grid-template-columns: 1fr 220px 240px;
+  gap: 14px;
+  align-items: end;
+  margin: 0 0 18px 0;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+}
+
+.apps-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #cfcfe6;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.apps-input,
+.apps-select {
+  width: 100%;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.apps-stats {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.apps-stat {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  min-width: 110px;
+  text-align: center;
+}
+
+.apps-stat-label {
+  display: block;
+  color: #b0b0c8;
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+}
+
+.apps-stat-value {
+  color: #ffca28;
+  font-weight: 900;
+}
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 18px;
+}
+
+.app-card {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.app-card-media {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+}
+
+.app-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.03);
+}
+
+.app-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(46, 125, 50, 0.85);
+  border: 1px solid rgba(46, 125, 50, 0.35);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+
+.app-card-body {
+  padding: 14px 14px 16px 14px;
+}
+
+.app-card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.app-card-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.app-card-category {
+  color: #ffca28;
+  font-weight: 900;
+  font-size: 0.85rem;
+}
+
+.app-card-desc {
+  margin: 10px 0 12px 0;
+  color: #cfcfe6;
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.app-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.app-tag {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(0, 0, 0, 0.20);
+  color: #ddd;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.app-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.app-btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  text-decoration: none;
+  font-weight: 900;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+}
+
+.app-btn.primary {
+  background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+  border: none;
+}
+
+.app-btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.apps-empty {
+  text-align: center;
+  margin-top: 80px;
+  color: #bbb;
+}
+.apps-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 14px;
+}
+
+.apps-hint {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 202, 40, 0.08);
+  border: 1px solid rgba(255, 202, 40, 0.20);
+  color: #ffecb3;
+  line-height: 1.8;
+}
+
+@media (max-width: 1024px) {
+  .apps-controls {
+    grid-template-columns: 1fr 220px;
+  }
+  .apps-stats {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .apps-controls {
+    grid-template-columns: 1fr;
+  }
+}
