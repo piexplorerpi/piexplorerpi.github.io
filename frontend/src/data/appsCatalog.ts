@@ -3,6 +3,7 @@ export type AppCategory = 'DeFi' | 'NFT' | 'Games' | 'Tools' | 'Social' | 'Educa
 export interface AppItem {
   id: string;
   category: AppCategory;
+
   title: string;
   titleFa?: string;
   titleTr?: string;
@@ -21,7 +22,10 @@ export interface AppItem {
 
   isVerified?: boolean;
 
-  // For future: boostPricePi, appOwner, piAppId, etc.
+  // Future fields (kept for expansion)
+  // boostPricePi?: number;
+  // piAppId?: string;
+  // ownerWallet?: string;
 }
 
 export const appsCatalog: AppItem[] = [
