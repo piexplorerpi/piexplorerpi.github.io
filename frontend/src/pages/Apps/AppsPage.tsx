@@ -27,7 +27,7 @@ function pickLocalized(app: AppItem, lang: string) {
 }
 
 const AppsPage: React.FC = () => {
-  const { t, lang } = useI18n();
+  const { lang } = useI18n();
 
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<(AppCategory | 'All')>('All');
@@ -52,10 +52,8 @@ const AppsPage: React.FC = () => {
     <div className="apps-page">
       <div className="apps-container">
         <header className="apps-header">
-          <h2 className="apps-title">dApps Directory</h2>
-          <p className="apps-subtitle">
-            Browse apps, open details, then Boost with Pi (next step).
-          </p>
+          <h2 className="apps-title">Pi Explorer · dApps Directory</h2>
+          <p className="apps-subtitle">Browse apps, open details, then Boost with Pi (next step).</p>
         </header>
 
         <div className="apps-controls">
@@ -117,11 +115,7 @@ const AppsPage: React.FC = () => {
               return (
                 <article key={app.id} className="app-card">
                   <div className="app-card-media">
-                    <img
-                      src={app.image || 'https://via.placeholder.com/1200x720'}
-                      alt={title}
-                      loading="lazy"
-                    />
+                    <img src={app.image || 'https://via.placeholder.com/1200x720'} alt={title} loading="lazy" />
                     {app.isVerified && <span className="app-badge">Verified</span>}
                   </div>
 
@@ -170,7 +164,8 @@ const AppsPage: React.FC = () => {
         )}
 
         <div className="apps-hint">
-          <strong>Next:</strong> In App Details page we’ll add <em>Boost with Pi</em> + optional Poll/Vote integration.
+          <strong>Next:</strong> In the App Details page we’ll add <em>Boost with Pi</em> + optional Poll/Vote
+          integration.
         </div>
       </div>
     </div>
