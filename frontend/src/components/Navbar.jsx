@@ -25,10 +25,7 @@ const Navbar = () => {
 
     if (location.pathname !== '/') {
       navigate('/');
-
-      setTimeout(() => {
-        doScroll();
-      }, 250);
+      setTimeout(() => doScroll(), 250);
     } else {
       doScroll();
     }
@@ -37,18 +34,15 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Logo */}
         <div className="navbar-logo">
-          <Link to="/" className="navbar-logo-link" aria-label="PiDao Home">
-            <img src={logo} alt="PiDao Logo" className="navbar-logo-img" />
-
+          <Link to="/" className="navbar-logo-link" aria-label="Pi Explorer Home">
+            <img src={logo} alt="Pi Explorer Logo" className="navbar-logo-img" />
             <span className="navbar-logo-text">
-              Pi<span>DAO</span>
+              Pi<span>Explorer</span>
             </span>
           </Link>
         </div>
 
-        {/* Main Menu */}
         <ul className="nav-menu">
           <li className="nav-item">
             <Link to="/" className="nav-link">
@@ -63,48 +57,32 @@ const Navbar = () => {
           </li>
 
           <li className="nav-item">
-            <button
-              type="button"
-              className="nav-link nav-button"
-              onClick={() => scrollToSection('features')}
-            >
+            <button type="button" className="nav-link nav-button" onClick={() => scrollToSection('features')}>
               {t('features')}
             </button>
           </li>
 
           <li className="nav-item">
-            <button
-              type="button"
-              className="nav-link nav-button"
-              onClick={() => scrollToSection('roadmap')}
-            >
+            <button type="button" className="nav-link nav-button" onClick={() => scrollToSection('roadmap')}>
               {t('navRoadmap')}
             </button>
           </li>
 
           <li className="nav-item">
-            <button
-              type="button"
-              className="nav-link nav-button"
-              onClick={() => scrollToSection('poll')}
-            >
+            <button type="button" className="nav-link nav-button" onClick={() => scrollToSection('poll')}>
               {t('governance')}
             </button>
           </li>
 
           <li className="nav-item">
-            <button
-              type="button"
-              className="nav-link nav-button"
-              onClick={() => scrollToSection('about')}
-            >
+            <button type="button" className="nav-link nav-button" onClick={() => scrollToSection('about')}>
               {t('aboutUs')}
             </button>
           </li>
 
-          {/* CHANGED: /shop -> /apps */}
           <li className="nav-item">
             <Link to="/apps" className="nav-link">
+              {/* اگر در ترجمه‌ها هنوز shop است، فعلاً می‌ماند؛ بعداً کلید را عوض می‌کنیم */}
               {t('shop')}
             </Link>
           </li>
@@ -115,8 +93,6 @@ const Navbar = () => {
             </Link>
           </li>
         </ul>
-
-        {/* Login button removed: login is handled inside pages with Pi */}
       </div>
     </nav>
   );
