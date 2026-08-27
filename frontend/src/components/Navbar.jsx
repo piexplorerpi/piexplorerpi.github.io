@@ -1,4 +1,3 @@
-// frontend/src/components/Navbar.jsx
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
@@ -38,14 +37,10 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* لوگو */}
+        {/* Logo */}
         <div className="navbar-logo">
           <Link to="/" className="navbar-logo-link" aria-label="PiDao Home">
-            <img
-              src={logo}
-              alt="PiDao Logo"
-              className="navbar-logo-img"
-            />
+            <img src={logo} alt="PiDao Logo" className="navbar-logo-img" />
 
             <span className="navbar-logo-text">
               Pi<span>DAO</span>
@@ -53,7 +48,7 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* منوی اصلی */}
+        {/* Main Menu */}
         <ul className="nav-menu">
           <li className="nav-item">
             <Link to="/" className="nav-link">
@@ -107,8 +102,9 @@ const Navbar = () => {
             </button>
           </li>
 
+          {/* CHANGED: /shop -> /apps */}
           <li className="nav-item">
-            <Link to="/shop" className="nav-link">
+            <Link to="/apps" className="nav-link">
               {t('shop')}
             </Link>
           </li>
@@ -120,7 +116,7 @@ const Navbar = () => {
           </li>
         </ul>
 
-        {/* دکمه Login از Navbar حذف شده تا ورود اصلی با Pi داخل صفحه انجام شود */}
+        {/* Login button removed: login is handled inside pages with Pi */}
       </div>
     </nav>
   );
