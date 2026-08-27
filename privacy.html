@@ -1,108 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy - PiDao</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.7;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 32px 20px;
-      color: #1f2937;
-      background: #ffffff;
-    }
-
-    h1, h2 {
-      color: #4c1d95;
-    }
-
-    a {
-      color: #673ab7;
-    }
-
-    .date {
-      color: #6b7280;
-      font-size: 14px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | Pi Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ffbd00;
+            --bg: #0f0f0f;
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 50px 25px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        .last-updated {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 40px;
+            display: block;
+        }
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 40px;
+            color: var(--text-main);
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 15px;
+            color: var(--text-dim);
+        }
+        strong {
+            color: var(--primary);
+        }
+        .footer-note {
+            margin-top: 60px;
+            padding-top: 20px;
+            font-size: 0.85rem;
+            color: #555;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-  <h1>Privacy Policy</h1>
-  <p class="date">Last updated: August 2026</p>
 
-  <p>
-    PiDao respects your privacy. This Privacy Policy explains how we collect,
-    use, and protect information when you use our application.
-  </p>
+<div class="container">
+    <header>
+        <h1>Privacy Policy</h1>
+        <span class="last-updated">Last Updated: August 2026</span>
+    </header>
 
-  <h2>1. Information We Collect</h2>
-  <p>
-    When you use PiDao, we may collect basic information provided through
-    Pi Network authentication, such as your Pi user ID and username.
-  </p>
+    <section>
+        <h2>1. Data Collection</h2>
+        <p>To provide a functional and secure experience, Pi Explorer collects minimal data necessary for the core services:</p>
+        <ul>
+            <li><strong>Wallet Address:</strong> We collect your public Pi wallet address solely to identify your on-chain actions, such as voting and transactions within the ecosystem.</li>
+            <li><strong>Language Preference:</strong> To optimize your user interface and provide a localized experience.</li>
+            <li><strong>Transaction Metadata:</strong> Essential data required to verify payments and boosts via the Pi SDK.</li>
+        </ul>
+    </section>
 
-  <p>
-    We may also collect interaction data related to voting, tasks, payments,
-    and usage of the application.
-  </p>
+    <section>
+        <h2>2. Data Usage</h2>
+        <p>Your privacy is our priority. We do <strong>not</strong> sell, rent, or trade your personal information to third parties. Data usage is strictly limited to:</p>
+        <ul>
+            <li>Maintaining and securing your user profile.</li>
+            <li>Recording legitimate community votes and meritocratic rankings.</li>
+            <li>Preventing fraudulent activities, Sybil attacks, and ensuring ecosystem integrity.</li>
+        </ul>
+    </section>
 
-  <h2>2. How We Use Information</h2>
-  <p>
-    We use collected information to provide authentication, prevent duplicate
-    voting, process Pi-related interactions, display user participation, and
-    improve the platform.
-  </p>
+    <section>
+        <h2>3. Third-Party Services</h2>
+        <p>Pi Explorer integrates with trusted industry-standard services to ensure security and scalability:</p>
+        <ul>
+            <li><strong>Supabase:</strong> Used for secure database management and encrypted data storage.</li>
+            <li><strong>Pi Network SDK:</strong> Used for user authentication and secure, decentralized payment processing.</li>
+        </ul>
+        <p><em>We encourage you to review the individual privacy policies of Supabase and the Pi Network.</em></p>
+    </section>
 
-  <h2>3. Pi Network Authentication</h2>
-  <p>
-    PiDao uses Pi Network tools such as Pi SDK for user authentication and
-    participation. We do not collect or store your Pi wallet private keys.
-  </p>
+    <section>
+        <h2>4. Security</h2>
+        <p>All interactions involving your assets and identity are conducted through the secure, sandboxed <strong>Pi Browser environment</strong>. Our backend architecture utilizes edge functions to validate all incoming requests, ensuring that no unauthorized data access can occur.</p>
+    </section>
 
-  <h2>4. Payments</h2>
-  <p>
-    If Pi payments are used, payment-related information such as payment ID,
-    transaction status, and transaction identifiers may be processed to complete
-    and verify transactions.
-  </p>
+    <div class="footer-note">
+        If you have any questions regarding this policy, please contact the Pi Explorer development team.
+    </div>
+</div>
 
-  <h2>5. Data Storage</h2>
-  <p>
-    Some application data may be stored in our backend systems or database,
-    including voting records and user participation data.
-  </p>
-
-  <h2>6. Data Sharing</h2>
-  <p>
-    We do not sell your personal data. We may share limited data only when
-    required to operate the application, comply with legal obligations, or
-    interact with Pi Network services.
-  </p>
-
-  <h2>7. Security</h2>
-  <p>
-    We use reasonable technical measures to protect user data. However, no
-    digital system can be guaranteed to be completely secure.
-  </p>
-
-  <h2>8. DIG Vision</h2>
-  <p>
-    PiDao is an early infrastructure related to the DIG vision. At this stage,
-    DIG is a concept and development path for transparent and people-powered
-    participation.
-  </p>
-
-  <h2>9. Contact</h2>
-  <p>
-    If you have questions about this Privacy Policy, please contact the PiDao
-    project team through the official project communication channels.
-  </p>
-
-  <p>
-    <a href="/">Back to PiDao</a>
-  </p>
 </body>
 </html>
