@@ -1,339 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PiDao & DIG Whitepaper</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.75;
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 36px 20px;
-      color: #1f2937;
-      background: #ffffff;
-    }
-
-    h1, h2, h3 {
-      color: #4c1d95;
-      line-height: 1.35;
-    }
-
-    h1 {
-      font-size: 2.4rem;
-      margin-bottom: 8px;
-    }
-
-    h2 {
-      margin-top: 42px;
-      border-bottom: 1px solid #e5e7eb;
-      padding-bottom: 8px;
-    }
-
-    p {
-      color: #374151;
-    }
-
-    ul {
-      padding-left: 22px;
-    }
-
-    li {
-      margin-bottom: 8px;
-    }
-
-    a {
-      color: #673ab7;
-    }
-
-    .meta {
-      color: #6b7280;
-      font-size: 14px;
-      margin-bottom: 32px;
-    }
-
-    .notice {
-      background: #f8f7ff;
-      border: 1px solid #ddd6fe;
-      border-radius: 14px;
-      padding: 18px;
-      margin: 24px 0;
-    }
-
-    .toc {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 18px 22px;
-      margin: 28px 0;
-    }
-
-    .toc a {
-      text-decoration: none;
-    }
-
-    .footer {
-      margin-top: 50px;
-      padding-top: 24px;
-      border-top: 1px solid #e5e7eb;
-      color: #6b7280;
-      font-size: 14px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whitepaper | Pi Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ffbd00; /* Pi Gold */
+            --bg: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 1.2rem;
+        }
+        section {
+            margin-bottom: 50px;
+        }
+        h2 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            border-left: 4px solid var(--primary);
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+        p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+        strong {
+            color: var(--text-main);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 25px;
+        }
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid #333;
+        }
+        .card h3 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+        .vision-box {
+            background: rgba(255, 189, 0, 0.05);
+            border: 1px dashed var(--primary);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #444;
+            font-size: 0.9rem;
+            border-top: 1px solid #222;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-  <h1>PiDao & DIG Whitepaper</h1>
-  <p class="meta">
-    Version 1.0 · Last updated: August 2026
-  </p>
 
-  <div class="notice">
-    <strong>Important Note:</strong>
-    This whitepaper describes an experimental vision and development path.
-    DIG is not an official government, legal authority, financial institution,
-    or recognized international organization. PiDao is an early-stage platform
-    exploring participation, voting, Pi payments, and decentralized governance concepts.
-  </div>
+<div class="container">
+    <header>
+        <h1>Pi Explorer</h1>
+        <p class="subtitle">Empowering the Pi Network Decentralized Ecosystem</p>
+    </header>
 
-  <div class="toc">
-    <h3>Table of Contents</h3>
-    <ul>
-      <li><a href="#abstract">1. Abstract</a></li>
-      <li><a href="#problem">2. The Problem</a></li>
-      <li><a href="#vision">3. Vision</a></li>
-      <li><a href="#pidao">4. What is PiDao?</a></li>
-      <li><a href="#dig">5. What is DIG?</a></li>
-      <li><a href="#pi-network">6. Role of Pi Network</a></li>
-      <li><a href="#governance">7. Governance Model</a></li>
-      <li><a href="#voting">8. Voting System</a></li>
-      <li><a href="#economy">9. Digital Economy</a></li>
-      <li><a href="#dib">10. DIB Concept</a></li>
-      <li><a href="#roadmap">11. Roadmap</a></li>
-      <li><a href="#security">12. Security & Transparency</a></li>
-      <li><a href="#disclaimer">13. Disclaimer</a></li>
-      <li><a href="#conclusion">14. Conclusion</a></li>
-    </ul>
-  </div>
+    <section>
+        <h2>1. Abstract</h2>
+        <p>As the Pi Network grows, the need for a centralized discovery layer for decentralized applications becomes critical. <strong>Pi Explorer</strong> provides a transparent, community-driven catalog to bridge the gap between developers and users, ensuring a frictionless entry into the Pi ecosystem.</p>
+    </section>
 
-  <h2 id="abstract">1. Abstract</h2>
-  <p>
-    PiDao is an early infrastructure project designed to explore participation,
-    voting, Pi-based interactions, digital services, and decentralized governance.
-    Its long-term vision is connected to DIG, the Decentralized International
-    Government concept.
-  </p>
-  <p>
-    DIG is a proposed model for future global decision-making where people can
-    gradually play a more direct role in voting, public participation, conflict
-    resolution, and transparent governance mechanisms.
-  </p>
+    <section>
+        <h2>2. The Problem</h2>
+        <p>The current Pi ecosystem lacks a unified, searchable, and ranked directory. Users struggle to find high-quality dApps amidst the noise, and developers lack a meritocratic, verifiable way to showcase their utility and reach their target audience.</p>
+    </section>
 
-  <h2 id="problem">2. The Problem</h2>
-  <p>
-    Many important global decisions are currently made through highly centralized
-    structures. While governments and institutions have historically played
-    important roles, modern technology creates new possibilities for broader
-    participation, transparent voting, and direct public involvement.
-  </p>
-  <p>
-    Existing systems face several challenges:
-  </p>
-  <ul>
-    <li>Limited direct participation of ordinary people in global decisions</li>
-    <li>Lack of transparency in many decision-making processes</li>
-    <li>Slow adaptation to global technological and social changes</li>
-    <li>Limited mechanisms for cross-border public voting</li>
-    <li>Dependence on centralized financial and governance structures</li>
-  </ul>
+    <section>
+        <h2>3. The Solution</h2>
+        <p>We present a <strong>"Discovery-as-a-Service"</strong> platform. By combining Pi-based voting (Proof-of-Engagement) with a transparent ranking algorithm, Pi Explorer creates a meritocracy where the most valuable and trusted dApps rise to the top based on real user interaction.</p>
+    </section>
 
-  <h2 id="vision">3. Vision</h2>
-  <p>
-    The vision of PiDao and DIG is to gradually build tools that allow people
-    to participate more directly in transparent and decentralized decision-making.
-    This does not require an immediate replacement of existing systems. Instead,
-    the project follows a gradual, experimental, and community-driven path.
-  </p>
-  <p>
-    The long-term goal is a more transparent global participation layer where
-    people can express their will, vote on important issues, and help shape
-    collective decisions.
-  </p>
+    <section>
+        <h2>4. Mechanism: The Boost System</h2>
+        <p>To protect the ecosystem from Sybil attacks and artificial manipulation, we implement a robust dual-layer verification system:</p>
+        <div class="grid">
+            <div class="card">
+                <h3>🌱 Free Votes</h3>
+                <p>Limited daily voting quotas per user to ensure organic, authentic community growth.</p>
+            </div>
+            <div class="card">
+                <h3>🚀 Paid Boosts</h3>
+                <p>Utilizing the Pi SDK to allow developers to increase visibility through actual Pi transactions, verified by secure backend edge functions.</p>
+            </div>
+        </div>
+    </section>
 
-  <h2 id="pidao">4. What is PiDao?</h2>
-  <p>
-    PiDao is the practical starting point of the project. It provides an early
-    platform for:
-  </p>
-  <ul>
-    <li>Pi-based authentication and participation</li>
-    <li>Experimental community voting</li>
-    <li>Digital products and services</li>
-    <li>Pi payment interactions</li>
-    <li>DAO-inspired governance experiments</li>
-    <li>Community engagement tasks</li>
-  </ul>
-  <p>
-    PiDao is not the final destination. It is the first layer for testing tools,
-    building community trust, and preparing the path toward larger decentralized
-    governance models.
-  </p>
+    <section>
+        <h2>5. Vision</h2>
+        <div class="vision-box">
+            <p>To become the <strong>"App Store" of the Pi Network</strong>—not owned by a central corporation, but powered, governed, and scaled by the global Pi community.</p>
+        </div>
+    </section>
 
-  <h2 id="dig">5. What is DIG?</h2>
-  <p>
-    DIG stands for Decentralized International Government. It is a conceptual
-    model for a future global decision-making framework where people can
-    participate more directly in important international matters.
-  </p>
-  <p>
-    DIG is currently a vision and development path, not a legal government or
-    official authority. Its purpose is to explore whether transparent,
-    technology-enabled, people-powered governance can become a meaningful layer
-    of global coordination.
-  </p>
+    <footer>
+        &copy; 2026 Pi Explorer Project. All rights reserved.
+    </footer>
+</div>
 
-  <h2 id="pi-network">6. Role of Pi Network</h2>
-  <p>
-    Pi Network can serve as an early entry point for the PiDao ecosystem because
-    it provides a large user community, identity-related tools, Pi Browser,
-    Pi SDK, and payment infrastructure.
-  </p>
-  <p>
-    In the PiDao model, Pi can help with:
-  </p>
-  <ul>
-    <li>User login and participation</li>
-    <li>Reducing duplicate votes</li>
-    <li>Creating an early community of participants</li>
-    <li>Testing payment flows and digital services</li>
-    <li>Building trust around real user interaction</li>
-  </ul>
-
-  <h2 id="governance">7. Governance Model</h2>
-  <p>
-    The governance model is expected to evolve gradually. In the early stage,
-    PiDao focuses on simple voting, participation, and community interaction.
-    Later stages may include proposal systems, voting history, delegated
-    participation, reputation mechanisms, and DAO-style decision structures.
-  </p>
-  <p>
-    The key principle is gradual development. Governance should not be forced
-    from the beginning. It should grow based on real participation, community
-    feedback, technical reliability, and transparent results.
-  </p>
-
-  <h2 id="voting">8. Voting System</h2>
-  <p>
-    Voting is one of the most important components of the DIG vision. The first
-    voting models are experimental and designed to measure public participation.
-  </p>
-  <p>
-    Early voting goals include:
-  </p>
-  <ul>
-    <li>One authenticated user, one vote where possible</li>
-    <li>Transparent recording of poll results</li>
-    <li>Prevention of duplicate voting</li>
-    <li>Community participation analytics</li>
-    <li>Gradual improvement toward more secure voting models</li>
-  </ul>
-
-  <h2 id="economy">9. Digital Economy</h2>
-  <p>
-    A decentralized governance ecosystem also needs an economic layer. PiDao
-    starts with digital products, Pi payments, and community tasks as an early
-    economic foundation.
-  </p>
-  <p>
-    This economic layer may later support services, rewards, voting rights,
-    participation incentives, and decentralized digital marketplaces.
-  </p>
-
-  <h2 id="dib">10. DIB Concept</h2>
-  <p>
-    DIB stands for Decentralized International Bank. It is a future concept that
-    may be explored as an economic complement to DIG.
-  </p>
-  <p>
-    At this stage, DIB is only an idea. It may involve future research into
-    decentralized finance, transparent reserves, global digital value exchange,
-    and community-driven financial governance.
-  </p>
-
-  <h2 id="roadmap">11. Roadmap</h2>
-  <ul>
-    <li>
-      <strong>Phase 1:</strong> Build the early PiDao community and introduce
-      the DIG vision.
-    </li>
-    <li>
-      <strong>Phase 2:</strong> Launch experimental voting and measure community
-      participation.
-    </li>
-    <li>
-      <strong>Phase 3:</strong> Use Pi authentication to reduce duplicate votes
-      and improve trusted participation.
-    </li>
-    <li>
-      <strong>Phase 4:</strong> Develop DAO-inspired proposal and governance
-      tools.
-    </li>
-    <li>
-      <strong>Phase 5:</strong> Expand toward DIG as a broader model for
-      decentralized global decision-making.
-    </li>
-    <li>
-      <strong>Phase 6:</strong> Explore DIB and decentralized financial
-      infrastructure as a future economic layer.
-    </li>
-  </ul>
-
-  <h2 id="security">12. Security & Transparency</h2>
-  <p>
-    Security and transparency are essential for any decentralized governance
-    project. PiDao aims to improve reliability through authentication, backend
-    verification, transparent records, secure APIs, and gradual technical
-    improvements.
-  </p>
-  <p>
-    Future versions may explore blockchain-based voting records, cryptographic
-    verification, anti-fraud mechanisms, and stronger identity protection.
-  </p>
-
-  <h2 id="disclaimer">13. Disclaimer</h2>
-  <p>
-    PiDao is an experimental platform. DIG is a vision and conceptual development
-    path. Nothing in this whitepaper should be considered legal, financial,
-    investment, governmental, or political advice.
-  </p>
-  <p>
-    Participation in PiDao is voluntary and should be done at the user’s own
-    discretion. The project may change, evolve, pause, or discontinue features
-    as development continues.
-  </p>
-
-  <h2 id="conclusion">14. Conclusion</h2>
-  <p>
-    PiDao begins with practical tools: Pi login, voting, payments, tasks, and
-    digital services. DIG represents the broader long-term vision: a more
-    transparent, participatory, and decentralized approach to global
-    decision-making.
-  </p>
-  <p>
-    The project does not claim that such a transformation can happen instantly.
-    Instead, it begins with small experiments, community participation, and
-    gradual development.
-  </p>
-
-  <div class="footer">
-    <p>
-      <a href="/">Back to PiDao</a> ·
-      <a href="/privacy.html">Privacy Policy</a> ·
-      <a href="/terms.html">Terms of Service</a>
-    </p>
-    <p>
-      © 2026 PiDao. All rights reserved.
-    </p>
-  </div>
 </body>
 </html>
