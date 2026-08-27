@@ -1,115 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Terms of Service - PiDao</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.7;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 32px 20px;
-      color: #1f2937;
-      background: #ffffff;
-    }
-
-    h1, h2 {
-      color: #4c1d95;
-    }
-
-    a {
-      color: #673ab7;
-    }
-
-    .date {
-      color: #6b7280;
-      font-size: 14px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service | Pi Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ffbd00;
+            --bg: #0f0f0f;
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+            --warning-bg: rgba(255, 189, 0, 0.05);
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 50px 25px;
+        }
+        header {
+            border-bottom: 1px solid #333;
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin: 0;
+        }
+        .last-updated {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 10px;
+        }
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 40px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+        }
+        h2::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            margin-right: 15px;
+            border-radius: 50%;
+        }
+        p, li {
+            color: var(--text-dim);
+            font-size: 1.05rem;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 12px;
+        }
+        .disclaimer-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #333;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        .disclaimer-box strong {
+            color: var(--primary);
+        }
+        .footer-note {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #444;
+        }
+    </style>
 </head>
 <body>
-  <h1>Terms of Service</h1>
-  <p class="date">Last updated: August 2026</p>
 
-  <p>
-    Welcome to PiDao. By using this application, you agree to these Terms of
-    Service. If you do not agree, please do not use the application.
-  </p>
+<div class="container">
+    <header>
+        <h1>Terms of Service</h1>
+        <span class="last-updated">Effective Date: August 2026</span>
+    </header>
 
-  <h2>1. Purpose of the Application</h2>
-  <p>
-    PiDao is an experimental platform for Pi-based participation, voting,
-    digital services, payments, and the gradual development of decentralized
-    governance concepts related to the DIG vision.
-  </p>
+    <section>
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing, browsing, or using the <strong>Pi Explorer</strong> platform, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree to these terms, please refrain from using our services immediately.</p>
+    </section>
 
-  <h2>2. DIG Vision</h2>
-  <p>
-    DIG, or Decentralized International Government, is currently a vision,
-    concept, and development path. It does not represent an official government,
-    legal authority, or recognized international institution.
-  </p>
+    <section>
+        <h2>2. User Conduct & Prohibited Activities</h2>
+        <p>To maintain the integrity of the Pi ecosystem, all users must adhere to the following rules:</p>
+        <ul>
+            <li><strong>No Manipulation:</strong> Users are strictly prohibited from attempting to manipulate the ranking system, popularity metrics, or voting algorithms through bots, automated scripts, or any form of fraudulent activity.</li>
+            <li><strong>No Exploitation:</strong> Any attempt to exploit vulnerabilities in the Pi SDK, our backend infrastructure, or our API will result in an immediate and permanent ban from the platform.</li>
+            <li><strong>Integrity of Payments:</strong> Any use of fraudulent payment methods to "boost" dApp visibility is strictly forbidden and will be reported to the relevant authorities within the Pi Network ecosystem.</li>
+        </ul>
+    </section>
 
-  <h2>3. User Eligibility</h2>
-  <p>
-    You are responsible for ensuring that your use of PiDao complies with the
-    laws and regulations applicable in your location.
-  </p>
+    <section>
+        <h2>3. Payments and Transactions</h2>
+        <p>Pi Explorer facilitates the discovery and verification of transactions, but we do not act as a custodian of funds:</p>
+        <ul>
+            <li>All payments are processed directly via the <strong>Pi Network SDK</strong>.</li>
+            <li>Pi Explorer does not hold, store, or have access to your Pi coins.</li>
+            <li>We only facilitate and verify the transaction metadata to ensure the legitimacy of "Boost" services.</li>
+        </ul>
+    </section>
 
-  <h2>4. Pi Network Login</h2>
-  <p>
-    Some features may require authentication through Pi Network tools such as
-    Pi SDK. You are responsible for keeping your Pi account and wallet secure.
-  </p>
+    <section class="disclaimer-box">
+        <h2>4. Disclaimer of Liability</h2>
+        <p><strong>PLEASE READ THIS SECTION CAREFULLY. IT LIMITS OUR LIABILITY.</strong></p>
+        <p>Pi Explorer is provided as a "as-is" discovery tool and directory. We provide no guarantees regarding the following:</p>
+        <ul>
+            <li><strong>Third-Party Content:</strong> We do not endorse, guarantee, or verify the quality, security, legality, or reliability of any dApps listed in our catalog.</li>
+            <li><strong>Financial Risk:</strong> Pi Explorer is not responsible for any financial loss, damages, or issues incurred during your interactions with third-party dApps or through the use of the Pi Network.</li>
+            <li><strong>Service Availability:</strong> While we strive for uptime, we are not liable for any interruptions in service caused by the Pi Network, Supabase, or other third-party providers.</li>
+        </ul>
+    </section>
 
-  <h2>5. Voting and Participation</h2>
-  <p>
-    Voting features are experimental and intended to measure community
-    participation. Poll results should not be considered legally binding unless
-    explicitly stated by the project in the future.
-  </p>
+    <footer class="footer-note">
+        &copy; 2026 Pi Explorer. All rights reserved.
+    </footer>
+</div>
 
-  <h2>6. Payments and Digital Products</h2>
-  <p>
-    PiDao may provide digital products, tasks, or Pi payment interactions.
-    Payment completion depends on Pi Network infrastructure and related
-    services.
-  </p>
-
-  <h2>7. No Financial or Legal Advice</h2>
-  <p>
-    PiDao does not provide financial, investment, legal, or governmental advice.
-    Any participation is at your own discretion and risk.
-  </p>
-
-  <h2>8. Service Availability</h2>
-  <p>
-    We may update, modify, suspend, or discontinue parts of the application at
-    any time, especially because the platform is under active development.
-  </p>
-
-  <h2>9. Limitation of Liability</h2>
-  <p>
-    PiDao is provided on an experimental basis. We are not liable for indirect,
-    incidental, or consequential damages arising from use of the application.
-  </p>
-
-  <h2>10. Changes to Terms</h2>
-  <p>
-    These Terms may be updated from time to time. Continued use of the
-    application means you accept the updated Terms.
-  </p>
-
-  <h2>11. Contact</h2>
-  <p>
-    If you have questions about these Terms, please contact the PiDao project
-    team through the official project communication channels.
-  </p>
-
-  <p>
-    <a href="/">Back to PiDao</a>
-  </p>
 </body>
 </html>
