@@ -2,7 +2,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 const API_BASE_URL =
-  (import.meta.env.VITE_API_URL || 'https://pidao.bonto.run/api').replace(
+  (import.meta.env.VITE_API_URL || 'https://piexplorer.bonto.run/api').replace(
     /\/+$/,
     ''
   );
