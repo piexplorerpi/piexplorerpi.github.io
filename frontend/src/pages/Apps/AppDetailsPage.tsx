@@ -30,7 +30,7 @@ const AppDetailsPage: React.FC = () => {
         <div className="app-details-container">
           <div className="app-details-notfound">
             <h2>App not found</h2>
-            <p>The requested app does not exist (yet).</p>
+            <p>The requested app does not exist (yet) in Pi Explorer.</p>
             <Link className="back-link" to="/apps">
               ← Back to Apps
             </Link>
@@ -60,6 +60,7 @@ const AppDetailsPage: React.FC = () => {
 
           <div className="app-details-info">
             <h1 className="app-details-title">{title}</h1>
+
             <div className="app-details-meta">
               <span className="meta-item">{app.category}</span>
               {(app.tags || []).slice(0, 6).map((tag) => (
@@ -82,14 +83,14 @@ const AppDetailsPage: React.FC = () => {
                 </button>
               )}
 
-              {/* Placeholder: Boost will be implemented next step with Pi payment */}
+              {/* Boost will be wired to Pi payment in the next step */}
               <button className="btn ghost" type="button" disabled title="Next step">
-                Boost with Pi (coming next step)
+                Boost with Pi (next step)
               </button>
             </div>
 
             <div className="app-details-note">
-              Next step: add Boost (Pi payment) + optionally connect to Poll/Vote while keeping existing Payment APIs.
+              Next step: enable Boost with Pi using your existing payment flow (so APIs/login remain intact).
             </div>
           </div>
         </div>
