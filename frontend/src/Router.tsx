@@ -1,4 +1,3 @@
-// frontend/src/Router.tsx
 import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
@@ -79,7 +78,7 @@ const AppRouter: React.FC = () => {
         {/* Home */}
         <Route path="/" element={<Home />} />
 
-        {/* DIG / Manifesto */}
+        {/* DIG / Manifesto (you said this is separate; we can remove later) */}
         <Route path="/dig" element={<Dig />} />
 
         {/* Login with Pi */}
@@ -119,23 +118,23 @@ const AppRouter: React.FC = () => {
           path="/history"
           element={
             <ProtectedRoute>
-              <HistoryAny
-                onPaymentSuccess={() => {}}
-                onPaymentError={() => {}}
-              />
+              <HistoryAny onPaymentSuccess={() => {}} onPaymentError={() => {}} />
             </ProtectedRoute>
           }
         />
 
-        {/* Shop - protected */}
+        {/* Apps Directory (was Shop) - protected */}
         <Route
-          path="/shop"
+          path="/apps"
           element={
             <ProtectedRoute>
               <Shop />
             </ProtectedRoute>
           }
         />
+
+        {/* Backward compatibility: redirect /shop -> /apps */}
+        <Route path="/shop" element={<Navigate to="/apps" replace />} />
 
         {/* Tasks - protected */}
         <Route
