@@ -3,16 +3,18 @@ import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext';
 import { useI18n } from './i18n/I18nContext';
 
-// Pages & Components
 import Home from './pages/Home';
 import Dig from './pages/Dig';
-import Shop from './pages/Shop';
 import TasksPage from './pages/Engagement/TasksPage';
 import SignIn from './components/SignIn';
 import PiPaymentPanel from './components/PiPaymentPanel';
 import History from './components/History';
 import Success from './components/Success';
 import LanguageSwitcher from './components/LanguageSwitcher';
+
+// NEW
+import AppsPage from './pages/Apps/AppsPage';
+import AppDetailsPage from './pages/Apps/AppDetailsPage';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -75,13 +77,10 @@ const AppRouter: React.FC = () => {
   return (
     <Router>
       <Routes>
-        {/* Home */}
         <Route path="/" element={<Home />} />
 
-        {/* DIG / Manifesto (you said this is separate; we can remove later) */}
         <Route path="/dig" element={<Dig />} />
 
-        {/* Login with Pi */}
         <Route
           path="/login"
           element={
@@ -92,7 +91,6 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* Payment success */}
         <Route
           path="/success"
           element={
@@ -103,7 +101,6 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* Payment - protected */}
         <Route
           path="/payment"
           element={
@@ -113,7 +110,6 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* History - protected */}
         <Route
           path="/history"
           element={
@@ -123,20 +119,27 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* Apps Directory (was Shop) - protected */}
+        {/* Apps Directory + Details (protected) */}
         <Route
           path="/apps"
           element={
             <ProtectedRoute>
-              <Shop />
+              <AppsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/apps/:id"
+          element={
+            <ProtectedRoute>
+              <AppDetailsPage />
             </ProtectedRoute>
           }
         />
 
-        {/* Backward compatibility: redirect /shop -> /apps */}
+        {/* Backward compatibility */}
         <Route path="/shop" element={<Navigate to="/apps" replace />} />
 
-        {/* Tasks - protected */}
         <Route
           path="/tasks"
           element={
@@ -146,7 +149,6 @@ const AppRouter: React.FC = () => {
           }
         />
 
-        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
