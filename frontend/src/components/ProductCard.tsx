@@ -1,24 +1,17 @@
-// frontend/src/components/ProductCard.tsx
-import React from 'react';
+import React, { useCallback } from 'react';
 import './ProductCard.css';
 import { useI18n } from '../i18n/I18nContext';
 
 export interface Product {
   id: string;
-
-  // حالت فعلی
   name: string;
   description: string;
-
-  // فیلدهای اختیاری برای چندزبانه کردن محصولات
   nameFa?: string;
   nameEn?: string;
   nameTr?: string;
-
   descriptionFa?: string;
   descriptionEn?: string;
   descriptionTr?: string;
-
   image: string;
   priceDisplay: string;
 }
@@ -38,45 +31,27 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const loading = isProcessing === product.id;
 
-  const getProductName = () => {
-    if (lang === 'fa') return product.nameFa || product.name;
-    if (lang === 'en') return product.nameEn || product.name;
-    if (lang === 'tr') return product.nameTr || product.name;
-
-    return product.name;
-  };
-
-  const getProductDescription = () => {
-    if (lang === 'fa') return product.descriptionFa || product.description;
-    if (lang === 'en') return product.descriptionEn || product.description;
-    if (lang === 'tr') return product.descriptionTr || product.description;
-
-    return product.description;
-  };
-
-  const productName = getProductName();
-  const productDescription = getProductDescription();
+  // تابع کمکی برای انتخاب فیلد مناسب بر اساس زبان
+  const getLocalizedField = useCallback((
+    field: 'name' | 'description'
+  ): string => {
+    const langKey = lang.charAt(0).toUpperCase() + lang.slice(1); // تبدیل 'fa' به 'Fa'
+    const localizedKey = `${field}${langKey}` as keyof Product;
+    
+    // بازگشت مقدار بومی‌سازی شده یا مقدار پیش‌فرض
+    return (product[localizedKey] as string) || product[field];
+  }, [lang, product]);
 
   return (
     <div className="product-card">
       <div className="product-image-wrapper">
-        <img
-          src={product.image}
-          alt={productName}
-          className="product-image"
-        />
-
-        <div className="product-price-badge">
-          {product.priceDisplay}
-        </div>
+        <img src={product.image} alt={getLocalizedField('name')} className="product-image" />
+        <div className="product-price-badge">{product.priceDisplay}</div>
       </div>
 
       <div className="product-content">
-        <h3 className="product-title">{productName}</h3>
-
-        <p className="product-description">
-          {productDescription}
-        </p>
+        <h3 className="product-title">{getLocalizedField('name')}</h3>
+        <p className="product-description">{getLocalizedField('description')}</p>
 
         <button
           className={`product-button ${loading ? 'loading' : ''}`}
@@ -86,9 +61,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {loading ? (
             <>
               <span className="spinner"></span>
-              <span style={{ marginInlineStart: '8px' }}>
-                {t('processing')}
-              </span>
+              <span style={{ marginInlineStart: '8px' }}>{t('processing')}</span>
             </>
           ) : (
             t('buyNow')
