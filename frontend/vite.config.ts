@@ -13,9 +13,9 @@ export default defineConfig(({ mode }) => {
   return {
     /**
      * برای GitHub User Page مثل:
-     * https://tiraxturumuz1.github.io
+     * https://piexplorerpi.github.io
      * و همچنین دامنه PiNet:
-     * https://apppidaonkm2562.pinet.com
+     * https://apppiexplorerrjk7732.pinet.com
      * مقدار base باید '/' باشد.
      */
     base: '/',
@@ -52,12 +52,12 @@ export default defineConfig(({ mode }) => {
        * اگر در development خواستی از مسیر نسبی /api استفاده کنی،
        * می‌توانی این proxy را فعال نگه داری.
        * اما چون در env فعلی از Bonto مستقیم استفاده می‌کنی:
-       * VITE_API_URL=https://pidao.bonto.run/api
+       * VITE_API_URL=https://piexplorer.bonto.run/api
        * این proxy ضروری نیست.
        */
       proxy: {
         '/api': {
-          target: env.VITE_PROXY_API_TARGET || 'https://pidao.bonto.run',
+          target: env.VITE_PROXY_API_TARGET || 'https://piexplorer.bonto.run',
           changeOrigin: true,
           secure: true,
         },
