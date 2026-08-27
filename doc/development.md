@@ -1,4 +1,4 @@
-# 🚀 Development Guide - Pi Decentralized Government Project
+# 🚀 Development Guide - PI BLOCK & DAPPS EXPLORER Project
 
 This document provides instructions for setting up and developing the project in both local and containerized environments.
 
