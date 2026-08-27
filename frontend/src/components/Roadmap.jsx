@@ -1,56 +1,24 @@
-// frontend/src/components/Roadmap.jsx
 import React from 'react';
 import './Roadmap.css';
 import { useI18n } from '../i18n/I18nContext';
+import { roadmapTranslations } from '../i18n/translations/roadmap';
 
 const Roadmap = () => {
-  const { t } = useI18n();
+  const { t, i18n } = useI18n();
 
-  const steps = [
-    {
-      number: '01',
-      icon: '🌱',
-      title: t('roadmapStep1Title'),
-      description: t('roadmapStep1Description'),
-    },
-    {
-      number: '02',
-      icon: '🗳️',
-      title: t('roadmapStep2Title'),
-      description: t('roadmapStep2Description'),
-    },
-    {
-      number: '03',
-      icon: 'π',
-      title: t('roadmapStep3Title'),
-      description: t('roadmapStep3Description'),
-    },
-    {
-      number: '04',
-      icon: '🌐',
-      title: t('roadmapStep4Title'),
-      description: t('roadmapStep4Description'),
-    },
-    {
-      number: '05',
-      icon: '🏛️',
-      title: t('roadmapStep5Title'),
-      description: t('roadmapStep5Description'),
-    },
-    {
-      number: '06',
-      icon: '💠',
-      title: t('roadmapStep6Title'),
-      description: t('roadmapStep6Description'),
-    },
-  ];
+  // تشخیص زبان فعلی (fa یا en) برای انتخاب آرایه صحیح از فایل ترجمه
+  const currentLang = i18n.language === 'fa' ? 'fa' : 'en';
+  
+  // استخراج مراحل بر اساس زبان فعلی
+  const steps = roadmapTranslations[currentLang].steps;
 
   return (
     <section id="roadmap" className="roadmap-section">
       <div className="container">
         <div className="roadmap-heading">
           <span className="roadmap-kicker">
-            {t('digShortName')}
+            {/* استفاده از t برای عنوان کوتاه پروژه یا مستقیم از فایل ترجمه */}
+            {roadmapTranslations[currentLang].kicker}
           </span>
 
           <h2 className="roadmap-title">
