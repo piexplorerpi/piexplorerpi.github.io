@@ -22,6 +22,7 @@
   text-decoration: none;
   font-weight: 900;
 }
+
 .back-link:hover {
   text-decoration: underline;
 }
@@ -85,8 +86,8 @@
 .meta-tag {
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  background: rgba(0, 0, 0, 0.20);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
   color: #ddd;
   font-size: 0.8rem;
   font-weight: 800;
@@ -137,7 +138,7 @@
   padding: 12px 12px;
   border-radius: 14px;
   background: rgba(255, 202, 40, 0.08);
-  border: 1px solid rgba(255, 202, 40, 0.20);
+  border: 1px solid rgba(255, 202, 40, 0.2);
   color: #ffecb3;
   line-height: 1.8;
 }
