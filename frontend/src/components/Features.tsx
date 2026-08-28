@@ -1,45 +1,41 @@
 import React from 'react';
 import './Features.css';
-import { useI18n } from '../i18n/I18nContext';
-
-interface FeatureItem {
-  title: string;
-  description: string;
-  icon: string;
-}
+import { useTranslate } from '../i18n/useTranslate';
+import { featuresTranslations } from '../i18n/translations/features';
 
 const Features: React.FC = () => {
-  const { t } = useI18n();
+  const { t } = useTranslate();
 
-  const features: FeatureItem[] = [
+  // ساختار آرایه ویژگی‌ها
+  const features = [
     {
-      title: t('featureGlobalVotingTitle'),
-      description: t('featureGlobalVotingDescription'),
+      title: t(featuresTranslations.featureVotingTitle),
+      description: t(featuresTranslations.featureVotingDesc),
       icon: '🗳️',
     },
     {
-      title: t('featureTransparentGovernanceTitle'),
-      description: t('featureTransparentGovernanceDescription'),
+      title: t(featuresTranslations.featureTransparencyTitle),
+      description: t(featuresTranslations.featureTransparencyDesc),
       icon: '🔍',
     },
     {
-      title: t('featurePiIdentityTitle'),
-      description: t('featurePiIdentityDescription'),
+      title: t(featuresTranslations.featureIdentityTitle),
+      description: t(featuresTranslations.featureIdentityDesc),
       icon: 'π',
     },
     {
-      title: t('featureDaoInfrastructureTitle'),
-      description: t('featureDaoInfrastructureDescription'),
+      title: t(featuresTranslations.featureInfraTitle),
+      description: t(featuresTranslations.featureInfraDesc),
       icon: '🌐',
     },
     {
-      title: t('featureDigitalEconomyTitle'),
-      description: t('featureDigitalEconomyDescription'),
+      title: t(featuresTranslations.featureEconomyTitle),
+      description: t(featuresTranslations.featureEconomyDesc),
       icon: '💠',
     },
     {
-      title: t('featureConflictResolutionTitle'),
-      description: t('featureConflictResolutionDescription'),
+      title: t(featuresTranslations.featureConflictTitle),
+      description: t(featuresTranslations.featureConflictDesc),
       icon: '🤝',
     },
   ];
@@ -49,8 +45,8 @@ const Features: React.FC = () => {
       <div className="container">
         <div className="features-heading">
           <span className="features-kicker">Pi Explorer</span>
-          <h2 className="section-title">{t('digFeaturesSectionTitle')}</h2>
-          <p className="features-intro">{t('digFeaturesSectionIntro')}</p>
+          <h2 className="section-title">{t(featuresTranslations.sectionTitle)}</h2>
+          <p className="features-intro">{t(featuresTranslations.sectionIntro)}</p>
         </div>
 
         <div className="features-grid">
