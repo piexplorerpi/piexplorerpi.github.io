@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useI18n } from '../i18n/I18nContext';
+import { useTranslate } from '../i18n/useTranslate';
+import { historyTranslations } from '../i18n/translations/history';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://pidao.bonto.run/api';
 
@@ -28,7 +29,7 @@ const History: React.FC<HistoryProps> = ({
   onPaymentSuccess = () => {}, 
   onPaymentError = () => {} 
 }) => {
-  const { t, lang } = useI18n();
+  const { t, lang } = useTranslate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,12 +52,12 @@ const History: React.FC<HistoryProps> = ({
       if (response.ok && data.success) {
         setTransactions(Array.isArray(data.data) ? data.data : []);
       } else {
-        setError(data.message || t('serverConnectionError'));
+        setError(data.message || t(historyTranslations.serverConnectionError));
         onPaymentError(data);
       }
     } catch (err) {
       console.error('History fetch error:', err);
-      setError(t('serverConnectionError'));
+      setError(t(historyTranslations.serverConnectionError));
       onPaymentError(err);
     } finally {
       setLoading(false);
@@ -79,11 +80,11 @@ const History: React.FC<HistoryProps> = ({
   const getStatusLabel = (status?: string): string => {
     const normalized = (status || '').toUpperCase();
     switch (normalized) {
-      case 'COMPLETED': case 'SUCCESS': return t('successful');
-      case 'APPROVED': return t('approved');
-      case 'PENDING': return t('pending');
-      case 'CANCELLED': return t('cancelled');
-      default: return t('failed');
+      case 'COMPLETED': case 'SUCCESS': return t(historyTranslations.successful);
+      case 'APPROVED': return t(historyTranslations.approved);
+      case 'PENDING': return t(historyTranslations.pending);
+      case 'CANCELLED': return t(historyTranslations.cancelled);
+      default: return t(historyTranslations.failed);
     }
   };
 
@@ -97,25 +98,25 @@ const History: React.FC<HistoryProps> = ({
     }
   };
 
-  if (loading) return <div style={styles.center}>{t('loading')}</div>;
+  if (loading) return <div style={styles.center}>{t(historyTranslations.loading)}</div>;
 
   if (error) return <div style={{ ...styles.center, color: 'red' }}>{error}</div>;
 
   return (
     <div style={{ ...styles.container, direction }}>
-      <h2 style={styles.title}>{t('historyTitle')}</h2>
+      <h2 style={styles.title}>{t(historyTranslations.historyTitle)}</h2>
       {transactions.length === 0 ? (
-        <p style={styles.center}>{t('noTransactions')}</p>
+        <p style={styles.center}>{t(historyTranslations.noTransactions)}</p>
       ) : (
         <div style={styles.tableWrapper}>
           <table style={styles.table}>
             <thead>
               <tr style={styles.tableHeader}>
-                <th style={styles.th}>{t('transactionId')}</th>
-                <th style={styles.th}>{t('amount')}</th>
-                <th style={styles.th}>{t('product')}</th>
-                <th style={styles.th}>{t('status')}</th>
-                <th style={styles.th}>{t('date')}</th>
+                <th style={styles.th}>{t(historyTranslations.transactionId)}</th>
+                <th style={styles.th}>{t(historyTranslations.amount)}</th>
+                <th style={styles.th}>{t(historyTranslations.product)}</th>
+                <th style={styles.th}>{t(historyTranslations.status)}</th>
+                <th style={styles.th}>{t(historyTranslations.date)}</th>
               </tr>
             </thead>
             <tbody>
