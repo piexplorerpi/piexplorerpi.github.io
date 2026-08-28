@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Footer.css';
-import { useI18n } from '../i18n/I18nContext';
+import { useTranslate } from '../../i18n/useTranslate';
+import { footerTranslations } from '../../i18n/translations/footer';
 
-const Footer = () => {
-  const { t } = useI18n();
+const Footer: React.FC = () => {
+  const { t } = useTranslate();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const scrollToSection = (sectionId) => {
+  const scrollToSection = (sectionId: string) => {
     const doScroll = () => {
       const element = document.getElementById(sectionId);
       if (element) {
@@ -34,79 +35,79 @@ const Footer = () => {
             Pi<span>Explorer</span>
           </Link>
 
-          <div className="footer-badge">{t('digFullName')}</div>
+          <div className="footer-badge">{t(footerTranslations.fullName)}</div>
 
-          <p className="footer-description">{t('footerDescription')}</p>
+          <p className="footer-description">{t(footerTranslations.description)}</p>
         </div>
 
         <ul className="footer-links">
           <li>
             <Link to="/dig" className="footer-link">
-              {t('navDig')}
+              {t(footerTranslations.navDig)}
             </Link>
           </li>
 
           <li>
             <button type="button" onClick={() => scrollToSection('features')} className="footer-link-button">
-              {t('features')}
+              {t(footerTranslations.features)}
             </button>
           </li>
 
           <li>
             <button type="button" onClick={() => scrollToSection('roadmap')} className="footer-link-button">
-              {t('navRoadmap')}
+              {t(footerTranslations.navRoadmap)}
             </button>
           </li>
 
           <li>
             <button type="button" onClick={() => scrollToSection('poll')} className="footer-link-button">
-              {t('governance')}
+              {t(footerTranslations.governance)}
             </button>
           </li>
 
           <li>
             <button type="button" onClick={() => scrollToSection('about')} className="footer-link-button">
-              {t('aboutUs')}
+              {t(footerTranslations.aboutUs)}
             </button>
           </li>
 
           <li>
             <Link to="/apps" className="footer-link">
-              {t('shop')}
+              {t(footerTranslations.shop)}
             </Link>
           </li>
 
           <li>
             <Link to="/tasks" className="footer-link">
-              {t('tasks')}
+              {t(footerTranslations.tasks)}
             </Link>
           </li>
         </ul>
 
         <div className="footer-legal-links">
           <a href="/privacy.html" className="footer-legal-link" target="_blank" rel="noopener noreferrer">
-            {t('privacyPolicy')}
+            {t(footerTranslations.privacyPolicy)}
           </a>
 
           <span className="footer-legal-separator">•</span>
 
           <a href="/terms.html" className="footer-legal-link" target="_blank" rel="noopener noreferrer">
-            {t('termsOfService')}
+            {t(footerTranslations.termsOfService)}
           </a>
 
           <span className="footer-legal-separator">•</span>
 
           <a href="/whitepaper.html" className="footer-legal-link" target="_blank" rel="noopener noreferrer">
-            {t('whitepaper')}
+            {t(footerTranslations.whitepaper)}
           </a>
         </div>
 
         <div className="footer-note">
-          <p>{t('footerNote')}</p>
+          <p>{t(footerTranslations.footerNote)}</p>
         </div>
 
         <div className="copyright">
-          <p>&copy; {new Date().getFullYear()} Pi Explorer. {t('footerRights')}</p>
+          <p>&copy; {new Date().getFullYear()} Pi Explorer. {t(footerTranslations.footerRights)}</p>
         </div>
       </div>
     </footer>
@@ -114,4 +115,3 @@ const Footer = () => {
 };
 
 export default Footer;
-            
