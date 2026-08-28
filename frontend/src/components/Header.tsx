@@ -1,21 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useI18n } from '../../i18n/I18nContext';
+import { useTranslate } from '../../i18n/useTranslate';
+import { headerTranslations } from '../../i18n/translations/header';
 import './Header.css';
 
-interface NavItem {
-  name: string;
-  path: string;
-}
-
 const Header: React.FC = () => {
-  const { t } = useI18n();
+  const { t } = useTranslate();
 
-  const navLinks: NavItem[] = [
-    { name: t('navAccounts'), path: '/accounts' },
-    { name: t('navLedgers'), path: '/ledgers' },
-    { name: t('navPayments'), path: '/payments' },
-    { name: t('navTrades'), path: '/trades' },
+  const navLinks = [
+    { name: t(headerTranslations.navAccounts), path: '/accounts' },
+    { name: t(headerTranslations.navLedgers), path: '/ledgers' },
+    { name: t(headerTranslations.navPayments), path: '/payments' },
+    { name: t(headerTranslations.navTrades), path: '/trades' },
   ];
 
   return (
