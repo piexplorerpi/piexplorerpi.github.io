@@ -1,43 +1,44 @@
 import React from 'react';
 import './About.css';
-import { useI18n } from '../i18n/I18nContext';
+import { useTranslate } from '../i18n/useTranslate';
+import { aboutTranslations } from '../i18n/translations/about';
 
-const About: React.FC = () => {
-  const { t } = useI18n();
+const About = () => {
+  const { t } = useTranslate();
 
   return (
     <section id="about" className="about-section">
       <div className="container">
         <div className="about-wrapper">
-          {/* ستون اول: معرفی Pi Explorer و DIG */}
+          {/* ستون اول: معرفی Pi Explorer */}
           <div className="about-content">
-            <div className="about-kicker">{t('aboutDigKicker')}</div>
+            <div className="about-kicker">{t(aboutTranslations.aboutExplorerKicker)}</div>
 
-            <h2 className="about-subtitle">{t('aboutDigSubtitle')}</h2>
+            <h2 className="about-subtitle">{t(aboutTranslations.aboutExplorerSubtitle)}</h2>
 
             <h1 className="about-title">
-              {t('aboutDigTitleBefore')}{' '}
-              <span className="highlight">{t('aboutDigTitleHighlight')}</span>
+              {t(aboutTranslations.aboutExplorerTitleBefore)}{' '}
+              <span className="highlight">{t(aboutTranslations.aboutExplorerTitleHighlight)}</span>
             </h1>
 
-            <p className="about-text">{t('aboutDigText')}</p>
+            <p className="about-text">{t(aboutTranslations.aboutExplorerText)}</p>
 
-            <p className="about-text about-text-secondary">{t('aboutDigTextSecondary')}</p>
+            <p className="about-text about-text-secondary">{t(aboutTranslations.aboutExplorerTextSecondary)}</p>
 
             <div className="about-stats">
               <div className="stat-item">
-                <span className="stat-number">DIG</span>
-                <span className="stat-label">{t('statGlobalGovernance')}</span>
+                <span className="stat-number">NET</span>
+                <span className="stat-label">{t(aboutTranslations.statNetwork)}</span>
               </div>
 
               <div className="stat-item">
                 <span className="stat-number">Pi</span>
-                <span className="stat-label">{t('statPiIdentity')}</span>
+                <span className="stat-label">{t(aboutTranslations.statIdentity)}</span>
               </div>
 
               <div className="stat-item">
-                <span className="stat-number">DAO</span>
-                <span className="stat-label">{t('statPeopleVoting')}</span>
+                <span className="stat-number">dApps</span>
+                <span className="stat-label">{t(aboutTranslations.statApps)}</span>
               </div>
             </div>
           </div>
@@ -46,26 +47,26 @@ const About: React.FC = () => {
           <div className="about-visual">
             <div className="vision-card">
               <div className="vision-icon">🌍</div>
-              <div className="vision-label">{t('digShortName')}</div>
-              <h3>{t('digMissionTitle')}</h3>
-              <p>{t('digMissionText')}</p>
+              <div className="vision-label">{t(aboutTranslations.explorerShortName)}</div>
+              <h3>{t(aboutTranslations.explorerMissionTitle)}</h3>
+              <p>{t(aboutTranslations.explorerMissionText)}</p>
 
               <div className="vision-points">
                 <div className="vision-point">
-                  <span>🗳️</span>
-                  <p>{t('digPointVoting')}</p>
+                  <span>⚡</span>
+                  <p>{t(aboutTranslations.pointSpeed)}</p>
                 </div>
                 <div className="vision-point">
                   <span>🔍</span>
-                  <p>{t('digPointTransparency')}</p>
+                  <p>{t(aboutTranslations.pointTransparency)}</p>
                 </div>
                 <div className="vision-point">
                   <span>🤝</span>
-                  <p>{t('digPointUnity')}</p>
+                  <p>{t(aboutTranslations.pointAccess)}</p>
                 </div>
               </div>
 
-              <div className="vision-badge">{t('digVisionBadge')}</div>
+              <div className="vision-badge">{t(aboutTranslations.badgeAction)}</div>
             </div>
           </div>
         </div>
