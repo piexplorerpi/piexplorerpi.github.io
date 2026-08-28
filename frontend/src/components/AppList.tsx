@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './AppList.css'; // فرض بر این است که استایل‌های خاص این کامپوننت اینجا قرار دارد
+import { useTranslate } from '../i18n/useTranslate';
+import { appListTranslations } from '../i18n/translations/appList';
+import './AppList.css';
 
-// تعریف ساختار داده اپلیکیشن برای حفظ تایپ‌اسکریپت
 interface AppItem {
   id: string;
   title: string;
@@ -13,6 +14,7 @@ interface AppItem {
 }
 
 const AppList: React.FC = () => {
+  const { t } = useTranslate();
   const [apps, setApps] = useState<AppItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,21 +22,22 @@ const AppList: React.FC = () => {
   useEffect(() => {
     const fetchApps = async () => {
       try {
-        // تغییر به متغیر محیطی در آینده توصیه می‌شود: process.env.VITE_API_URL
+        // نکته: در محیط Production حتماً از import.meta.env.VITE_API_URL استفاده کنید
         const response = await axios.get('http://localhost:5000/api/apps');
         setApps(response.data);
       } catch (err) {
         console.error("Error fetching Pi Explorer apps:", err);
-        setError("Failed to load apps. Please try again later.");
+        // خطا را از فایل ترجمه می‌گیریم
+        setError(t(appListTranslations.error));
       } finally {
         setLoading(false);
       }
     };
 
     fetchApps();
-  }, []);
+  }, [t]); // اضافه کردن t به وابستگی‌ها برای اطمینان از آپدیت شدن در صورت تغییر زبان
 
-  if (loading) return <div className="apps-loader">Loading Pi Explorer ecosystem...</div>;
+  if (loading) return <div className="apps-loader">{t(appListTranslations.loading)}</div>;
   if (error) return <div className="apps-error">{error}</div>;
 
   return (
@@ -42,8 +45,16 @@ const AppList: React.FC = () => {
       {apps.map((app) => (
         <article key={app.id} className="app-card">
           <div className="app-card-media">
-            <img src={app.image || '/placeholder-app.png'} alt={app.title} loading="lazy" />
-            {app.isVerified && <span className="app-badge">Verified</span>}
+            <img 
+              src={app.image || '/placeholder-app.png'} 
+              alt={app.title} 
+              loading="lazy" 
+            />
+            {app.isVerified && (
+              <span className="app-badge">
+                {t(appListTranslations.verifiedBadge)}
+              </span>
+            )}
           </div>
           
           <div className="app-card-body">
