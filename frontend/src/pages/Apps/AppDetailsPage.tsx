@@ -1,8 +1,27 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
-import { appsCatalog, AppItem } from '../../data/appsCatalog';
 import './AppDetailsPage.css';
+
+// تعریف Interface مربوط به دیتای اپلیکیشن (برای رعایت قوانین TypeScript)
+export type AppCategory = 'DeFi' | 'NFT' | 'Games' | 'Tools' | 'Social' | 'Education';
+
+export interface AppItem {
+  id: string;
+  title: string;
+  titleFa?: string;
+  titleTr?: string;
+  description: string;
+  descriptionFa?: string;
+  descriptionTr?: string;
+  category: AppCategory;
+  tags?: string[];
+  image?: string;
+  isVerified?: boolean;
+  websiteUrl?: string;
+  demoUrl?: string;
+  githubUrl?: string;
+}
 
 function pickLocalized(app: AppItem, lang: string) {
   const title =
@@ -19,11 +38,41 @@ function pickLocalized(app: AppItem, lang: string) {
 }
 
 const AppDetailsPage: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { lang } = useI18n();
 
-  const app = useMemo(() => appsCatalog.find((a) => a.id === id), [id]);
+  const [app, setApp] = useState<AppItem | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // دریافت داده‌ها از بک‌اند بر اساس ID
+  useEffect(() => {
+    const fetchApp = async () => {
+      try {
+        setLoading(true);
+        // آدرس API خود را اینجا قرار دهید
+        const response = await fetch(`/api/apps/${id}`);
+        if (!response.ok) throw new Error('App not found');
+        const data = await response.json();
+        setApp(data);
+      } catch (error) {
+        console.error("Error fetching app details:", error);
+        setApp(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchApp();
+  }, [id]);
+
+  if (loading) {
+    return (
+        <div className="app-details-page">
+            <div className="app-details-container">Loading details...</div>
+        </div>
+    );
+  }
 
   if (!app) {
     return (
@@ -45,14 +94,11 @@ const AppDetailsPage: React.FC = () => {
   const externalUrl = app.websiteUrl || app.demoUrl || app.githubUrl;
 
   const handleBoost = () => {
-    // Send user to existing payment flow; keep old APIs intact.
-    // We pass app context via navigation state (safe, no persistence needed).
     navigate('/payment', {
       state: {
         purpose: 'BOOST_APP',
         appId: app.id,
         appTitle: title,
-        // Future: amountPi, boostTier, metadata...
       },
     });
   };
