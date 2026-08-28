@@ -1,9 +1,10 @@
 import React from 'react';
 import './Hero.css';
-import { useI18n } from '../i18n/I18nContext';
+import { useTranslate } from '../i18n/useTranslate';
+import { heroTranslations } from '../i18n/translations/hero';
 
 const Hero: React.FC = () => {
-  const { t } = useI18n();
+  const { t } = useTranslate();
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -12,16 +13,16 @@ const Hero: React.FC = () => {
 
   return (
     <section className="hero">
-      <div className="hero-badge">Pi Explorer · Decentralized Governance</div>
-      <h1>{t('digHeroTitle')}</h1>
-      <p>{t('digHeroDescription')}</p>
+      <div className="hero-badge">{t(heroTranslations.heroBadge)}</div>
+      <h1>{t(heroTranslations.heroTitle)}</h1>
+      <p>{t(heroTranslations.heroDescription)}</p>
 
       <div className="hero-btns">
         <button onClick={() => scrollToSection('pi-payment-panel')} className="btn-primary">
-          🔐 {t('joinWithPi')}
+          🔐 {t(heroTranslations.joinWithPi)}
         </button>
         <button onClick={() => scrollToSection('about')} className="btn-secondary">
-          🌐 {t('exploreDig')}
+          🌐 {t(heroTranslations.exploreEcosystem)}
         </button>
       </div>
     </section>
