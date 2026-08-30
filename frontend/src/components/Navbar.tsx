@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
-import { useI18n } from '../i18n/I18nContext';
+import { useTranslate } from '../i18n/useTranslate';
+import { navbarTranslations } from '../i18n/translations/navbar';
 import logo from '../assets/logo.png';
 
 const Navbar: React.FC = () => {
-  const { t } = useI18n();
+  const { t } = useTranslate();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -24,7 +25,6 @@ const Navbar: React.FC = () => {
 
     if (location.pathname !== '/') {
       navigate('/');
-      // تأخیر کوتاه برای اجازه دادن به بارگذاری صفحه اصلی
       setTimeout(() => doScroll(), 250);
     } else {
       doScroll();
@@ -46,44 +46,43 @@ const Navbar: React.FC = () => {
         <ul className="nav-menu">
           <li className="nav-item">
             <Link to="/" className="nav-link">
-              {t('home')}
+              {t(navbarTranslations.home)}
             </Link>
           </li>
 
-          {/* اگر بخش خاصی مثل Dig دیگر اولویت ندارد، می‌توانیم آن را به Apps منتقل کنیم */}
           <li className="nav-item">
             <button type="button" className="nav-link nav-button" onClick={() => scrollToSection('features')}>
-              {t('features')}
+              {t(navbarTranslations.features)}
             </button>
           </li>
 
           <li className="nav-item">
             <button type="button" className="nav-link nav-button" onClick={() => scrollToSection('roadmap')}>
-              {t('navRoadmap')}
+              {t(navbarTranslations.navRoadmap)}
             </button>
           </li>
 
           <li className="nav-item">
             <button type="button" className="nav-link nav-button" onClick={() => scrollToSection('poll')}>
-              {t('governance')}
+              {t(navbarTranslations.governance)}
             </button>
           </li>
 
           <li className="nav-item">
             <button type="button" className="nav-link nav-button" onClick={() => scrollToSection('about')}>
-              {t('aboutUs')}
+              {t(navbarTranslations.aboutUs)}
             </button>
           </li>
 
           <li className="nav-item">
             <Link to="/apps" className="nav-link">
-              {t('shop')}
+              {t(navbarTranslations.shop)}
             </Link>
           </li>
 
           <li className="nav-item">
             <Link to="/tasks" className="nav-link">
-              {t('tasks')}
+              {t(navbarTranslations.tasks)}
             </Link>
           </li>
         </ul>
