@@ -1,28 +1,44 @@
 import React from 'react';
 import './Roadmap.css';
-import { useI18n } from '../i18n/I18nContext';
-import { roadmapTranslations } from '../i18n/translations/roadmap';
+import { useTranslate } from '../i18n/useTranslate'; // مهاجرت به هوک جدید
+
+// تعریف اینترفیس برای داده‌های استاتیک (نقشه راه معمولاً دیتا است، نه متن ترجمه شده)
+interface RoadmapStep {
+  number: string;
+  icon: string;
+  translationKey: string; // کلید مربوط به فایل ترجمه
+}
+
+const ROADMAP_STEPS: RoadmapStep[] = [
+  { number: '01', icon: '🚀', translationKey: 'step1' },
+  { number: '02', icon: '🌐', translationKey: 'step2' },
+  { number: '03', icon: '🏆', translationKey: 'step3' },
+];
 
 const Roadmap: React.FC = () => {
-  const { lang } = useI18n();
-  const { header, steps } = roadmapTranslations;
+  const { t } = useTranslate(); // استفاده از هوک جدید
 
   return (
     <section id="roadmap" className="roadmap-section">
       <div className="container">
         <div className="roadmap-heading">
-          <span className="roadmap-kicker">{header.kicker[lang as keyof typeof header.kicker]}</span>
-          <h2 className="roadmap-title">{header.title[lang as keyof typeof header.title]}</h2>
-          <p className="roadmap-intro">{header.intro[lang as keyof typeof header.intro]}</p>
+          <span className="roadmap-kicker">{t('roadmap.kicker')}</span>
+          <h2 className="roadmap-title">{t('roadmap.title')}</h2>
+          <p className="roadmap-intro">{t('roadmap.intro')}</p>
         </div>
 
         <div className="roadmap-timeline">
-          {steps.map((step, index) => (
+          {ROADMAP_STEPS.map((step, index) => (
             <div key={index} className="roadmap-card">
               <div className="roadmap-number">{step.number}</div>
               <div className="roadmap-icon">{step.icon}</div>
-              <h3>{step.content.title[lang as keyof typeof step.content.title]}</h3>
-              <p>{step.content.description[lang as keyof typeof step.content.description]}</p>
+              {/* استفاده از کلید داینامیک برای دسترسی به عنوان و توضیحات هر مرحله */}
+              <h3 className="roadmap-step-title">
+                {t(`roadmap.steps.${step.translationKey}.title`)}
+              </h3>
+              <p className="roadmap-step-desc">
+                {t(`roadmap.steps.${step.translationKey}.description`)}
+              </p>
             </div>
           ))}
         </div>
