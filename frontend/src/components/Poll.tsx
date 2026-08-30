@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import './Poll.css';
-import { useI18n } from '../i18n/I18nContext';
+import { useTranslate } from '../i18n/useTranslate'; // مهاجرت به هوک جدید
 import { useAuth } from '../context/AuthContext';
 
-// اینترفیس‌ها برای تایپ‌گذاری دقیق
 interface Votes {
   yes: number;
   no: number;
@@ -39,7 +38,7 @@ interface HistoryItem {
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://pidao.bonto.run/api';
 
 const Poll: React.FC = () => {
-  const { t, lang } = useI18n();
+  const { t, lang } = useTranslate(); // استفاده از هوک جدید
   const auth = useAuth();
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -63,9 +62,8 @@ const Poll: React.FC = () => {
 
   const getToken = (): string | null => localStorage.getItem('token');
 
-  // بهینه‌سازی انتخاب متن سوال بر اساس زبان
   const getLocalizedQuestion = useCallback(() => {
-    if (!pollData) return t('pollQuestion');
+    if (!pollData) return t('poll.pollQuestion');
     const langMap: Record<string, string | undefined> = {
       fa: pollData.questionFa,
       en: pollData.questionEn,
@@ -74,7 +72,7 @@ const Poll: React.FC = () => {
       hi: pollData.questionHi,
       ar: pollData.questionAr,
     };
-    return langMap[lang] || pollData.question || t('pollQuestion');
+    return langMap[lang] || pollData.question || t('poll.pollQuestion');
   }, [lang, pollData, t]);
 
   const maskUsername = (username: string): string => {
@@ -102,13 +100,13 @@ const Poll: React.FC = () => {
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
-        throw new Error(data.message || t('pollConnectionError'));
+        throw new Error(data.message || t('poll.pollConnectionError'));
       }
       setVotes(data.data.votes);
       setUserVote(data.data.userVote);
       setPollData(data.data.poll || null);
     } catch (err: any) {
-      setError(err.message || t('pollConnectionError'));
+      setError(err.message || t('poll.pollConnectionError'));
     } finally {
       setLoading(false);
     }
@@ -132,11 +130,6 @@ const Poll: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchPoll();
-    fetchVoteHistory();
-  }, []);
-
-  useEffect(() => {
     if (auth?.isAuthenticated && getToken()) {
       fetchPoll();
       fetchVoteHistory();
@@ -146,11 +139,11 @@ const Poll: React.FC = () => {
   const handleVote = async (option: 'yes' | 'no') => {
     const token = getToken();
     if (!auth?.isAuthenticated || !token) {
-      setMessage(t('pollLoginRequired'));
+      setMessage(t('poll.pollLoginRequired'));
       return;
     }
     if (userVote) {
-      setMessage(t('pollAlreadyVoted'));
+      setMessage(t('poll.pollAlreadyVoted'));
       return;
     }
     try {
@@ -168,18 +161,18 @@ const Poll: React.FC = () => {
           setVotes(data.data.votes);
           setUserVote(data.data.userVote);
           setPollData(data.data.poll || null);
-          setMessage(t('pollAlreadyVoted'));
+          setMessage(t('poll.pollAlreadyVoted'));
           return;
         }
-        throw new Error(data.message || t('pollConnectionError'));
+        throw new Error(data.message || t('poll.pollConnectionError'));
       }
       setVotes(data.data.votes);
       setUserVote(data.data.userVote);
       setPollData(data.data.poll || null);
-      setMessage(t('pollVoteSuccess'));
+      setMessage(t('poll.pollVoteSuccess'));
       await fetchVoteHistory();
     } catch (err: any) {
-      setError(err.message || t('pollConnectionError'));
+      setError(err.message || t('poll.pollConnectionError'));
     } finally {
       setVoting(false);
     }
@@ -195,8 +188,8 @@ const Poll: React.FC = () => {
     return (
       <section id="poll" className="poll-section">
         <div className="poll-container">
-          <div className="poll-badge">{t('digShortName')} · {t('governance')}</div>
-          <p className="poll-loading-text">{t('pollLoading')}</p>
+          <div className="poll-badge">{t('dig.digShortName')} · {t('poll.governance')}</div>
+          <p className="poll-loading-text">{t('poll.pollLoading')}</p>
         </div>
       </section>
     );
@@ -205,27 +198,27 @@ const Poll: React.FC = () => {
   return (
     <section id="poll" className="poll-section">
       <div className="poll-container">
-        <div className="poll-badge">{t('digShortName')} · {t('governance')}</div>
+        <div className="poll-badge">{t('dig.digShortName')} · {t('poll.governance')}</div>
         <h2 className="poll-question">{getLocalizedQuestion()}</h2>
-        <p className="poll-description">{t('pollDescription')}</p>
+        <p className="poll-description">{t('poll.pollDescription')}</p>
         <div className="poll-total">
-          <span>{t('totalVotes')}</span>
+          <span>{t('poll.totalVotes')}</span>
           <strong>{votes.total}</strong>
         </div>
 
         {!userVote ? (
           <div className="poll-options">
             <button className="poll-btn poll-btn-yes" onClick={() => handleVote('yes')} disabled={voting}>
-              {voting ? t('processing') : t('pollYes')}
+              {voting ? t('poll.processing') : t('poll.pollYes')}
             </button>
             <button className="poll-btn poll-btn-no" onClick={() => handleVote('no')} disabled={voting}>
-              {voting ? t('processing') : t('pollNo')}
+              {voting ? t('poll.processing') : t('poll.pollNo')}
             </button>
           </div>
         ) : (
           <div className="poll-user-vote">
-            <div>{t('yourVote')}: <strong>{userVote.option === 'yes' ? t('yesLabel') : t('noLabel')}</strong></div>
-            <span>{t('voteDate')}: {formatDate(userVote.createdAt)}</span>
+            <div>{t('poll.yourVote')}: <strong>{userVote.option === 'yes' ? t('poll.yesLabel') : t('poll.noLabel')}</strong></div>
+            <span>{t('poll.voteDate')}: {formatDate(userVote.createdAt)}</span>
           </div>
         )}
 
@@ -234,21 +227,25 @@ const Poll: React.FC = () => {
         )}
 
         <div className="poll-results">
-            <div className="poll-result-label" style={{ textAlign }}>
-                <span>{t('yesLabel')}</span>
-                <strong>{votes.yesPercent}% ({votes.yes})</strong>
-            </div>
-            <div className="result-bar-container"><div className="result-bar result-bar-yes" style={{ width: `${votes.yesPercent}%` }}></div></div>
-            <div className="poll-result-label poll-result-label-no" style={{ textAlign }}>
-                <span>{t('noLabel')}</span>
-                <strong>{votes.noPercent}% ({votes.no})</strong>
-            </div>
-            <div className="result-bar-container"><div className="result-bar result-bar-no" style={{ width: `${votes.noPercent}%` }}></div></div>
+          <div className="poll-result-label" style={{ textAlign }}>
+            <span>{t('poll.yesLabel')}</span>
+            <strong>{votes.yesPercent}% ({votes.yes})</strong>
+          </div>
+          <div className="result-bar-container">
+            <div className="result-bar result-bar-yes" style={{ width: `${votes.yesPercent}%` }}></div>
+          </div>
+          <div className="poll-result-label poll-result-label-no" style={{ textAlign }}>
+            <span>{t('poll.noLabel')}</span>
+            <strong>{votes.noPercent}% ({votes.no})</strong>
+          </div>
+          <div className="result-bar-container">
+            <div className="result-bar result-bar-no" style={{ width: `${votes.noPercent}%` }}></div>
+          </div>
         </div>
 
         {history.length > 0 && (
           <div className="poll-history" style={{ textAlign }}>
-            <strong>{t('voteHistory')}</strong>
+            <strong>{t('poll.voteHistory')}</strong>
             <ul>
               {history.map((item) => (
                 <li key={item.id}>
@@ -256,7 +253,7 @@ const Poll: React.FC = () => {
                   <div className="poll-history-meta">
                     <span className="poll-history-user">{maskUsername(item.username)}</span>
                     <span className="poll-history-separator"> · </span>
-                    <span>{item.vote_option === 'yes' ? t('yesLabel') : t('noLabel')}</span>
+                    <span>{item.vote_option === 'yes' ? t('poll.yesLabel') : t('poll.noLabel')}</span>
                     <span className="poll-history-separator"> - </span>
                     <span>{formatDate(item.created_at)}</span>
                   </div>
