@@ -1,17 +1,10 @@
-// frontend/src/components/Payment.jsx
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axiosClient from '../lib/axiosClient';
-import './Payment.css'; // اضافه کردن استایل برای ظاهر مدرن
+import { useTranslate } from '../i18n/useTranslate';
+import { paymentTranslations } from '../i18n/translations/payment';
+import './Payment.css';
 
-/**
- * @param {{ 
- *   transactionId?: string, 
- *   onReset?: () => void, 
- *   onPaymentSuccess?: (txid: string) => void, 
- *   onPaymentError?: (err: any) => void 
- * }} props
- */
 const Payment = ({ 
   transactionId = "", 
   onReset = () => {}, 
@@ -19,6 +12,7 @@ const Payment = ({
   onPaymentError = () => {} 
 }) => {
   const { user } = useAuth();
+  const { t } = useTranslate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
 
@@ -32,7 +26,7 @@ const Payment = ({
 
   const handlePayment = async () => {
     if (!window.Pi) {
-      setError("Pi SDK is not available. Please open this app in the Pi Browser.");
+      setError(t(paymentTranslations.sdkNotAvailable));
       return;
     }
 
@@ -64,21 +58,21 @@ const Payment = ({
               setIsProcessing(false);
               onPaymentSuccess(txid); 
             } catch (err) {
-              setError("Failed to finalize transaction.");
+              setError(t(paymentTranslations.finalizeError));
               setIsProcessing(false);
               onPaymentError(err);
             }
           });
 
         } catch (err) {
-          setError("Server approval failed.");
+          setError(t(paymentTranslations.approvalError));
           setIsProcessing(false);
           onPaymentError(err);
         }
       });
 
     } catch (err) {
-      setError(err.message || "Payment failed to start.");
+      setError(err.message || t(paymentTranslations.startError));
       setIsProcessing(false);
       onPaymentError(err);
     }
@@ -87,7 +81,7 @@ const Payment = ({
   return (
     <div className="payment-container">
       <div className="payment-card">
-        <h2 className="payment-title">Complete Purchase</h2>
+        <h2 className="payment-title">{t(paymentTranslations.completePurchase)}</h2>
         
         {error && (
           <div className="payment-error-box">
@@ -96,8 +90,8 @@ const Payment = ({
         )}
         
         <div className="payment-details-box">
-          <p>Amount: <span className="amount-highlight">1.0 PI</span></p>
-          <p>Product: <span className="product-name">PiDao Premium Item</span></p>
+          <p>{t(paymentTranslations.amount)}: <span className="amount-highlight">1.0 PI</span></p>
+          <p>{t(paymentTranslations.product)}: <span className="product-name">{t(paymentTranslations.premiumItem)}</span></p>
           {transactionId && <p className="tx-id">ID: {transactionId}</p>}
         </div>
 
@@ -109,20 +103,20 @@ const Payment = ({
           {isProcessing ? (
             <>
               <span className="spinner"></span>
-              Processing...
+              {t(paymentTranslations.processing)}
             </>
           ) : (
-            'Pay with Pi'
+            t(paymentTranslations.payWithPi)
           )}
         </button>
 
         <button className="payment-reset-btn" onClick={onReset}>
-          Cancel / Reset
+          {t(paymentTranslations.cancelReset)}
         </button>
 
         {isProcessing && (
           <p className="payment-loader-text">
-            Please do not close the Pi Browser...
+            {t(paymentTranslations.doNotClose)}
           </p>
         )}
       </div>
