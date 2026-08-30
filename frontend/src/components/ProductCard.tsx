@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import './ProductCard.css';
-import { useI18n } from '../i18n/I18nContext';
+import { useTranslate } from '../i18n/useTranslate'; // تغییر به هوک جدید
 
 export interface Product {
   id: string;
@@ -27,18 +27,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onBuy,
   isProcessing,
 }) => {
-  const { lang, t } = useI18n();
+  const { lang, t } = useTranslate(); // استفاده از هوک جدید
 
   const loading = isProcessing === product.id;
 
-  // تابع کمکی برای انتخاب فیلد مناسب بر اساس زبان
+  // این منطق مربوط به دیتای محصول است و نباید تغییر کند
   const getLocalizedField = useCallback((
     field: 'name' | 'description'
   ): string => {
-    const langKey = lang.charAt(0).toUpperCase() + lang.slice(1); // تبدیل 'fa' به 'Fa'
+    const langKey = lang.charAt(0).toUpperCase() + lang.slice(1); 
     const localizedKey = `${field}${langKey}` as keyof Product;
     
-    // بازگشت مقدار بومی‌سازی شده یا مقدار پیش‌فرض
     return (product[localizedKey] as string) || product[field];
   }, [lang, product]);
 
@@ -61,10 +60,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {loading ? (
             <>
               <span className="spinner"></span>
-              <span style={{ marginInlineStart: '8px' }}>{t('processing')}</span>
+              <span style={{ marginInlineStart: '8px' }}>{t('productCard.processing')}</span>
             </>
           ) : (
-            t('buyNow')
+            t('productCard.buyNow')
           )}
         </button>
       </div>
