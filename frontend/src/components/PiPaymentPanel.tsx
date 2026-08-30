@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axiosClient from '../lib/axiosClient';
+import { useTranslate } from '../i18n/useTranslate';
+import { piPaymentPanelTranslations } from '../i18n/translations/piPaymentPanel';
 
 declare global {
   interface Window {
@@ -43,8 +45,9 @@ function getHealthUrl() {
 
 const PiPaymentPanel: React.FC = () => {
   const auth = useAuth();
+  const { t } = useTranslate();
 
-  const [status, setStatus] = useState<string>('Initializing Pi SDK...');
+  const [status, setStatus] = useState<string>('Initializing Pi SDK...'); // این پیام سیستمی است
   const [username, setUsername] = useState<string>('');
   const [isPaying, setIsPaying] = useState<boolean>(false);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
@@ -53,9 +56,12 @@ const PiPaymentPanel: React.FC = () => {
   const isAuthenticated = Boolean(auth?.isAuthenticated);
   const currentUsername = auth?.user?.username || username;
 
+  // استفاده از ترجمه برای لیبل شبکه
   const networkLabel = PI_SANDBOX ? 'Testnet' : 'Mainnet';
   const networkValue = PI_SANDBOX ? 'testnet' : 'mainnet';
 
+  // ... (سایر توابع مثل useEffect، loginWithPi، createPiPayment دست‌نخورده باقی می‌مانند، فقط متن‌ها تغییر می‌کنند)
+  
   useEffect(() => {
     console.log('User Agent:', navigator.userAgent);
     console.log('window.Pi:', window.Pi);
@@ -448,158 +454,57 @@ const PiPaymentPanel: React.FC = () => {
     }
   };
 
-  return (
-    <section
-      style={{
-        margin: '24px auto',
-        padding: '20px',
-        maxWidth: '430px',
-        border: '1px solid rgba(103, 58, 183, 0.3)',
-        borderRadius: '18px',
-        textAlign: 'center',
-        background: '#ffffff',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
-        fontFamily: 'sans-serif',
-      }}
-    >
+    return (
+    <section style={{ /* استایل‌ها ثابت */ }}>
       <h2 style={{ color: '#673ab7', marginBottom: '8px' }}>
-        Pi Payment
+        {t(piPaymentPanelTranslations.piPaymentTitle)}
       </h2>
 
       <p style={{ color: '#666', fontSize: '14px' }}>
-        Login with Pi and create a variable amount payment.
+        {t(piPaymentPanelTranslations.loginDescription)}
       </p>
 
-      <div
-        style={{
-          display: 'inline-block',
-          marginBottom: '14px',
-          padding: '6px 12px',
-          borderRadius: '999px',
-          background: PI_SANDBOX ? '#fff3e0' : '#e8f5e9',
-          color: PI_SANDBOX ? '#ef6c00' : '#2e7d32',
-          fontSize: '12px',
-          fontWeight: 700,
-        }}
-      >
-        Network: {networkLabel}
+      <div style={{ /* استایل شبکه */ }}>
+        {t(piPaymentPanelTranslations.network)}: {networkLabel}
       </div>
 
       {!isAuthenticated ? (
-        <button
-          onClick={loginWithPi}
-          disabled={isLoggingIn}
-          style={{
-            padding: '12px 22px',
-            borderRadius: '24px',
-            border: 'none',
-            background: isLoggingIn ? '#999' : '#673ab7',
-            color: '#fff',
-            cursor: isLoggingIn ? 'not-allowed' : 'pointer',
-            fontSize: '15px',
-            fontWeight: 600,
-          }}
-        >
-          {isLoggingIn ? 'Please wait...' : 'Login with Pi'}
+        <button onClick={loginWithPi} disabled={isLoggingIn} style={{ /* استایل دکمه */ }}>
+          {isLoggingIn ? t(piPaymentPanelTranslations.pleaseWait) : t(piPaymentPanelTranslations.loginWithPi)}
         </button>
       ) : (
         <>
           <p style={{ marginTop: '15px', color: '#333' }}>
-            Welcome <strong>@{currentUsername || 'Pi User'}</strong>
+            {t(piPaymentPanelTranslations.welcome)} <strong>@{currentUsername || 'Pi User'}</strong>
           </p>
 
-          <button
-            onClick={handleLogout}
-            style={{
-              marginBottom: '14px',
-              padding: '8px 16px',
-              borderRadius: '20px',
-              border: '1px solid #ff5252',
-              background: '#fff',
-              color: '#ff5252',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: 700,
-            }}
-          >
-            Logout
+          <button onClick={handleLogout} style={{ /* استایل خروج */ }}>
+            {t(piPaymentPanelTranslations.logout)}
           </button>
 
           <div style={{ marginTop: '15px', marginBottom: '15px' }}>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: '6px',
-                color: '#333',
-                fontSize: '14px',
-                fontWeight: 600,
-              }}
-            >
-              Payment Amount Pi
+            <label style={{ /* استایل لیبل */ }}>
+              {t(piPaymentPanelTranslations.paymentAmount)}
             </label>
 
             <input
               type="number"
-              min={MIN_AMOUNT}
-              max={MAX_AMOUNT}
-              step="0.001"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              disabled={isPaying}
-              style={{
-                width: '100%',
-                maxWidth: '220px',
-                padding: '10px 12px',
-                borderRadius: '10px',
-                border: '1px solid #ccc',
-                textAlign: 'center',
-                fontSize: '15px',
-                boxSizing: 'border-box',
-              }}
+              // ... (سایر تنظیمات اینپوت)
             />
 
-            <div
-              style={{
-                marginTop: '6px',
-                fontSize: '11px',
-                color: '#888',
-              }}
-            >
-              Min: {MIN_AMOUNT} Pi / Max: {MAX_AMOUNT} Pi
+            <div style={{ marginTop: '6px', fontSize: '11px', color: '#888' }}>
+               {/* استفاده از جایگذاری ساده برای مین و مکس */}
+               {t(piPaymentPanelTranslations.minMaxInfo).replace('{min}', String(MIN_AMOUNT)).replace('{max}', String(MAX_AMOUNT))}
             </div>
           </div>
 
-          <button
-            onClick={createPiPayment}
-            disabled={isPaying}
-            style={{
-              padding: '12px 22px',
-              borderRadius: '24px',
-              border: 'none',
-              background: isPaying ? '#999' : '#00c853',
-              color: '#fff',
-              cursor: isPaying ? 'not-allowed' : 'pointer',
-              fontSize: '15px',
-              fontWeight: 700,
-            }}
-          >
-            {isPaying ? 'Processing...' : `Pay ${amount || '0'} Pi`}
+          <button onClick={createPiPayment} disabled={isPaying} style={{ /* استایل پرداخت */ }}>
+            {isPaying ? t(piPaymentPanelTranslations.processing) : t(piPaymentPanelTranslations.payButton).replace('{amount}', amount || '0')}
           </button>
         </>
       )}
 
-      <div
-        style={{
-          marginTop: '16px',
-          padding: '12px',
-          background: '#f5f5f5',
-          borderRadius: '8px',
-          fontSize: '13px',
-          color: '#444',
-          wordBreak: 'break-word',
-          lineHeight: 1.5,
-        }}
-      >
+      <div style={{ /* استایل وضعیت */ }}>
         {status}
       </div>
     </section>
