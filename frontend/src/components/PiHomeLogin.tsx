@@ -1,7 +1,7 @@
-// frontend/src/components/PiHomeLogin.tsx
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useI18n } from '../i18n/I18nContext';
+import { useTranslate } from '../i18n/useTranslate'; // تغییر از useI18n به useTranslate
+import { piHomeLoginTranslations } from '../i18n/translations/piHomeLogin';
 
 declare global {
   interface Window {
@@ -15,35 +15,26 @@ const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
   if (value === undefined || value === null || value === '') {
     return defaultValue;
   }
-
   return String(value).trim().toLowerCase() === 'true';
 };
 
-/**
- * Mainnet by default.
- * برای Sandbox/Testnet در env بگذار:
- * VITE_PI_SANDBOX=true
- */
 const PI_SANDBOX = parseBooleanEnv(import.meta.env.VITE_PI_SANDBOX, false);
 
 const PiHomeLogin: React.FC = () => {
   const auth = useAuth();
-  const { t } = useI18n();
+  const { t } = useTranslate(); // استفاده از هوک جدید
 
-  const [status, setStatus] = useState<string>(t('initializingPiSdk'));
+  const [status, setStatus] = useState<string>(t(piHomeLoginTranslations.initializingPiSdk));
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const networkLabel = PI_SANDBOX ? t('testnet') : t('mainnet');
+  // تعیین لیبل شبکه بر اساس ترجمه
+  const networkLabel = PI_SANDBOX 
+    ? t(piHomeLoginTranslations.testnet) 
+    : t(piHomeLoginTranslations.mainnet);
 
   useEffect(() => {
-    console.log('PiHomeLogin User Agent:', navigator.userAgent);
-    console.log('PiHomeLogin window.Pi:', window.Pi);
-    console.log('PiHomeLogin Current URL:', window.location.href);
-    console.log('PiHomeLogin Current Origin:', window.location.origin);
-    console.log('PiHomeLogin PI_SANDBOX:', PI_SANDBOX);
-
     if (!window.Pi) {
-      setStatus(t('piSdkNotFound'));
+      setStatus(t(piHomeLoginTranslations.piSdkNotFound));
       return;
     }
 
@@ -56,18 +47,9 @@ const PiHomeLogin: React.FC = () => {
 
         window.__PI_SDK_INITIALIZED__ = true;
         window.__PI_SDK_SANDBOX__ = PI_SANDBOX;
-
-        console.log('Pi SDK initialized from PiHomeLogin.', {
-          sandbox: PI_SANDBOX,
-        });
-      } else if (window.__PI_SDK_SANDBOX__ !== PI_SANDBOX) {
-        console.warn('Pi SDK already initialized with a different sandbox value.', {
-          initializedSandbox: window.__PI_SDK_SANDBOX__,
-          currentSandbox: PI_SANDBOX,
-        });
       }
 
-      setStatus(`${t('piSdkReady')} ${t('network')}: ${networkLabel}`);
+      setStatus(`${t(piHomeLoginTranslations.piSdkReady)} ${t(piHomeLoginTranslations.network)}: ${networkLabel}`);
     } catch (error: any) {
       console.error('Pi SDK init error:', error);
       setStatus('Pi SDK error: ' + (error?.message || String(error)));
@@ -75,36 +57,33 @@ const PiHomeLogin: React.FC = () => {
   }, [t, networkLabel]);
 
   const onIncompletePaymentFound = (payment: any) => {
-    console.log('Incomplete payment found:', payment);
-    setStatus(t('incompletePaymentFound'));
+    setStatus(t(piHomeLoginTranslations.incompletePaymentFound));
   };
 
   const handleLogin = async () => {
     if (!auth) {
-      setStatus(t('authContextMissing'));
+      setStatus(t(piHomeLoginTranslations.authContextMissing));
       return;
     }
 
     if (!window.Pi) {
-      setStatus(t('piSdkNotFound'));
+      setStatus(t(piHomeLoginTranslations.piSdkNotFound));
       return;
     }
 
     if (typeof window.Pi.authenticate !== 'function') {
-      setStatus('Pi authenticate function is not available.');
+      setStatus(t(piHomeLoginTranslations.piAuthenticateError));
       return;
     }
 
     try {
       setIsLoading(true);
-      setStatus(t('authenticating'));
+      setStatus(t(piHomeLoginTranslations.authenticating));
 
       const authResult = await window.Pi.authenticate(
         ['username', 'payments'],
         onIncompletePaymentFound
       );
-
-      console.log('Pi authentication result:', authResult);
 
       const piUserId =
         authResult?.user?.uid ||
@@ -129,18 +108,11 @@ const PiHomeLogin: React.FC = () => {
 
       await auth.login(String(piUserId), String(username), accessToken);
 
-      setStatus(`${t('loginSuccess')} @${username}`);
+      setStatus(`${t(piHomeLoginTranslations.loginSuccess)} @${username}`);
     } catch (error: any) {
       console.error('Pi login error:', error);
-
-      setStatus(
-        `${t('loginFailed')} ` +
-          (
-            error?.response?.data?.message ||
-            error?.message ||
-            'Authentication failed'
-          )
-      );
+      const errorMessage = error?.response?.data?.message || error?.message || 'Authentication failed';
+      setStatus(`${t(piHomeLoginTranslations.loginFailed)} ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -148,7 +120,7 @@ const PiHomeLogin: React.FC = () => {
 
   const handleLogout = () => {
     auth?.logout();
-    setStatus(`${t('piSdkReady')} ${t('network')}: ${networkLabel}`);
+    setStatus(`${t(piHomeLoginTranslations.piSdkReady)} ${t(piHomeLoginTranslations.network)}: ${networkLabel}`);
   };
 
   const isAuthenticated = auth?.isAuthenticated;
@@ -169,11 +141,11 @@ const PiHomeLogin: React.FC = () => {
       }}
     >
       <h2 style={{ color: '#673ab7', marginBottom: '8px' }}>
-        {t('piLoginTitle')}
+        {t(piHomeLoginTranslations.piLoginTitle)}
       </h2>
 
       <p style={{ color: '#666', fontSize: '14px', lineHeight: 1.7 }}>
-        {t('piLoginDescription')}
+        {t(piHomeLoginTranslations.piLoginDescription)}
       </p>
 
       <div
@@ -188,7 +160,7 @@ const PiHomeLogin: React.FC = () => {
           fontWeight: 700,
         }}
       >
-        {t('network')}: {networkLabel}
+        {t(piHomeLoginTranslations.network)}: {networkLabel}
       </div>
 
       {!isAuthenticated ? (
@@ -208,12 +180,12 @@ const PiHomeLogin: React.FC = () => {
             fontWeight: 700,
           }}
         >
-          {isLoading ? t('pleaseWait') : t('loginWithPi')}
+          {isLoading ? t(piHomeLoginTranslations.pleaseWait) : t(piHomeLoginTranslations.loginWithPi)}
         </button>
       ) : (
         <>
           <p style={{ color: '#333', marginTop: '10px' }}>
-            {t('welcome')},{' '}
+            {t(piHomeLoginTranslations.welcome)},{' '}
             <strong>@{user?.username || 'Pi User'}</strong>
           </p>
 
@@ -230,7 +202,7 @@ const PiHomeLogin: React.FC = () => {
               fontWeight: 600,
             }}
           >
-            {t('logout')}
+            {t(piHomeLoginTranslations.logout)}
           </button>
         </>
       )}
