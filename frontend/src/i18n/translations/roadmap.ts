@@ -1,12 +1,5 @@
 // src/i18n/translations/roadmap.ts
-
-export interface LocalizedString {
-  en: string;
-  fa: string;
-  ar: string;
-  tr: string;
-  zh: string;
-}
+import { LocalizedString } from '../types';
 
 export interface RoadmapStep {
   number: string;
@@ -15,7 +8,14 @@ export interface RoadmapStep {
   description: LocalizedString;
 }
 
-export const roadmapTranslations = {
+export const roadmapTranslations: {
+  header: {
+    title: LocalizedString;
+    intro: LocalizedString;
+    kicker: LocalizedString;
+  };
+  steps: RoadmapStep[];
+} = {
   header: {
     title: {
       en: "Project Roadmap",
