@@ -1,11 +1,14 @@
+// frontend/src/components/Footer.tsx
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Footer.css';
-import { useTranslate } from '../../i18n/useTranslate';
-import { footerTranslations } from '../../i18n/translations/footer';
+// اصلاح Import: استفاده از I18nContext به جای useTranslate
+import { useI18n } from '../i18n/I18nContext'; 
+import { footerTranslations } from '../i18n/translations/footer';
 
 const Footer: React.FC = () => {
-  const { t } = useTranslate();
+  // اصلاح هوک: استفاده از useI18n
+  const { t } = useI18n(); 
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -29,6 +32,7 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="footer">
+      {/* ... بقیه محتوا دقیقاً مثل قبل باقی می‌ماند ... */}
       <div className="footer-inner">
         <div className="footer-brand">
           <Link to="/" className="footer-logo">
