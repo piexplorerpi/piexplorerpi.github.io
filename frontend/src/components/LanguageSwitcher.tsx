@@ -1,5 +1,7 @@
+// frontend/src/components/LanguageSwitcher.tsx
 import React from 'react';
 import { Language, useI18n } from '../i18n/I18nContext';
+import { languageSwitcherTranslations } from '../i18n/translations/languageSwitcher';
 
 const LanguageSwitcher: React.FC = () => {
   const {
@@ -10,7 +12,6 @@ const LanguageSwitcher: React.FC = () => {
     languageLabels,
   } = useI18n();
 
-  // اطمینان از جهت‌دهی صحیح بر اساس زبان انتخاب شده
   const isRtl = lang === 'fa' || lang === 'ar';
 
   return (
@@ -33,14 +34,15 @@ const LanguageSwitcher: React.FC = () => {
           fontWeight: 600,
         }}
       >
-        {t('language')}:
+        {t(languageSwitcherTranslations.label)}:
       </label>
 
       <select
         id="language-switcher"
         value={lang}
         onChange={(e) => setLang(e.target.value as Language)}
-        aria-label={t('language')}
+        // استفاده از شیء ترجمه برای aria-label جهت Type-safety
+        aria-label={t(languageSwitcherTranslations.label)}
         style={{
           padding: '8px 12px',
           borderRadius: '10px',
