@@ -1,7 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+// frontend/src/components/SignIn.tsx
+
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../i18n/I18nContext';
+import { signInTranslations } from '../i18n/translations/signin';
 
 // افزایش تایپ‌های Window برای جلوگیری از خطاهای TypeScript
 declare global {
@@ -24,15 +27,23 @@ const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useI18n();
 
-  const [status, setStatus] = useState<string>(t('initializingPiSdk'));
+  // زبان شبکه را در یک متغیر مِموشده قرار می‌دهیم
+  const networkLabel = useMemo(() => {
+    return PI_SANDBOX ? t(signInTranslations.testnet) : t(signInTranslations.mainnet);
+  }, [t]);
+
+  const [status, setStatus] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const networkLabel = PI_SANDBOX ? t('testnet') : t('mainnet');
+  // مقداردهی وضعیت اولیه بر اساس زبان جاری
+  useEffect(() => {
+    setStatus(t(signInTranslations.initializingPiSdk));
+  }, [t]);
 
   // مقداردهی اولیه SDK در یک چرخه امن
   useEffect(() => {
     if (!window.Pi) {
-      setStatus(t('piSdkNotFound'));
+      setStatus(t(signInTranslations.piSdkNotFound));
       return;
     }
 
@@ -45,7 +56,7 @@ const SignIn: React.FC = () => {
         window.__PI_SDK_INITIALIZED__ = true;
         window.__PI_SDK_SANDBOX__ = PI_SANDBOX;
       }
-      setStatus(`${t('piSdkReady')} ${t('network')}: ${networkLabel}`);
+      setStatus(`${t(signInTranslations.piSdkReady)} ${t(signInTranslations.network)}: ${networkLabel}`);
     } catch (error: any) {
       setStatus(`Pi SDK init error: ${error?.message || String(error)}`);
     }
@@ -53,22 +64,22 @@ const SignIn: React.FC = () => {
 
   const handlePiLogin = useCallback(async () => {
     if (!auth) {
-      setStatus(t('authContextMissing'));
+      setStatus(t(signInTranslations.authContextMissing));
       return;
     }
 
     if (!window.Pi || typeof window.Pi.authenticate !== 'function') {
-      setStatus(t('piSdkNotFound'));
+      setStatus(t(signInTranslations.piSdkNotFound));
       return;
     }
 
     try {
       setIsLoading(true);
-      setStatus(t('authenticating'));
+      setStatus(t(signInTranslations.authenticating));
 
       const authResult = await window.Pi.authenticate(['username', 'payments'], (payment: any) => {
         console.log('Incomplete payment found:', payment);
-        setStatus(t('incompletePaymentFound'));
+        setStatus(t(signInTranslations.incompletePaymentFound));
       });
 
       const user = authResult?.user || {};
@@ -82,12 +93,12 @@ const SignIn: React.FC = () => {
 
       await auth.login(String(piUserId), String(username), accessToken);
 
-      setStatus(`${t('loginSuccess')} ${t('redirecting')}`);
+      setStatus(`${t(signInTranslations.loginSuccess)} ${t(signInTranslations.redirecting)}`);
       navigate('/', { replace: true });
     } catch (error: any) {
       console.error('Pi login error:', error);
       setStatus(
-        `${t('loginFailed')} ${error?.response?.data?.message || error?.message || 'User cancelled or authentication failed'}`
+        `${t(signInTranslations.loginFailed)} ${error?.response?.data?.message || error?.message || 'User cancelled or authentication failed'}`
       );
     } finally {
       setIsLoading(false);
@@ -97,11 +108,11 @@ const SignIn: React.FC = () => {
   return (
     <div style={styles.pageContainer}>
       <div style={styles.card}>
-        <h1 style={styles.title}>{t('signInTitle')}</h1>
-        <p style={styles.description}>{t('signInDescription')}</p>
+        <h1 style={styles.title}>{t(signInTranslations.signInTitle)}</h1>
+        <p style={styles.description}>{t(signInTranslations.signInDescription)}</p>
 
         <div style={{ ...styles.badge, background: PI_SANDBOX ? '#fff3e0' : '#e8f5e9', color: PI_SANDBOX ? '#ef6c00' : '#2e7d32' }}>
-          {t('network')}: {networkLabel}
+          {t(signInTranslations.network)}: {networkLabel}
         </div>
 
         <button
@@ -109,12 +120,12 @@ const SignIn: React.FC = () => {
           disabled={isLoading}
           style={{ ...styles.button, background: isLoading ? '#999' : '#673ab7' }}
         >
-          {isLoading ? t('pleaseWait') : t('loginWithPi')}
+          {isLoading ? t(signInTranslations.pleaseWait) : t(signInTranslations.loginWithPi)}
         </button>
 
         <div style={styles.statusBox}>{status}</div>
 
-        <p style={styles.footerText}>{t('pleaseUsePiBrowser')}</p>
+        <p style={styles.footerText}>{t(signInTranslations.pleaseUsePiBrowser)}</p>
       </div>
     </div>
   );
