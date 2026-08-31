@@ -1,102 +1,97 @@
-/**
 // src/i18n/translations/roadmap.ts
 
-export const roadmap = {
+export interface LocalizedString {
+  en: string;
+  fa: string;
+  ar: string;
+  tr: string;
+  zh: string;
+}
+
+export interface RoadmapStep {
+  number: string;
+  icon: string;
+  title: LocalizedString;
+  description: LocalizedString;
+}
+
+export const roadmapTranslations = {
   header: {
     title: {
-      en: "Development Roadmap",
-      fa: "نقشه راه توسعه",
-      ar: "خارطة طريق التطوير",
-      tr: "Geliştirme Yol Haritası",
-      zh: "开发路线图"
+      en: "Project Roadmap",
+      fa: "نقشه راه پروژه",
+      ar: "خارطة طريق المشروع",
+      tr: "Proje Yol Haritası",
+      zh: "项目路线图"
     },
     intro: {
-      en: "Our journey towards a decentralized Pi ecosystem explorer.",
-      fa: "مسیر ما به سوی یک اکسپلورر غیرمتمرکز در اکوسیستم Pi.",
-      ar: "رحلتنا نحو مستكشف لامركزي لنظام Pi البيئي.",
-      tr: "Merkeziyetsiz Pi ekosistemi gezginine doğru yolculuğumuz.",
-      zh: "我们迈向去中心化 Pi 生态系统浏览器的旅程。"
+      en: "Our journey toward building a decentralized ecosystem.",
+      fa: "مسیر ما برای ساخت یک اکوسیستم غیرمتمرکز.",
+      ar: "رحلتنا نحو بناء نظام بيئي لامركزي.",
+      tr: "Merkeziyetsiz bir ekosistem oluşturma yolculuğumuz.",
+      zh: "我们迈向构建去中心化生态系统的旅程。"
     },
     kicker: {
-      en: "Pi Explorer",
-      fa: "پای اکسپلورر",
-      ar: "مستكشف باي",
-      tr: "Pi Explorer",
-      zh: "Pi Explorer"
+      en: "Future Goals",
+      fa: "اهداف آینده",
+      ar: "الأهداف المستقبلية",
+      tr: "Gelecek Hedefleri",
+      zh: "未来目标"
     }
   },
-
   steps: [
     {
       number: "01",
-      icon: "🌱",
+      icon: "🚀",
       title: {
-        en: "Phase 1: Foundation",
-        fa: "فاز ۱: زیرساخت",
-        ar: "المرحلة 1: التأسيس",
-        tr: "Aşama 1: Temel",
-        zh: "第一阶段：基础建设"
+        en: "Launch Phase",
+        fa: "فاز راه‌اندازی",
+        ar: "مرحلة الإطلاق",
+        tr: "Başlatma Aşaması",
+        zh: "启动阶段"
       },
       description: {
-        en: "Core Architecture (Vite, TS, Tailwind), Supabase Schema, and Pi SDK Integration.",
-        fa: "راه‌اندازی معماری اصلی، طراحی دیتابیس Supabase و ادغام Pi SDK.",
-        ar: "البنية التحتية الأساسية، تصميم مخطط Supabase، وتكامل Pi SDK.",
-        tr: "Temel Mimari (Vite, TS, Tailwind), Supabase Şeması ve Pi SDK Entegrasyonu.",
-        zh: "核心架构 (Vite, TS, Tailwind), Supabase Schema 和 Pi SDK 集成。"
+        en: "Establishing the core infrastructure and initial network nodes.",
+        fa: "ایجاد زیرساخت‌های اصلی و گره‌های اولیه شبکه.",
+        ar: "تأسيس البنية التحتية الأساسية وعقد الشبكة الأولية.",
+        tr: "Temel altyapının ve ilk ağ düğümlerinin kurulması.",
+        zh: "建立核心基础设施和初始网络节点。"
       }
     },
     {
       number: "02",
-      icon: "🗳️",
+      icon: "🌐",
       title: {
-        en: "Phase 2: Community Engagement",
-        fa: "فاز ۲: تعامل با جامعه",
-        ar: "المرحلة 2: مشاركة المجتمع",
-        tr: "Aşama 2: Topluluk Katılımı",
-        zh: "第二阶段：社区参与"
+        en: "Ecosystem Growth",
+        fa: "رشد اکوسیستم",
+        ar: "نمو النظام البيئي",
+        tr: "Ekosistem Büyümesi",
+        zh: "生态系统增长"
       },
       description: {
-        en: "Advanced Voting, User Profiles, i18n Integration, and dApp Search Engine.",
-        fa: "الگوریتم‌های رای‌گیری، پروفایل کاربری، پشتیبانی از چندزبانی و موتور جستجو.",
-        ar: "التصويت المتقدم، ملفات تعريف المستخدم، تكامل i18n، ومحرك البحث عن dApps.",
-        tr: "Gelişmiş Oylama, Kullanıcı Profilleri, i18n Entegrasyonu ve dApp Arama Motoru.",
-        zh: "高级投票、用户资料、多语言 (i18n) 集成以及 dApp 搜索引擎。"
+        en: "Integrating new dApps and expanding cross-chain capabilities.",
+        fa: "ادغام دی‌اپ‌های جدید و گسترش قابلیت‌های میان‌زنجیره‌ای.",
+        ar: "دمج تطبيقات لامركزية جديدة وتوسيع قدرات الربط بين السلاسل.",
+        tr: "Yeni dApp'lerin entegrasyonu ve zincirler arası yeteneklerin genişletilmesi.",
+        zh: "集成新的去中心化应用并扩展跨链功能。"
       }
     },
     {
       number: "03",
-      icon: "📊",
+      icon: "🏆",
       title: {
-        en: "Phase 3: Advanced Analytics",
-        fa: "فاز ۳: تحلیل‌های پیشرفته",
-        ar: "المرحلة 3: التحليلات المتقدمة",
-        tr: "Aşama 3: Gelişmiş Analitik",
-        zh: "第三阶段：高级分析"
+        en: "Global Adoption",
+        fa: "پذیرش جهانی",
+        ar: "التبني العالمي",
+        tr: "Küresel Benimseme",
+        zh: "全球采用"
       },
       description: {
-        en: "Tokenomics Dashboard, Real-time Blockchain Explorer, and DePIN Node Tracking.",
-        fa: "داشبورد توکنومیک، اکسپلورر لحظه‌ای بلاک‌چین و ردیابی نودهای DePIN.",
-        ar: "لوحة تحكم اقتصاد الرموز، مستكشف البلوكشين في الوقت الفعلي، وتتبع عقد DePIN.",
-        tr: "Tokenomics Paneli, Gerçek Zamanlı Blockchain Gezgini ve DePIN Düğüm Takibi.",
-        zh: "代币经济仪表板、实时区块链浏览器和 DePIN 节点追踪。"
-      }
-    },
-    {
-      number: "04",
-      icon: "🌐",
-      title: {
-        en: "Phase 4: Decentralization",
-        fa: "فاز ۴: تمرکززدایی و گسترش",
-        ar: "المرحلة 4: اللامركزية والتوسع",
-        tr: "Aşama 4: Merkeziyetsizlik ve Genişleme",
-        zh: "第四阶段：去中心化与扩张"
-      },
-      description: {
-        en: "Full DAO Governance, Cross-chain Research (QRL), and PWA Mobile App.",
-        fa: "حاکمیت کامل DAO، تحقیق بر روی زنجیره‌های دیگر (QRL) و نسخه موبایل (PWA).",
-        ar: "حكم DAO الكامل، أبحاث عبر السلاسل (QRL)، وتطبيق موبایل (PWA).",
-        tr: "Tam DAO Yönetişimi, Zincirler Arası Araştırma (QRL) ve PWA Mobil Uygulaması.",
-        zh: "完全 DAO 治理、跨链研究 (QRL) 和 PWA 优化移动应用。"
+        en: "Full decentralization and mass community integration.",
+        fa: "غیرمتمرکزسازی کامل و ادغام گسترده جامعه.",
+        ar: "اللامركزية الكاملة وتكامل المجتمع الجماعي.",
+        tr: "Tam merkeziyetsizlik ve topluluk entegrasyonu.",
+        zh: "完全去中心化和大规模社区整合。"
       }
     }
   ]
