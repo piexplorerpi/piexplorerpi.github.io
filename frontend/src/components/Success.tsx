@@ -1,9 +1,15 @@
-// frontend/src/components/Success.jsx
+// src/components/Success.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nContext';
+import { successTranslations } from '../i18n/translations/success';
 
-const Success = ({ transactionId, onReset }) => {
+interface SuccessProps {
+  transactionId?: string;
+  onReset?: () => void;
+}
+
+const Success: React.FC<SuccessProps> = ({ transactionId, onReset }) => {
   const navigate = useNavigate();
   const { t, lang } = useI18n();
 
@@ -12,16 +18,15 @@ const Success = ({ transactionId, onReset }) => {
       onReset();
       return;
     }
-
     navigate('/', { replace: true });
   };
 
   const styles = {
     container: {
-      textAlign: 'center',
+      textAlign: 'center' as const,
       padding: '50px 20px',
       fontFamily: 'Tahoma, sans-serif',
-      direction: lang === 'fa' ? 'rtl' : 'ltr',
+      direction: lang === 'fa' || lang === 'ar' ? 'rtl' : 'ltr',
       minHeight: '100vh',
       background: '#f5f7fb',
       display: 'flex',
@@ -56,7 +61,7 @@ const Success = ({ transactionId, onReset }) => {
     txId: {
       fontSize: '14px',
       color: '#999',
-      wordBreak: 'break-all',
+      wordBreak: 'break-all' as const,
       backgroundColor: '#f8f9fa',
       padding: '12px',
       borderRadius: '8px',
@@ -82,24 +87,24 @@ const Success = ({ transactionId, onReset }) => {
         <div style={styles.icon}>✅</div>
 
         <h2 style={styles.title}>
-          {t('paymentSuccessful')}
+          {t(successTranslations.paymentSuccessful)}
         </h2>
 
         <p style={styles.text}>
-          {t('transactionRegistered')}
+          {t(successTranslations.transactionRegistered)}
         </p>
 
         <div style={styles.txId}>
-          <strong>{t('transactionIdentifier')}:</strong>
+          <strong>{t(successTranslations.transactionIdentifier)}:</strong>
           <br />
-          {transactionId || t('processing')}
+          {transactionId || t(successTranslations.processing)}
         </div>
 
         <button
           style={styles.button}
           onClick={handleBackHome}
         >
-          {t('backToHome')}
+          {t(successTranslations.backToHome)}
         </button>
       </div>
     </div>
