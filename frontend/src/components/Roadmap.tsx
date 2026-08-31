@@ -1,43 +1,38 @@
+// src/components/Roadmap.tsx
 import React from 'react';
 import './Roadmap.css';
-import { useTranslate } from '../i18n/useTranslate'; // مهاجرت به هوک جدید
-
-// تعریف اینترفیس برای داده‌های استاتیک (نقشه راه معمولاً دیتا است، نه متن ترجمه شده)
-interface RoadmapStep {
-  number: string;
-  icon: string;
-  translationKey: string; // کلید مربوط به فایل ترجمه
-}
-
-const ROADMAP_STEPS: RoadmapStep[] = [
-  { number: '01', icon: '🚀', translationKey: 'step1' },
-  { number: '02', icon: '🌐', translationKey: 'step2' },
-  { number: '03', icon: '🏆', translationKey: 'step3' },
-];
+import { useTranslate } from '../i18n/useTranslate';
+// ایمپورت کردن شیء نقشه راه که در مرحله قبل ساختیم
+import { roadmapTranslations } from '../i18n/translations/roadmap'; 
 
 const Roadmap: React.FC = () => {
-  const { t } = useTranslate(); // استفاده از هوک جدید
+  const { t } = useTranslate(); 
+
+  // استفاده مستقیم از داده‌های ساختاریافته در فایل TS
+  const { header, steps } = roadmapTranslations;
 
   return (
     <section id="roadmap" className="roadmap-section">
       <div className="container">
         <div className="roadmap-heading">
-          <span className="roadmap-kicker">{t('roadmap.kicker')}</span>
-          <h2 className="roadmap-title">{t('roadmap.title')}</h2>
-          <p className="roadmap-intro">{t('roadmap.intro')}</p>
+          {/* پاس دادن مستقیم شیء ترجمه به هوک t */}
+          <span className="roadmap-kicker">{t(header.kicker)}</span>
+          <h2 className="roadmap-title">{t(header.title)}</h2>
+          <p className="roadmap-intro">{t(header.intro)}</p>
         </div>
 
         <div className="roadmap-timeline">
-          {ROADMAP_STEPS.map((step, index) => (
+          {steps.map((step, index) => (
             <div key={index} className="roadmap-card">
               <div className="roadmap-number">{step.number}</div>
               <div className="roadmap-icon">{step.icon}</div>
-              {/* استفاده از کلید داینامیک برای دسترسی به عنوان و توضیحات هر مرحله */}
+              
+              {/* پاس دادن شیء ترجمه عنوان و توضیحات به هوک t */}
               <h3 className="roadmap-step-title">
-                {t(`roadmap.steps.${step.translationKey}.title`)}
+                {t(step.title)}
               </h3>
               <p className="roadmap-step-desc">
-                {t(`roadmap.steps.${step.translationKey}.description`)}
+                {t(step.description)}
               </p>
             </div>
           ))}
