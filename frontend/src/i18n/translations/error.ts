@@ -1,25 +1,26 @@
+// src/i18n/translations/error.ts
 import { LocalizedString } from '../types';
 
 export const errorTranslations = {
   title: {
-    en: "Oops! Something went wrong.",
-    fa: "اوه! مشکلی پیش آمده.",
-    ar: "عذراً! حدث خطأ ما.",
-    tr: "Hay aksi! Bir şeyler ters gitti.",
-    zh: "哎呀！出错了。"
-  } as LocalizedString,
+    en: "Oops! Something went wrong",
+    fa: "اوه! مشکلی پیش آمد",
+    ar: "عذراً! حدث خطأ ما",
+    tr: "Hay aksi! Bir şeyler ters gitti",
+    zh: "糟糕！出错了"
+  },
   message: {
-    en: "The application encountered an unexpected error. Please try refreshing the page.",
-    fa: "برنامه با خطای غیرمنتظره‌ای مواجه شد. لطفاً صفحه را رفرش کنید.",
-    ar: "واجه التطبيق خطأ غير متوقع. يرجى محاولة تحديث الصفحة.",
-    tr: "Uygulama beklenmedik bir hatayla karşılaştı. Lütfen sayfayı yenilemeyi deneyin.",
-    zh: "应用程序遇到意外错误。请尝试刷新页面。"
-  } as LocalizedString,
+    en: "An unexpected error occurred while loading content.",
+    fa: "یک خطای غیرمنتظره هنگام بارگذاری محتوا رخ داد.",
+    ar: "حدث خطأ غير متوقع أثناء تحميل المحتوى.",
+    tr: "İçerik yüklenirken beklenmedik bir hata oluştu.",
+    zh: "加载内容时发生了意外错误。"
+  },
   reload: {
     en: "Reload Page",
-    fa: "بارگذاری مجدد",
+    fa: "بارگذاری مجدد صفحه",
     ar: "إعادة تحميل الصفحة",
     tr: "Sayfayı Yenile",
-    zh: "重新加载"
-  } as LocalizedString
+    zh: "刷新页面"
+  }
 };
