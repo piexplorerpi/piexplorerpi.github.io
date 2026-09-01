@@ -1,6 +1,46 @@
 // backend/server.js
 const path = require('path');
 const express = require('express');
+const path = require('path');
+const app = express();
+
+// ... (سایر تنظیمات CORS و Middlewareها) ...
+
+// ۱. این خط را اضافه کنید تا فایل‌های استاتیک سرو شوند
+app.use(express.static(path.join(__dirname, 'build')));
+
+// ۲. اصلاح Middleware برای جلوگیری از بلاک کردن فایل‌های استاتیک
+function requirePiBrowserForGithubDomain(req, res, next) {
+  if (req.method === 'OPTIONS') return next();
+
+  // اگر فایل استاتیک است (css, js, png, ...)، بلاک نکن!
+  const isStaticFile = /\.(js|css|json|png|jpg|jpeg|svg|ico)$/i.test(req.path);
+  const isApi = req.path.startsWith('/api');
+
+  if (isStaticFile || isApi) {
+    return next();
+  }
+
+  // اگر صفحه اصلی یا مسیرهای SPA است، بررسی کن
+  if (!isFromRequiredGithubDomain(req)) return next();
+  if (isPiBrowserRequest(req)) return next();
+
+  return sendPiBrowserGuide(req, res);
+}
+
+// اضافه کردن Middleware به مسیرها
+app.use(requirePiBrowserForGithubDomain);
+
+// ۳. مسیر Catch-all (بسیار مهم برای React Router)
+// هر درخواستی که API نیست و فایل استاتیک نیست را به index.html هدایت کن
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log('Server running...');
+});
+
 const cors = require('cors');
 const dotenv = require('dotenv');
 const helmet = require('helmet');
@@ -24,7 +64,7 @@ app.set('trust proxy', 1);
 // Pi Browser Guard Config
 // -------------------------
 
-const REQUIRED_PI_BROWSER_DOMAIN = 'https://piexplorerpi.github.io';
+const REQUIRED_PI_BROWSER_DOMAIN = 'piexplorerpi.github.io'; // https:// حذف شد
 const REQUIRED_PI_BROWSER_APP_URL = `https://${REQUIRED_PI_BROWSER_DOMAIN}`;
 
 const PI_BROWSER_DEEP_LINK = `pi://browser?url=${encodeURIComponent(
