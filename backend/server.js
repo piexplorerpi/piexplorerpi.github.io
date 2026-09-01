@@ -2,60 +2,63 @@
 const path = require('path');
 const express = require('express');
 const path = require('path');
+const express = require('express');
+const path = require('path');
+
 const app = express();
 
-// ... سایر میدل‌ورهای CORS، dotenv و ...
+// ۱. تنظیم مسیر دقیق پوشه dist فرانت‌اند
+// اگر server.js و پوشه dist کنار هم هستند از path.join(__dirname, 'dist') استفاده کنید
+// اگر server.js داخل یک پوشه مثل backend است، مسیر '../dist' را جایگزین کنید
+const DIST_PATH = path.resolve(__dirname, 'dist'); 
 
-// 🔴 بسیار مهم: ساخت آدرس دقیق به پوشه dist (یک پوشه عقب‌تر یا ریشه)
-// اگر server.js داخل پوشه backend است، از '../dist' استفاده می‌شود.
-// اگر dist دقیقا کنار server.js است، path.join(__dirname, 'dist') بگذارید.
-const DIST_PATH = path.resolve(__dirname, '../dist'); // یا path.join(__dirname, 'dist')
+console.log(`[INFO] Serving static files from: ${DIST_PATH}`);
 
-console.log('Serving static files from:', DIST_PATH); // برای اطمینان در کنسول لاگ می‌شود
-
-// ۱. سرو فایل‌های استاتیک
-app.use(express.static(DIST_PATH));
-
-// ۲. میدل‌ور بررسی Pi Browser و استثنا کردن API و فایل‌های استاتیک
-function requirePiBrowserForGithubDomain(req, res, next) {
+// ۲. میدل‌ور برای اجازه دادن به فایل‌های استاتیک و مسیرهای API
+app.use((req, res, next) => {
+  // عبور درخواست‌های OPTIONS (CORS)
   if (req.method === 'OPTIONS') return next();
 
-  // فایل استاتیک یا مسیر API را بلاک نکن
-  const isStaticFile = /\.(js|css|json|png|jpg|jpeg|svg|ico|map|woff2?)$/i.test(req.path);
+  // آیا درخواست برای یک فایل استاتیک است؟ (CSS, JS, PNG, ...)
+  const isStaticFile = /\.(js|css|json|png|jpg|jpeg|svg|ico|map|woff2?|ttf|eot)$/i.test(req.path);
+  
+  // آیا درخواست به مسیرهای API است؟
   const isApi = req.path.startsWith('/api');
 
+  // اگر فایل استاتیک یا API بود، بدون بلاک شدن اجازه عبور بده
   if (isStaticFile || isApi) {
     return next();
   }
 
-  // بررسی شرط Pi Browser (منطق خودتان)
-  // if (!isFromRequiredGithubDomain(req)) return next();
-  // if (isPiBrowserRequest(req)) return next();
+  // در غیر این صورت ادامه مسیر (بررسی میدل‌ورهای دیگر)
+  next();
+});
 
-  return next(); // در صورت لزوم هدایت به راهنما
-}
+// ۳. سرو فایل‌های استاتیک از پوشه dist
+app.use(express.static(DIST_PATH));
 
-app.use(requirePiBrowserForGithubDomain);
+// ۴. تعریف مسیرهای API شما (نمونه)
+// app.use('/api', apiRouter);
 
-// ۳. مسیر Catch-all برای React Router / SPA
+// ۵. مسیر Catch-All برای پشتیبانی از SPA (React Router)
 app.get('*', (req, res) => {
-  // اگر درخواست API است ولی پیدا نشده، 404 بده
+  // اگر متدی به API آمد که وجود نداشت، 404 بدهد
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'API route not found' });
   }
 
-  const indexPath = path.join(DIST_PATH, 'index.html');
-  res.sendFile(indexPath, (err) => {
+  // تمام درخواست‌های دیگر به index.html هدایت شوند
+  res.sendFile(path.join(DIST_PATH, 'index.html'), (err) => {
     if (err) {
-      console.error('Error sending index.html:', err);
-      res.status(500).send('فایل index.html در مسیر مشخص شده پیدا نشد! لطفا بررسی کنید dist ساخته شده است یا خیر.');
+      console.error('[ERROR] Could not send index.html:', err);
+      res.status(500).send('Error loading frontend application.');
     }
   });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
 });
 
 // --- توابع کمکی (مطمئن شوید این توابع در فایل موجود باشند یا Import شده باشند) ---
