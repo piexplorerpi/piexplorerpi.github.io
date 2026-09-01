@@ -2,48 +2,57 @@
 const path = require('path');
 const express = require('express');
 const path = require('path');
-const express = require('express');
-const path = require('path');
 const app = express();
 
-// ۱. تنظیمات دامنه (بدون https:// اضافی)
-const REQUIRED_PI_BROWSER_DOMAIN = 'pidao.bonto.run'; // دامنه سرور بونتو
-const REQUIRED_PI_BROWSER_APP_URL = `https://${REQUIRED_PI_BROWSER_DOMAIN}`;
+// ... سایر میدل‌ورهای CORS، dotenv و ...
 
-// ۲. سرو کردن فایل‌های استاتیک از پوشه dist (خروجی Vite)
-app.use(express.static(path.join(__dirname, 'dist')));
+// 🔴 بسیار مهم: ساخت آدرس دقیق به پوشه dist (یک پوشه عقب‌تر یا ریشه)
+// اگر server.js داخل پوشه backend است، از '../dist' استفاده می‌شود.
+// اگر dist دقیقا کنار server.js است، path.join(__dirname, 'dist') بگذارید.
+const DIST_PATH = path.resolve(__dirname, '../dist'); // یا path.join(__dirname, 'dist')
 
-// ۳. تابع Middleware امنیتی
+console.log('Serving static files from:', DIST_PATH); // برای اطمینان در کنسول لاگ می‌شود
+
+// ۱. سرو فایل‌های استاتیک
+app.use(express.static(DIST_PATH));
+
+// ۲. میدل‌ور بررسی Pi Browser و استثنا کردن API و فایل‌های استاتیک
 function requirePiBrowserForGithubDomain(req, res, next) {
   if (req.method === 'OPTIONS') return next();
 
-  // اگر فایل استاتیک است (css, js, png, ...)، بلاک نکن!
-  const isStaticFile = /\.(js|css|json|png|jpg|jpeg|svg|ico|map)$/i.test(req.path);
+  // فایل استاتیک یا مسیر API را بلاک نکن
+  const isStaticFile = /\.(js|css|json|png|jpg|jpeg|svg|ico|map|woff2?)$/i.test(req.path);
   const isApi = req.path.startsWith('/api');
 
   if (isStaticFile || isApi) {
     return next();
   }
 
-  // بررسی وضعیت Pi Browser (از توابع کمکی که در پروژه دارید استفاده می‌شود)
-  // توجه: مطمئن شوید این توابع در فایل شما تعریف شده باشند
-  if (!isFromRequiredGithubDomain(req)) return next();
-  if (isPiBrowserRequest(req)) return next();
+  // بررسی شرط Pi Browser (منطق خودتان)
+  // if (!isFromRequiredGithubDomain(req)) return next();
+  // if (isPiBrowserRequest(req)) return next();
 
-  // اگر هیچ‌کدام نبود، هدایت به صفحه راهنما
-  return sendPiBrowserGuide(req, res);
+  return next(); // در صورت لزوم هدایت به راهنما
 }
 
-// اضافه کردن Middleware به مسیرها
 app.use(requirePiBrowserForGithubDomain);
 
-// ۴. مسیر Catch-all برای React Router
-// هر درخواستی که API نیست و فایل استاتیک نیست را به index.html هدایت کن
+// ۳. مسیر Catch-all برای React Router / SPA
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  // اگر درخواست API است ولی پیدا نشده، 404 بده
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'API route not found' });
+  }
+
+  const indexPath = path.join(DIST_PATH, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('Error sending index.html:', err);
+      res.status(500).send('فایل index.html در مسیر مشخص شده پیدا نشد! لطفا بررسی کنید dist ساخته شده است یا خیر.');
+    }
+  });
 });
 
-// ۵. اجرای سرور
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
