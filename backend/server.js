@@ -166,10 +166,21 @@ function sendPiBrowserGuide(req, res) {
 }
 
 function requirePiBrowserForGithubDomain(req, res, next) {
+  // ۱. درخواست‌های OPTIONS همیشه مجاز
   if (req.method === 'OPTIONS') {
     return next();
   }
 
+  // ۲. استثنا قائل شدن برای فایل‌های استاتیک و مسیرهای API
+  // فایل‌های JS, CSS, تصاویر و APIها نباید توسط این سیستم بلاک شوند
+  const isStaticFile = /\.(js|css|json|png|jpg|jpeg|svg|ico)$/i.test(req.path);
+  const isApi = req.path.startsWith('/api'); // اگر API دارید
+
+  if (isStaticFile || isApi) {
+    return next();
+  }
+
+  // ۳. بقیه منطق احراز هویت
   if (!isFromRequiredGithubDomain(req)) {
     return next();
   }
@@ -178,6 +189,7 @@ function requirePiBrowserForGithubDomain(req, res, next) {
     return next();
   }
 
+  // ۴. فقط اگر کاربر در دامنه است و مرورگر Pi نیست، راهنما را نشان بده
   return sendPiBrowserGuide(req, res);
 }
 
@@ -456,6 +468,15 @@ app.use((err, req, res, next) => {
 // -------------------------
 
 const PORT = process.env.PORT || 5000;
+
+// ۱. مسیر پوشه build فرانت‌اند را مشخص کنید (اگر در یک پوشه جداست مسیر را اصلاح کنید)
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+// ۲. تمامی درخواست‌های دیگر را به index.html هدایت کنید (برای کارکرد React Router)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
 
 const server = app.listen(PORT, () => {
   const publicApiUrl =
