@@ -37,8 +37,7 @@ services:
     env_file:
       - ./frontend/.env
     depends_on:
-      backend:
-        condition: service_started
+      - backend
     expose:
       - "80"
     networks:
@@ -51,15 +50,15 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      DOMAIN_NAME: https://apppiexplorerrjk7732.pinet.com
+      # فقط دامنه، بدون https://
+      DOMAIN_NAME: apppiexplorerrjk7732.pinet.com
     ports:
       - "80:80"
-      - "443:443"
+      # اگر SSL تنظیم نکرده‌ای، این را فعلاً حذف کن
+      # - "443:443"
     depends_on:
-      backend:
-        condition: service_started
-      frontend:
-        condition: service_started
+      - backend
+      - frontend
     networks:
       - pi_network
 
