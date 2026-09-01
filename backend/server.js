@@ -2,44 +2,67 @@
 const path = require('path');
 const express = require('express');
 const path = require('path');
+const express = require('express');
+const path = require('path');
 const app = express();
 
-// ... (سایر تنظیمات CORS و Middlewareها) ...
+// ۱. تنظیمات دامنه (بدون https:// اضافی)
+const REQUIRED_PI_BROWSER_DOMAIN = 'pidao.bonto.run'; // دامنه سرور بونتو
+const REQUIRED_PI_BROWSER_APP_URL = `https://${REQUIRED_PI_BROWSER_DOMAIN}`;
 
-// ۱. این خط را اضافه کنید تا فایل‌های استاتیک سرو شوند
-app.use(express.static(path.join(__dirname, 'build')));
+// ۲. سرو کردن فایل‌های استاتیک از پوشه dist (خروجی Vite)
+app.use(express.static(path.join(__dirname, 'dist')));
 
-// ۲. اصلاح Middleware برای جلوگیری از بلاک کردن فایل‌های استاتیک
+// ۳. تابع Middleware امنیتی
 function requirePiBrowserForGithubDomain(req, res, next) {
   if (req.method === 'OPTIONS') return next();
 
   // اگر فایل استاتیک است (css, js, png, ...)، بلاک نکن!
-  const isStaticFile = /\.(js|css|json|png|jpg|jpeg|svg|ico)$/i.test(req.path);
+  const isStaticFile = /\.(js|css|json|png|jpg|jpeg|svg|ico|map)$/i.test(req.path);
   const isApi = req.path.startsWith('/api');
 
   if (isStaticFile || isApi) {
     return next();
   }
 
-  // اگر صفحه اصلی یا مسیرهای SPA است، بررسی کن
+  // بررسی وضعیت Pi Browser (از توابع کمکی که در پروژه دارید استفاده می‌شود)
+  // توجه: مطمئن شوید این توابع در فایل شما تعریف شده باشند
   if (!isFromRequiredGithubDomain(req)) return next();
   if (isPiBrowserRequest(req)) return next();
 
+  // اگر هیچ‌کدام نبود، هدایت به صفحه راهنما
   return sendPiBrowserGuide(req, res);
 }
 
 // اضافه کردن Middleware به مسیرها
 app.use(requirePiBrowserForGithubDomain);
 
-// ۳. مسیر Catch-all (بسیار مهم برای React Router)
+// ۴. مسیر Catch-all برای React Router
 // هر درخواستی که API نیست و فایل استاتیک نیست را به index.html هدایت کن
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log('Server running...');
+// ۵. اجرای سرور
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
+
+// --- توابع کمکی (مطمئن شوید این توابع در فایل موجود باشند یا Import شده باشند) ---
+function isFromRequiredGithubDomain(req) {
+    // منطق شما برای بررسی Host
+    return true; // اینجا منطق اصلی خود را قرار دهید
+}
+
+function isPiBrowserRequest(req) {
+    // منطق تشخیص مرورگر Pi
+    return true; // اینجا منطق اصلی خود را قرار دهید
+}
+
+function sendPiBrowserGuide(req, res) {
+    res.send('Please use Pi Browser to access this site.');
+}
 
 const cors = require('cors');
 const dotenv = require('dotenv');
