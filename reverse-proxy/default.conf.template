@@ -4,7 +4,9 @@ server {
 
     client_max_body_size 10m;
 
-    # Health check backend
+    # -----------------------------
+    # Backend health check
+    # -----------------------------
     location = /health {
         proxy_pass http://backend:5000/health;
         proxy_http_version 1.1;
@@ -15,7 +17,9 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    # API routes to backend
+    # -----------------------------
+    # Backend API
+    # -----------------------------
     location /api/ {
         proxy_pass http://backend:5000/api/;
         proxy_http_version 1.1;
@@ -26,7 +30,9 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    # Validation file if needed from frontend public build
+    # -----------------------------
+    # Optional validation file
+    # -----------------------------
     location = /validation-key.txt {
         proxy_pass http://frontend:80/validation-key.txt;
         proxy_http_version 1.1;
@@ -37,7 +43,9 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    # Frontend
+    # -----------------------------
+    # Frontend (static)
+    # -----------------------------
     location / {
         proxy_pass http://frontend:80;
         proxy_http_version 1.1;
@@ -48,4 +56,3 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
-
