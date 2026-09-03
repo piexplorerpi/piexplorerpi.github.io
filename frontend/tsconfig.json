@@ -21,10 +21,10 @@
     }
   },
   "include": [
-    "src/**/*.ts", 
-    "src/**/*.tsx", 
-    "src/**/*.js", 
-    "src/**/*.jsx", 
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.js",
+    "src/**/*.jsx",
     "vite-env.d.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
