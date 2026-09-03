@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <meta
       name="description"
@@ -15,8 +12,8 @@
 
     <meta name="theme-color" content="#673ab7" />
 
-    <!-- Pi Domain Validation -->
-    <link rel="pi-domain-validation" href="/validation-key.txt" />
+    <!-- Pi Domain Validation (relative path so it works on sub-path deployments too) -->
+    <link rel="pi-domain-validation" href="validation-key.txt" />
 
     <title>Pi EXPLORER - BLOCK & DAPPS EXPLORER</title>
   </head>
@@ -28,23 +25,25 @@
     <script>
       (function () {
         try {
+          // If you want to block ONLY on GitHub Pages host, keep this:
           var requiredHost = 'piexplorerpi.github.io';
-          var appUrl = 'https://piexplorerpi.github.io';
 
           var userAgent = navigator.userAgent || '';
           var isPiBrowser = /PiBrowser|Pi Browser|MinePi/i.test(userAgent);
+
+          // Use current origin so it works on PiNet domain too
+          var appUrl = window.location.origin;
+
           var isRequiredHost = window.location.hostname === requiredHost;
 
+          // Block only on requiredHost and outside Pi Browser
           var shouldBlock = isRequiredHost && !isPiBrowser;
 
           window.__PI_BROWSER_REQUIRED_BLOCKED__ = shouldBlock;
 
-          if (!shouldBlock) {
-            return;
-          }
+          if (!shouldBlock) return;
 
           var root = document.getElementById('root');
-
           if (!root) {
             document.body.innerHTML =
               '<div style="padding:24px;font-family:Arial">Root element not found.</div>';
@@ -68,9 +67,7 @@
           var note = document.getElementById('piBrowserNote');
 
           function setNote(text) {
-            if (note) {
-              note.textContent = text;
-            }
+            if (note) note.textContent = text;
           }
 
           function copyAppUrl() {
@@ -78,52 +75,30 @@
               navigator.clipboard
                 .writeText(appUrl)
                 .then(function () {
-                  if (copyButton) {
-                    copyButton.textContent = 'App address copied';
-                  }
-
-                  setNote(
-                    'Now open Pi Browser manually and paste the copied address.'
-                  );
+                  if (copyButton) copyButton.textContent = 'App address copied';
+                  setNote('Now open Pi Browser manually and paste the copied address.');
                 })
                 .catch(function () {
-                  if (copyButton) {
-                    copyButton.textContent = 'Copy failed';
-                  }
-
-                  setNote(
-                    'Copy failed. Please open Pi Browser manually and type the app address.'
-                  );
+                  if (copyButton) copyButton.textContent = 'Copy failed';
+                  setNote('Copy failed. Please open Pi Browser manually and type the app address.');
                 });
             } else {
-              if (copyButton) {
-                copyButton.textContent = 'Copy not supported';
-              }
-
-              setNote(
-                'Please open Pi Browser manually and type the app address.'
-              );
+              if (copyButton) copyButton.textContent = 'Copy not supported';
+              setNote('Please open Pi Browser manually and type the app address.');
             }
           }
 
-          if (copyButton) {
-            copyButton.addEventListener('click', copyAppUrl);
-          }
-
+          if (copyButton) copyButton.addEventListener('click', copyAppUrl);
           if (manualButton) {
             manualButton.addEventListener('click', function () {
-              setNote(
-                'Open Pi Browser manually, then paste the copied app address in the Pi Browser address bar.'
-              );
+              setNote('Open Pi Browser manually, then paste the copied app address in the Pi Browser address bar.');
             });
           }
         } catch (error) {
           console.error('Pi Browser Guard error:', error);
-
           window.__PI_BROWSER_REQUIRED_BLOCKED__ = false;
 
           var rootFallback = document.getElementById('root');
-
           if (rootFallback) {
             rootFallback.innerHTML =
               '<div style="padding:24px;font-family:Arial;color:#111;">An error occurred while loading the Pi Browser guide. Please refresh the page.</div>';
