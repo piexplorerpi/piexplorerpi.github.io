@@ -15,74 +15,53 @@ declare global {
 }
 
 const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
-  if (value === undefined || value === null || value === '') {
-    return defaultValue;
-  }
-
+  if (value === undefined || value === null || value === '') return defaultValue;
   return String(value).trim().toLowerCase() === 'true';
 };
 
-/**
- * Mainnet by default.
- * For Sandbox/Testnet set:
- * VITE_PI_SANDBOX=true
- */
 const PI_SANDBOX = parseBooleanEnv(import.meta.env.VITE_PI_SANDBOX, false);
 
 /**
- * Initialize Pi SDK once.
- * Pi SDK is loaded in frontend/index.html:
- * <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+ * وظیفه این تابع فقط مقداردهی اولیه است و نباید توسط جای دیگری فراخوانی شود.
  */
-function initializePiSdk() {
-  if (window.__PI_SDK_INITIALIZED__) {
-    return;
-  }
+async function initializePiSdk(): Promise<void> {
+  if (window.__PI_SDK_INITIALIZED__) return;
 
+  // انتظار برای اطمینان از بارگذاری کامل اسکریپت Pi SDK
   if (!window.Pi) {
-    console.warn(
-      'Pi SDK is not available on window.Pi. Make sure pi-sdk.js is loaded before React or open the app inside Pi Browser.'
-    );
-    return;
-  }
-
-  if (typeof window.Pi.init !== 'function') {
-    console.warn('Pi SDK init function is not available.');
-    return;
+    console.warn('Pi SDK not found. Waiting for load...');
+    return new Promise((resolve) => {
+      window.addEventListener('load', () => resolve(initializePiSdk()));
+    });
   }
 
   try {
-    window.Pi.init({
-      version: '2.0',
-      sandbox: PI_SANDBOX,
-    });
-
-    window.__PI_SDK_INITIALIZED__ = true;
-    window.__PI_SDK_SANDBOX__ = PI_SANDBOX;
-
-    console.log('Pi SDK initialized successfully from main.tsx.', {
-      sandbox: PI_SANDBOX,
-    });
+    if (typeof window.Pi.init === 'function') {
+      window.Pi.init({
+        version: '2.0',
+        sandbox: PI_SANDBOX,
+      });
+      window.__PI_SDK_INITIALIZED__ = true;
+      window.__PI_SDK_SANDBOX__ = PI_SANDBOX;
+      console.log('Pi SDK initialized successfully.');
+    }
   } catch (error) {
     console.error('Failed to initialize Pi SDK:', error);
   }
 }
 
-// اگر صفحه روی https://piexplorerpi.github.io خارج از Pi Browser باز شده باشد،
-// index.html پیام راهنما را نمایش می‌دهد و React نباید آن را جایگزین کند.
-if (window.__PI_BROWSER_REQUIRED_BLOCKED__) {
-  console.warn(
-    'Pi Browser is required. React app rendering has been blocked outside Pi Browser.'
-  );
-} else {
-  initializePiSdk();
+// شروع فرآیند رندرینگ
+async function startApp() {
+  if (window.__PI_BROWSER_REQUIRED_BLOCKED__) {
+    console.warn('Pi Browser required. Rendering blocked.');
+    return;
+  }
+
+  await initializePiSdk();
 
   const rootElement = document.getElementById('root');
-
   if (!rootElement) {
-    throw new Error(
-      "Critical Error: Could not find the root element with id 'root'. Please check your index.html"
-    );
+    throw new Error("Critical Error: Could not find the root element with id 'root'.");
   }
 
   ReactDOM.createRoot(rootElement).render(
@@ -95,3 +74,5 @@ if (window.__PI_BROWSER_REQUIRED_BLOCKED__) {
     </React.StrictMode>
   );
 }
+
+startApp();
