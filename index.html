@@ -78,11 +78,15 @@
                 .writeText(appUrl)
                 .then(function () {
                   if (copyButton) copyButton.textContent = 'App address copied';
-                  setNote('Now open Pi Browser manually and paste the copied address.');
+                  setNote(
+                    'Now open Pi Browser manually and paste the copied address.'
+                  );
                 })
                 .catch(function () {
                   if (copyButton) copyButton.textContent = 'Copy failed';
-                  setNote('Copy failed. Please open Pi Browser manually and type the app address.');
+                  setNote(
+                    'Copy failed. Please open Pi Browser manually and type the app address.'
+                  );
                 });
             } else {
               if (copyButton) copyButton.textContent = 'Copy not supported';
@@ -93,7 +97,9 @@
           if (copyButton) copyButton.addEventListener('click', copyAppUrl);
           if (manualButton) {
             manualButton.addEventListener('click', function () {
-              setNote('Open Pi Browser manually, then paste the copied app address in the Pi Browser address bar.');
+              setNote(
+                'Open Pi Browser manually, then paste the copied app address in the Pi Browser address bar.'
+              );
             });
           }
         } catch (error) {
