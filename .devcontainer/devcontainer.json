@@ -1,7 +1,6 @@
 {
   "name": "Pi Network Fullstack Dev",
   "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
-
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:1": {},
     "ghcr.io/devcontainers/features/common-utils:1": {
@@ -11,7 +10,6 @@
       "version": "20"
     }
   },
-
   "customizations": {
     "vscode": {
       "extensions": [
@@ -30,12 +28,14 @@
       }
     }
   },
-
-  "forwardPorts": [5173, 5000, 5432],
-
+  "forwardPorts": [5173, 4173, 5000, 5432],
   "portsAttributes": {
     "5173": {
-      "label": "Vite Frontend",
+      "label": "Vite Frontend (dev)",
+      "onAutoForward": "notify"
+    },
+    "4173": {
+      "label": "Vite Frontend (preview)",
       "onAutoForward": "notify"
     },
     "5000": {
@@ -47,8 +47,6 @@
       "onAutoForward": "silent"
     }
   },
-
   "postCreateCommand": "corepack enable && if [ -d backend ]; then yarn install --cwd backend; fi && if [ -d frontend ]; then yarn install --cwd frontend; fi",
-
   "remoteUser": "node"
 }
