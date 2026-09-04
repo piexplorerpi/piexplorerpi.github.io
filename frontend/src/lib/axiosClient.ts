@@ -48,19 +48,24 @@ axiosClient.interceptors.response.use(
     if (error.response) {
       const status = error.response.status;
 
+// ... داخل interceptor.response.use
       if (status === 401) {
         console.warn('Unauthorized! Cleaning up session...');
-
         localStorage.removeItem('token');
         localStorage.removeItem('user');
 
-        // IMPORTANT:
-        // If you use HashRouter, use hash navigation.
-        const currentHash = window.location.hash || '#/';
-
-        if (!currentHash.includes('/login')) {
-          window.location.hash = '#/login';
+        // به جای تغییر مستقیم Hash، فقط خطا را برگردانید.
+        // اجازه دهید AuthContext یا کامپوننت اصلی تصمیم بگیرد.
+        // اگر حتما باید ریدایرکت شود، چک کنید که همین الان در صفحه لاگین نباشیم:
+        if (!window.location.hash.includes('/login')) {
+            // از setTimeout استفاده می‌کنیم تا مطمئن شویم پردازش فعلی تمام شده است
+            setTimeout(() => {
+                window.location.hash = '#/login';
+            }, 100);
         }
+      }
+// ...
+
       } else if (status === 403) {
         console.error('Forbidden:', error.response.data);
       } else if (status === 404) {
