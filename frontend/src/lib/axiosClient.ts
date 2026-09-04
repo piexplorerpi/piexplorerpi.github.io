@@ -23,17 +23,41 @@ const axiosClient = axios.create({
  * Request Interceptor
  * Add JWT token to all authenticated requests.
  */
-axiosClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token');
+axiosClient.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError<any>) => {
+    if (error.response) {
+      const status = error.response.status;
 
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+      if (status === 401) {
+        console.warn('Unauthorized! Cleaning up session...');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
+        if (!window.location.hash.includes('/login')) {
+          setTimeout(() => {
+            window.location.hash = '#/login';
+          }, 100);
+        }
+      } else if (status === 403) {
+        console.error('Forbidden:', error.response.data);
+      } else if (status === 404) {
+        console.error('API route not found:', error.config?.url);
+      } else if (status === 500) {
+        console.error('Server Error:', error.response.data);
+      } else {
+        console.error('API Error:', {
+          status,
+          data: error.response.data,
+          url: error.config?.url,
+        });
+      }
+    } else if (error.request) {
+      console.error('Network Error: Cannot connect to server.');
+    } else {
+      console.error('Axios Error:', error.message);
     }
 
-    return config;
-  },
-  (error) => {
     return Promise.reject(error);
   }
 );
