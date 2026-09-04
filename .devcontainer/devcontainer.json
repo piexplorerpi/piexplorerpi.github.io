@@ -47,6 +47,6 @@
       "onAutoForward": "silent"
     }
   },
-  "postCreateCommand": "corepack enable && if [ -d backend ]; then yarn install --cwd backend; fi && if [ -d frontend ]; then yarn install --cwd frontend; fi",
+  "postCreateCommand": "if [ -d backend ]; then (cd backend && npm install); fi && if [ -d frontend ]; then (cd frontend && npm install); fi",
   "remoteUser": "node"
 }
