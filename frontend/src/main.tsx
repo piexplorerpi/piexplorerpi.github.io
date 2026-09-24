@@ -1,3 +1,4 @@
+// frontend/src/main.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
@@ -8,7 +9,14 @@ import { I18nProvider } from './i18n/I18nContext';
 declare global {
   interface Window {
     __PI_BROWSER_REQUIRED_BLOCKED__?: boolean;
-    Pi?: any;
+    Pi?: {
+      init?: (config: { version: string; sandbox: boolean }) => void;
+      authenticate: (
+        scopes: string[],
+        onIncompletePaymentFound: (payment: any) => void
+      ) => Promise<any>;
+      createPayment?: any;
+    };
     __PI_SDK_INITIALIZED__?: boolean;
     __PI_SDK_SANDBOX__?: boolean;
   }
