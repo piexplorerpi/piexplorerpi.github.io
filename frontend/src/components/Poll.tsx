@@ -14,8 +14,9 @@ interface Votes {
 }
 
 interface PollData {
-  id: number;
-  question: string;
+  id?: number | string;
+  pollId?: string;
+  question?: string;
   questionFa?: string;
   questionEn?: string;
   questionTr?: string;
@@ -37,7 +38,7 @@ interface HistoryItem {
   created_at: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://pidao.bonto.run/api';
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'https://piexplorer.bonto.run/api').replace(/\/+$/, '');
 
 const Poll: React.FC = () => {
   const { t, lang } = useTranslate(); // استفاده از هوک جدید
@@ -64,8 +65,25 @@ const Poll: React.FC = () => {
 
   const getToken = (): string | null => localStorage.getItem('token');
 
+  const normalizePoll = (raw: any): PollData | null => {
+    if (!raw || typeof raw !== 'object') return null;
+    // Support both camelCase (API) and snake_case
+    return {
+      id: raw.id,
+      pollId: raw.pollId || raw.poll_id,
+      question: raw.question || raw.questionEn || raw.question_en || '',
+      questionFa: raw.questionFa || raw.question_fa || '',
+      questionEn: raw.questionEn || raw.question_en || raw.question || '',
+      questionTr: raw.questionTr || raw.question_tr || '',
+      questionZh: raw.questionZh || raw.question_zh || '',
+      questionHi: raw.questionHi || raw.question_hi || '',
+      questionAr: raw.questionAr || raw.question_ar || '',
+    };
+  };
+
   const getLocalizedQuestion = useCallback(() => {
     if (!pollData) return t(pollTranslations.pollQuestion);
+
     const langMap: Record<string, string | undefined> = {
       fa: pollData.questionFa,
       en: pollData.questionEn,
@@ -74,7 +92,18 @@ const Poll: React.FC = () => {
       hi: pollData.questionHi,
       ar: pollData.questionAr,
     };
-    return langMap[lang] || pollData.question || t(pollTranslations.pollQuestion);
+
+    // Prefer language-specific text; for English prefer questionEn over legacy question
+    const localized = (langMap[lang] || '').trim();
+    if (localized) return localized;
+
+    const en = (pollData.questionEn || '').trim();
+    if (en) return en;
+
+    const fallback = (pollData.question || '').trim();
+    if (fallback) return fallback;
+
+    return t(pollTranslations.pollQuestion);
   }, [lang, pollData, t]);
 
   const maskUsername = (username: string): string => {
@@ -106,7 +135,7 @@ const Poll: React.FC = () => {
       }
       setVotes(data.data.votes);
       setUserVote(data.data.userVote);
-      setPollData(data.data.poll || null);
+      setPollData(normalizePoll(data.data.poll));
     } catch (err: any) {
       setError(err.message || t(pollTranslations.pollConnectionError));
     } finally {
@@ -162,7 +191,7 @@ const Poll: React.FC = () => {
         if (response.status === 409 && data.data) {
           setVotes(data.data.votes);
           setUserVote(data.data.userVote);
-          setPollData(data.data.poll || null);
+          setPollData(normalizePoll(data.data.poll));
           setMessage(t(pollTranslations.pollAlreadyVoted));
           return;
         }
@@ -170,7 +199,7 @@ const Poll: React.FC = () => {
       }
       setVotes(data.data.votes);
       setUserVote(data.data.userVote);
-      setPollData(data.data.poll || null);
+      setPollData(normalizePoll(data.data.poll));
       setMessage(t(pollTranslations.pollVoteSuccess));
       await fetchVoteHistory();
     } catch (err: any) {
