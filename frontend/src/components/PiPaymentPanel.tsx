@@ -27,6 +27,13 @@ const DEFAULT_AMOUNT = import.meta.env.VITE_DEFAULT_PI_AMOUNT || '0.01';
 const MIN_AMOUNT = Number(import.meta.env.VITE_MIN_PI_AMOUNT || '0.001');
 const MAX_AMOUNT = Number(import.meta.env.VITE_MAX_PI_AMOUNT || '100');
 
+/** Official Pi app URL (pinet.com) — keep both origins for dual-domain setup */
+const REGISTERED_APP_URL = (
+  import.meta.env.VITE_PI_APP_URL ||
+  'https://apppiexplorerrjk7732.pinet.com'
+).replace(/\/+$/, '');
+
+
 function getHealthUrl() {
   if (!API_BASE_URL) return '';
   return API_BASE_URL.replace(/\/api\/?$/, '') + '/health';
@@ -294,6 +301,8 @@ const PiPaymentPanel: React.FC = () => {
         network: networkValue,
         pageUrl: window.location.href,
         pageOrigin: window.location.origin,
+        registeredAppUrl: REGISTERED_APP_URL,
+        appHost: window.location.hostname,
       }
     );
   };
@@ -371,9 +380,18 @@ const PiPaymentPanel: React.FC = () => {
           username: currentUsername || '',
           amount: paymentAmount,
           network: networkValue,
+          // Both origins: github.io and pinet.com must work
           pageOrigin: window.location.origin,
+          registeredAppUrl: REGISTERED_APP_URL,
+          appHost: window.location.hostname,
         },
       };
+
+      console.log('Creating payment from origin:', window.location.origin, {
+        registeredAppUrl: REGISTERED_APP_URL,
+        amount: paymentAmount,
+        network: networkValue,
+      });
 
       /**
        * IMPORTANT for Pi SDK:
@@ -393,8 +411,15 @@ const PiPaymentPanel: React.FC = () => {
             .catch((error: any) => {
               console.error('Server approval error:', error);
               setIsPaying(false);
+              const detail =
+                error?.response?.data?.message ||
+                error?.message ||
+                String(error);
               setStatus(
-                'Server approval error: ' + (error?.message || String(error))
+                'Server approval error: ' +
+                  detail +
+                  ' | origin=' +
+                  window.location.origin
               );
               // Re-throw so Pi SDK knows approval failed
               throw error;
