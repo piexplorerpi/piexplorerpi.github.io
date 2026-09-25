@@ -1,5 +1,5 @@
 // frontend/src/lib/axiosClient.ts
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 const API_BASE_URL =
   (import.meta.env.VITE_API_URL || 'https://piexplorer.bonto.run/api').replace(
@@ -8,27 +8,40 @@ const API_BASE_URL =
   );
 
 const axiosClient = axios.create({
+  // Production fallback must point to the real backend, not localhost.
   baseURL: API_BASE_URL,
+
   headers: {
     'Content-Type': 'application/json',
   },
+
+  // Bonto/server cold start may take more than 10 seconds.
   timeout: 30000,
 });
 
-// Attach JWT so payment approve/complete and protected routes work
-axiosClient.interceptors.request.use((config) => {
-  try {
+/**
+ * Request Interceptor
+ * Add JWT token to all authenticated requests.
+ */
+axiosClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token');
-    if (token) {
-      config.headers = config.headers || {};
+
+    if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-  } catch {
-    // ignore
-  }
-  return config;
-});
 
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * Response Interceptor
+ * Handle errors safely to avoid white screen.
+ */
 axiosClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError<any>) => {
@@ -37,13 +50,15 @@ axiosClient.interceptors.response.use(
 
       if (status === 401) {
         console.warn('Unauthorized! Cleaning up session...');
+
         localStorage.removeItem('token');
         localStorage.removeItem('user');
 
-        if (!window.location.hash.includes('/login')) {
-          setTimeout(() => {
-            window.location.hash = '#/login';
-          }, 100);
+        // IMPORTANT: HashRouter navigation
+        const currentHash = window.location.hash || '#/';
+
+        if (!currentHash.includes('/login')) {
+          window.location.hash = '#/login';
         }
       } else if (status === 403) {
         console.error('Forbidden:', error.response.data);
