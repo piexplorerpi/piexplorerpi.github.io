@@ -102,9 +102,30 @@ const PiPaymentPanel: React.FC = () => {
 
   const onIncompletePaymentFound = (payment: any) => {
     console.log('Incomplete payment found:', payment);
+    const paymentId = payment?.identifier || payment?.paymentId || payment?.id;
     setStatus(
-      'Incomplete payment found. Please complete or cancel it in Pi Browser.'
+      'Incomplete payment found. Trying to resolve on server... ' +
+        (paymentId || '')
     );
+
+    if (!paymentId) return;
+
+    // Try to approve stuck payment so user can finish or clear the flow
+    axiosClient
+      .post('/pi/incomplete', { paymentId })
+      .then((res) => {
+        console.log('Incomplete payment resolved:', res.data);
+        setStatus(
+          'Previous incomplete payment was processed. You can try a new payment.'
+        );
+      })
+      .catch((err) => {
+        console.warn('Could not auto-resolve incomplete payment:', err);
+        setStatus(
+          'Incomplete payment found. Cancel it in Pi Wallet, then try again. id=' +
+            paymentId
+        );
+      });
   };
 
   const warmUpBackend = async () => {
