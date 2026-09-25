@@ -15,6 +15,20 @@ const axiosClient = axios.create({
   timeout: 30000,
 });
 
+// Attach JWT so payment approve/complete and protected routes work
+axiosClient.interceptors.request.use((config) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  } catch {
+    // ignore
+  }
+  return config;
+});
+
 axiosClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError<any>) => {
