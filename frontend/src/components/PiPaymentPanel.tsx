@@ -268,43 +268,87 @@ const PiPaymentPanel: React.FC = () => {
   };
 
 
-  const postWithFallback = async (paths: string[], body: Record<string, unknown>) => {
+  /**
+   * Use native fetch (not axios) for approve/complete.
+   * Reasons:
+   * 1) App on pinet.com runs inside an iframe → origin is github.io
+   * 2) axios 401 interceptor can redirect to #/login mid-payment and leave wallet stuck
+   * 3) Absolute URL is more reliable inside PiNet iframe
+   */
+  const postPaymentEndpoint = async (
+    paths: string[],
+    body: Record<string, unknown>
+  ) => {
     let lastError: any = null;
+    const token = localStorage.getItem('token');
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
 
     for (const path of paths) {
-      try {
-        console.log('POST', path, body);
-        const response = await axiosClient.post(path, body);
-        console.log('Response', path, response.status, response.data);
+      const url = path.startsWith('http')
+        ? path
+        : `${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 
-        if (response.data?.success === false) {
-          throw new Error(response.data?.message || `Request failed: ${path}`);
+      try {
+        console.log('Payment POST', url, body);
+        const response = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(body),
+          // omit credentials cookies; we use Bearer token
+          credentials: 'omit',
+          mode: 'cors',
+        });
+
+        let data: any = null;
+        const textBody = await response.text();
+        try {
+          data = textBody ? JSON.parse(textBody) : null;
+        } catch {
+          data = { raw: textBody };
         }
 
-        return response.data;
-      } catch (error: any) {
-        lastError = error;
-        const status = error?.response?.status;
-        const msg =
-          error?.response?.data?.message ||
-          error?.response?.data?.error?.message ||
-          error?.message ||
-          String(error);
+        console.log('Payment response', url, response.status, data);
 
-        console.warn(`Endpoint ${path} failed:`, status, msg);
-
-        // try next path only on 404
-        if (status === 404) {
+        if (response.status === 404) {
+          lastError = new Error(`404 ${url}`);
           continue;
         }
-        throw new Error(msg);
+
+        if (!response.ok) {
+          const msg =
+            data?.message ||
+            data?.error?.message ||
+            data?.error ||
+            `HTTP ${response.status}`;
+          throw new Error(String(msg));
+        }
+
+        if (data?.success === false) {
+          throw new Error(data?.message || `Request failed: ${url}`);
+        }
+
+        return data;
+      } catch (error: any) {
+        lastError = error;
+        const msg = error?.message || String(error);
+        console.warn(`Endpoint ${url} failed:`, msg);
+        // network errors: try next path
+        if (/404/.test(msg)) continue;
+        // for non-404 HTTP errors thrown above, stop
+        if (error?.message && !/Failed to fetch|NetworkError|404/.test(error.message)) {
+          throw error;
+        }
       }
     }
 
     throw new Error(
-      lastError?.response?.data?.message ||
-        lastError?.message ||
-        'All payment endpoints failed'
+      lastError?.message || 'All payment endpoints failed'
     );
   };
 
@@ -313,7 +357,7 @@ const PiPaymentPanel: React.FC = () => {
     orderId: string,
     paymentAmount: number
   ) => {
-    return postWithFallback(
+    return postPaymentEndpoint(
       ['/pi/approve', '/payment/approve', '/payments/approve'],
       {
         paymentId,
@@ -324,6 +368,7 @@ const PiPaymentPanel: React.FC = () => {
         pageOrigin: window.location.origin,
         registeredAppUrl: REGISTERED_APP_URL,
         appHost: window.location.hostname,
+        inIframe: window.self !== window.top,
       }
     );
   };
@@ -334,7 +379,7 @@ const PiPaymentPanel: React.FC = () => {
     orderId: string,
     paymentAmount: number
   ) => {
-    return postWithFallback(
+    return postPaymentEndpoint(
       ['/pi/complete', '/payment/complete', '/payments/complete'],
       {
         paymentId,
@@ -344,6 +389,9 @@ const PiPaymentPanel: React.FC = () => {
         network: networkValue,
         pageUrl: window.location.href,
         pageOrigin: window.location.origin,
+        registeredAppUrl: REGISTERED_APP_URL,
+        appHost: window.location.hostname,
+        inIframe: window.self !== window.top,
       }
     );
   };
@@ -487,7 +535,10 @@ const PiPaymentPanel: React.FC = () => {
       // Fire createPayment — flow continues in callbacks
       window.Pi.createPayment(paymentData, callbacks);
 
-      setStatus('Payment opened in Pi Wallet. Waiting for server approval...');
+      setStatus(
+        'Payment opened in Pi Wallet. Waiting for server approval...' +
+          (window.self !== window.top ? ' (PiNet iframe)' : '')
+      );
     } catch (error: any) {
       console.error('Create payment error:', error);
       setIsPaying(false);
