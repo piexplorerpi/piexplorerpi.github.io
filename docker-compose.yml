@@ -51,7 +51,7 @@ services:
     restart: unless-stopped
     environment:
       # فقط دامنه، بدون https://
-      DOMAIN_NAME: apppiexplorerrjk7732.pinet.com
+      DOMAIN_NAME: https://explorer2786.pinet.com
     ports:
       - "80:80"
       # اگر SSL تنظیم نکرده‌ای، این را فعلاً حذف کن
