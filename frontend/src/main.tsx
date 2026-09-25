@@ -6,22 +6,6 @@ import './index.css';
 import { AuthProvider } from './context/AuthContext';
 import { I18nProvider } from './i18n/I18nContext';
 
-declare global {
-  interface Window {
-    __PI_BROWSER_REQUIRED_BLOCKED__?: boolean;
-    Pi?: {
-      init?: (config: { version: string; sandbox: boolean }) => void;
-      authenticate: (
-        scopes: string[],
-        onIncompletePaymentFound: (payment: any) => void
-      ) => Promise<any>;
-      createPayment?: any;
-    };
-    __PI_SDK_INITIALIZED__?: boolean;
-    __PI_SDK_SANDBOX__?: boolean;
-  }
-}
-
 const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
   if (value === undefined || value === null || value === '') {
     return defaultValue;

@@ -2,6 +2,7 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { useI18n } from './i18n/I18nContext';
+import { commonTranslations } from './i18n/translations/common';
 
 import Home from './pages/Home';
 import Dig from './pages/Dig';
@@ -37,7 +38,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           fontFamily: 'sans-serif',
         }}
       >
-        <p>{t('connectingToServer')}</p>
+        <p>{t(commonTranslations.connectingToServer)}</p>
       </div>
     );
   }
@@ -59,7 +60,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           fontFamily: 'sans-serif',
         }}
       >
-        {t('loading')}
+        {t(commonTranslations.loading)}
       </div>
     );
   }
