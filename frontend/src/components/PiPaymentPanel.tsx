@@ -239,46 +239,63 @@ const PiPaymentPanel: React.FC = () => {
     };
   };
 
+
+  const postWithFallback = async (paths: string[], body: Record<string, unknown>) => {
+    let lastError: any = null;
+
+    for (const path of paths) {
+      try {
+        console.log('POST', path, body);
+        const response = await axiosClient.post(path, body);
+        console.log('Response', path, response.status, response.data);
+
+        if (response.data?.success === false) {
+          throw new Error(response.data?.message || `Request failed: ${path}`);
+        }
+
+        return response.data;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.response?.status;
+        const msg =
+          error?.response?.data?.message ||
+          error?.response?.data?.error?.message ||
+          error?.message ||
+          String(error);
+
+        console.warn(`Endpoint ${path} failed:`, status, msg);
+
+        // try next path only on 404
+        if (status === 404) {
+          continue;
+        }
+        throw new Error(msg);
+      }
+    }
+
+    throw new Error(
+      lastError?.response?.data?.message ||
+        lastError?.message ||
+        'All payment endpoints failed'
+    );
+  };
+
   const approvePaymentOnServer = async (
     paymentId: string,
     orderId: string,
     paymentAmount: number
   ) => {
-    console.log('Calling approve endpoint:', '/pi/approve', {
-      paymentId,
-      orderId,
-      amount: paymentAmount,
-      network: networkValue,
-    });
-
-    try {
-      const response = await axiosClient.post('/pi/approve', {
+    return postWithFallback(
+      ['/pi/approve', '/payment/approve', '/payments/approve'],
+      {
         paymentId,
         orderId,
         amount: paymentAmount,
         network: networkValue,
         pageUrl: window.location.href,
         pageOrigin: window.location.origin,
-      });
-
-      console.log('Approve response:', response.status, response.data);
-
-      if (!response.data?.success) {
-        throw new Error(response.data?.message || 'Server approval failed');
       }
-
-      return response.data;
-    } catch (error: any) {
-      console.error('Approve request failed:', error?.response?.data || error);
-
-      throw new Error(
-        error?.response?.data?.message ||
-          error?.response?.data?.error?.message ||
-          error?.response?.data?.error ||
-          error?.message ||
-          'Server approval failed'
-      );
-    }
+    );
   };
 
   const completePaymentOnServer = async (
@@ -287,16 +304,9 @@ const PiPaymentPanel: React.FC = () => {
     orderId: string,
     paymentAmount: number
   ) => {
-    console.log('Calling complete endpoint:', '/pi/complete', {
-      paymentId,
-      txid,
-      orderId,
-      amount: paymentAmount,
-      network: networkValue,
-    });
-
-    try {
-      const response = await axiosClient.post('/pi/complete', {
+    return postWithFallback(
+      ['/pi/complete', '/payment/complete', '/payments/complete'],
+      {
         paymentId,
         txid,
         orderId,
@@ -304,26 +314,8 @@ const PiPaymentPanel: React.FC = () => {
         network: networkValue,
         pageUrl: window.location.href,
         pageOrigin: window.location.origin,
-      });
-
-      console.log('Complete response:', response.status, response.data);
-
-      if (!response.data?.success) {
-        throw new Error(response.data?.message || 'Server completion failed');
       }
-
-      return response.data;
-    } catch (error: any) {
-      console.error('Complete request failed:', error?.response?.data || error);
-
-      throw new Error(
-        error?.response?.data?.message ||
-          error?.response?.data?.error?.message ||
-          error?.response?.data?.error ||
-          error?.message ||
-          'Server completion failed'
-      );
-    }
+    );
   };
 
   const createPiPayment = async () => {
@@ -381,11 +373,12 @@ const PiPaymentPanel: React.FC = () => {
         onReadyForServerApproval: async function (paymentId: string) {
           try {
             console.log('Ready for server approval:', paymentId);
-            setStatus('Approving payment on server...');
+            setStatus('Approving payment on server... (' + paymentId + ')');
 
             await approvePaymentOnServer(paymentId, orderId, paymentAmount);
 
-            setStatus('Payment approved by server. Continue in Pi Wallet.');
+            // Critical: after successful approve, Pi Wallet continues automatically
+            setStatus('Approved. Confirm the payment in Pi Wallet...');
           } catch (error: any) {
             console.error('Server approval error:', error);
             setIsPaying(false);
@@ -434,10 +427,10 @@ const PiPaymentPanel: React.FC = () => {
         },
       };
 
-      const payment = await window.Pi.createPayment(paymentData, callbacks);
+      // Do not block UI on the returned promise; callbacks drive the flow
+      window.Pi.createPayment(paymentData, callbacks);
 
-      console.log('Payment result:', payment);
-      setStatus('Payment request sent to Pi Wallet. Please confirm.');
+      setStatus('Payment opened in Pi Wallet. Waiting for approval...');
     } catch (error: any) {
       console.error('Create payment error:', error);
       setIsPaying(false);
