@@ -54,11 +54,18 @@ axiosClient.interceptors.response.use(
         localStorage.removeItem('token');
         localStorage.removeItem('user');
 
-        // IMPORTANT: HashRouter navigation
+        // Do NOT force-redirect during critical flows; let UI handle it.
+        // Forced hash change mid-payment leaves Pi Wallet stuck on "Preparing..."
         const currentHash = window.location.hash || '#/';
-
         if (!currentHash.includes('/login')) {
-          window.location.hash = '#/login';
+          // soft redirect only when not inside iframe payment flow
+          try {
+            if (window.self === window.top) {
+              window.location.hash = '#/login';
+            }
+          } catch {
+            // cross-origin iframe: skip redirect
+          }
         }
       } else if (status === 403) {
         console.error('Forbidden:', error.response.data);
