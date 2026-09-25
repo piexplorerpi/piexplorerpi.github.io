@@ -1,6 +1,7 @@
 // frontend/src/pages/Engagement/TasksPage.tsx
 import React from 'react';
 import { useI18n } from '../../i18n/I18nContext';
+import { tasksTranslations } from '../../i18n/translations/tasks';
 
 interface Task {
   id: number;
@@ -26,6 +27,12 @@ const tasks: Task[] = [
   },
 ];
 
+const taskTitleMap = {
+  taskWatchVideo: tasksTranslations.taskWatchVideo,
+  taskJoinPoll: tasksTranslations.taskJoinPoll,
+  taskDailyCheckin: tasksTranslations.taskDailyCheckin,
+} as const;
+
 const EngagementTasksPage: React.FC = () => {
   const { t, lang } = useI18n();
 
@@ -37,23 +44,23 @@ const EngagementTasksPage: React.FC = () => {
         fontFamily: 'sans-serif',
       }}
     >
-      <h2>{t('tasksTitle')}</h2>
+      <h2>{t(tasksTranslations.tasksTitle)}</h2>
 
-      <p>{t('tasksSubtitle')}</p>
+      <p>{t(tasksTranslations.tasksSubtitle)}</p>
 
       <div style={{ marginTop: '20px' }}>
         {tasks.map((task) => (
           <div key={task.id} style={taskCardStyle}>
             <div>
-              <strong>{t(task.titleKey)}</strong>
+              <strong>{t(taskTitleMap[task.titleKey as keyof typeof taskTitleMap] || task.titleKey)}</strong>
 
               <div style={{ fontSize: '0.8rem', color: '#666' }}>
-                {t('reward')}: {task.reward}
+                {t(tasksTranslations.reward)}: {task.reward}
               </div>
             </div>
 
             <button style={actionButtonStyle}>
-              {t('claim')}
+              {t(tasksTranslations.claim)}
             </button>
           </div>
         ))}
