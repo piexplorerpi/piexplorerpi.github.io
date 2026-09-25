@@ -7,26 +7,13 @@ import React, {
 } from 'react';
 import axiosClient from '../lib/axiosClient';
 
-declare global {
-  interface Window {
-    Pi?: {
-      init?: (config: { version: string; sandbox: boolean }) => void;
-      authenticate: (
-        scopes: string[],
-        onIncompletePaymentFound: (payment: any) => void
-      ) => Promise<any>;
-      createPayment?: any;
-    };
-    __PI_SDK_INITIALIZED__?: boolean;
-    __PI_SDK_SANDBOX__?: boolean;
-  }
-}
-
 export interface User {
   id: string;
   username: string;
   role: 'user' | 'admin' | string;
   piUserId?: string;
+  /** Alias some components use instead of id / piUserId */
+  uid?: string;
 }
 
 interface AuthContextType {
