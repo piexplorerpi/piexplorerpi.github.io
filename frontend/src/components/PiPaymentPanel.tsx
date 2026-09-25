@@ -25,7 +25,7 @@ const PI_SANDBOX = parseBooleanEnv(import.meta.env.VITE_PI_SANDBOX, false);
 
 const DEFAULT_AMOUNT = import.meta.env.VITE_DEFAULT_PI_AMOUNT || '0.01';
 const MIN_AMOUNT = Number(import.meta.env.VITE_MIN_PI_AMOUNT || '0.001');
-const MAX_AMOUNT = Number(import.meta.env.VITE_MAX_PI_AMOUNT || '100');
+const MAX_AMOUNT = Number(import.meta.env.VITE_MAX_PI_AMOUNT || '10000000000');
 
 /** Official Pi app URL (pinet.com) — keep both origins for dual-domain setup */
 const REGISTERED_APP_URL = (
@@ -110,7 +110,7 @@ const PiPaymentPanel: React.FC = () => {
 
     if (!paymentId) return;
 
-    // Try to approve stuck payment so user can finish or clear the flow
+    // Only try to resolve (approve) stuck payment — do NOT auto-cancel
     const resolveIncomplete = async () => {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -124,22 +124,19 @@ const PiPaymentPanel: React.FC = () => {
           headers,
           body: JSON.stringify({ paymentId }),
         });
-        console.log('Incomplete resolve:', await res.json().catch(() => ({})));
+        const data = await res.json().catch(() => ({}));
+        console.log('Incomplete resolve:', data);
+        setStatus(
+          data?.success
+            ? 'Previous incomplete payment resolved. You can continue or start a new payment.'
+            : 'Incomplete payment noted. You can try a new payment.'
+        );
       } catch (e) {
         console.warn('incomplete resolve failed', e);
+        setStatus(
+          'Incomplete payment found. You can try a new payment.'
+        );
       }
-      try {
-        await fetch(`${API_BASE_URL}/pi/cancel`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ paymentId }),
-        });
-      } catch (e) {
-        console.warn('cancel failed', e);
-      }
-      setStatus(
-        'Previous incomplete payment cleared. Try a new payment.'
-      );
     };
     resolveIncomplete();
   };
