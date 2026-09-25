@@ -318,6 +318,7 @@ const PiPaymentPanel: React.FC = () => {
     );
   };
 
+
   const createPiPayment = async () => {
     if (!window.Pi) {
       setStatus('Pi SDK not found. Please open this app inside Pi Browser.');
@@ -352,7 +353,12 @@ const PiPaymentPanel: React.FC = () => {
     try {
       setIsPaying(true);
 
-      await warmUpBackend();
+      // Warm backend first so approve is fast (payment expires in ~60s)
+      try {
+        await warmUpBackend();
+      } catch (warmErr) {
+        console.warn('Warm-up skipped:', warmErr);
+      }
 
       setStatus(`Creating ${networkLabel} Pi payment...`);
 
@@ -362,56 +368,61 @@ const PiPaymentPanel: React.FC = () => {
         metadata: {
           type: PI_SANDBOX ? 'testnet_payment' : 'mainnet_payment',
           orderId,
-          username: currentUsername,
+          username: currentUsername || '',
           amount: paymentAmount,
           network: networkValue,
           pageOrigin: window.location.origin,
         },
       };
 
+      /**
+       * IMPORTANT for Pi SDK:
+       * Callbacks must RETURN the Promise so the wallet waits for server approve/complete.
+       * Using async without returning (or fire-and-forget) causes:
+       * "Preparing for a payment... This payment will expire in XX second(s)."
+       */
       const callbacks = {
-        onReadyForServerApproval: async function (paymentId: string) {
-          try {
-            console.log('Ready for server approval:', paymentId);
-            setStatus('Approving payment on server... (' + paymentId + ')');
+        onReadyForServerApproval: function (paymentId: string) {
+          console.log('Ready for server approval:', paymentId);
+          setStatus('Approving payment on server...');
 
-            await approvePaymentOnServer(paymentId, orderId, paymentAmount);
-
-            // Critical: after successful approve, Pi Wallet continues automatically
-            setStatus('Approved. Confirm the payment in Pi Wallet...');
-          } catch (error: any) {
-            console.error('Server approval error:', error);
-            setIsPaying(false);
-            setStatus(
-              'Server approval error: ' + (error?.message || String(error))
-            );
-          }
+          return approvePaymentOnServer(paymentId, orderId, paymentAmount)
+            .then(() => {
+              setStatus('Approved. Confirm the payment in Pi Wallet...');
+            })
+            .catch((error: any) => {
+              console.error('Server approval error:', error);
+              setIsPaying(false);
+              setStatus(
+                'Server approval error: ' + (error?.message || String(error))
+              );
+              // Re-throw so Pi SDK knows approval failed
+              throw error;
+            });
         },
 
-        onReadyForServerCompletion: async function (
-          paymentId: string,
-          txid: string
-        ) {
-          try {
-            console.log('Ready for server completion:', paymentId, txid);
-            setStatus('Completing payment on server...');
+        onReadyForServerCompletion: function (paymentId: string, txid: string) {
+          console.log('Ready for server completion:', paymentId, txid);
+          setStatus('Completing payment on server...');
 
-            await completePaymentOnServer(
-              paymentId,
-              txid,
-              orderId,
-              paymentAmount
-            );
-
-            setStatus('Payment completed successfully. TXID: ' + txid);
-            setIsPaying(false);
-          } catch (error: any) {
-            console.error('Server completion error:', error);
-            setIsPaying(false);
-            setStatus(
-              'Server completion error: ' + (error?.message || String(error))
-            );
-          }
+          return completePaymentOnServer(
+            paymentId,
+            txid,
+            orderId,
+            paymentAmount
+          )
+            .then(() => {
+              setStatus('Payment completed successfully. TXID: ' + txid);
+              setIsPaying(false);
+            })
+            .catch((error: any) => {
+              console.error('Server completion error:', error);
+              setIsPaying(false);
+              setStatus(
+                'Server completion error: ' + (error?.message || String(error))
+              );
+              throw error;
+            });
         },
 
         onCancel: function (paymentId: string) {
@@ -427,10 +438,10 @@ const PiPaymentPanel: React.FC = () => {
         },
       };
 
-      // Do not block UI on the returned promise; callbacks drive the flow
+      // Fire createPayment — flow continues in callbacks
       window.Pi.createPayment(paymentData, callbacks);
 
-      setStatus('Payment opened in Pi Wallet. Waiting for approval...');
+      setStatus('Payment opened in Pi Wallet. Waiting for server approval...');
     } catch (error: any) {
       console.error('Create payment error:', error);
       setIsPaying(false);
