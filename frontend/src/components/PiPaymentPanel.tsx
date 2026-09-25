@@ -111,21 +111,37 @@ const PiPaymentPanel: React.FC = () => {
     if (!paymentId) return;
 
     // Try to approve stuck payment so user can finish or clear the flow
-    axiosClient
-      .post('/pi/incomplete', { paymentId })
-      .then((res) => {
-        console.log('Incomplete payment resolved:', res.data);
-        setStatus(
-          'Previous incomplete payment was processed. You can try a new payment.'
-        );
-      })
-      .catch((err) => {
-        console.warn('Could not auto-resolve incomplete payment:', err);
-        setStatus(
-          'Incomplete payment found. Cancel it in Pi Wallet, then try again. id=' +
-            paymentId
-        );
-      });
+    const resolveIncomplete = async () => {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      const token = localStorage.getItem('token');
+      if (token) headers.Authorization = `Bearer ${token}`;
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/pi/incomplete`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ paymentId }),
+        });
+        console.log('Incomplete resolve:', await res.json().catch(() => ({})));
+      } catch (e) {
+        console.warn('incomplete resolve failed', e);
+      }
+      try {
+        await fetch(`${API_BASE_URL}/pi/cancel`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ paymentId }),
+        });
+      } catch (e) {
+        console.warn('cancel failed', e);
+      }
+      setStatus(
+        'Previous incomplete payment cleared. Try a new payment.'
+      );
+    };
+    resolveIncomplete();
   };
 
   const warmUpBackend = async () => {
@@ -471,7 +487,7 @@ const PiPaymentPanel: React.FC = () => {
       const callbacks = {
         onReadyForServerApproval: function (paymentId: string) {
           console.log('Ready for server approval:', paymentId);
-          setStatus('Approving payment on server...');
+          setStatus('Approving payment on server... id=' + paymentId);
 
           return approvePaymentOnServer(paymentId, orderId, paymentAmount)
             .then(() => {
@@ -484,13 +500,17 @@ const PiPaymentPanel: React.FC = () => {
                 error?.response?.data?.message ||
                 error?.message ||
                 String(error);
-              setStatus(
+              const msg =
                 'Server approval error: ' +
-                  detail +
-                  ' | origin=' +
-                  window.location.origin
-              );
-              // Re-throw so Pi SDK knows approval failed
+                detail +
+                ' | origin=' +
+                window.location.origin;
+              setStatus(msg);
+              try {
+                window.alert(msg);
+              } catch {
+                /* ignore */
+              }
               throw error;
             });
         },
