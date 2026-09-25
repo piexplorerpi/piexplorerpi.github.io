@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useI18n } from '../i18n/I18nContext';
+import { digTranslations } from '../i18n/translations/dig';
 import './Dig.css';
 
 const Dig: React.FC = () => {
@@ -22,24 +23,24 @@ const Dig: React.FC = () => {
         <section className="dig-hero-section">
           <div className="dig-container">
             <div className="dig-badge">
-              {t('digShortName')} · {t('digFullName')}
+              {t(digTranslations.digShortName)} · {t(digTranslations.digFullName)}
             </div>
 
             <h1 className="dig-title">
-              {t('digPageTitle')}
+              {t(digTranslations.digPageTitle)}
             </h1>
 
             <p className="dig-lead">
-              {t('digPageLead')}
+              {t(digTranslations.digPageLead)}
             </p>
 
             <div className="dig-actions">
               <Link to="/" className="dig-primary-link">
-                {t('backToHome')}
+                {t(digTranslations.backToHome)}
               </Link>
 
               <a href="#dig-roadmap" className="dig-secondary-link">
-                {t('navRoadmap')}
+                {t(digTranslations.navRoadmap)}
               </a>
             </div>
           </div>
@@ -49,38 +50,38 @@ const Dig: React.FC = () => {
           <div className="dig-container dig-grid">
             <article className="dig-card dig-card-large">
               <span className="dig-card-icon">🌍</span>
-              <h2>{t('digWhatTitle')}</h2>
-              <p>{t('digWhatText')}</p>
+              <h2>{t(digTranslations.digWhatTitle)}</h2>
+              <p>{t(digTranslations.digWhatText)}</p>
             </article>
 
             <article className="dig-card">
               <span className="dig-card-icon">🗳️</span>
-              <h3>{t('digVotingTitle')}</h3>
-              <p>{t('digVotingText')}</p>
+              <h3>{t(digTranslations.digVotingTitle)}</h3>
+              <p>{t(digTranslations.digVotingText)}</p>
             </article>
 
             <article className="dig-card">
               <span className="dig-card-icon">🔍</span>
-              <h3>{t('digTransparencyTitle')}</h3>
-              <p>{t('digTransparencyText')}</p>
+              <h3>{t(digTranslations.digTransparencyTitle)}</h3>
+              <p>{t(digTranslations.digTransparencyText)}</p>
             </article>
 
             <article className="dig-card">
               <span className="dig-card-icon">π</span>
-              <h3>{t('digPiRoleTitle')}</h3>
-              <p>{t('digPiRoleText')}</p>
+              <h3>{t(digTranslations.digPiRoleTitle)}</h3>
+              <p>{t(digTranslations.digPiRoleText)}</p>
             </article>
 
             <article className="dig-card">
               <span className="dig-card-icon">🤝</span>
-              <h3>{t('digConflictTitle')}</h3>
-              <p>{t('digConflictText')}</p>
+              <h3>{t(digTranslations.digConflictTitle)}</h3>
+              <p>{t(digTranslations.digConflictText)}</p>
             </article>
 
             <article className="dig-card">
               <span className="dig-card-icon">💠</span>
-              <h3>{t('digDibTitle')}</h3>
-              <p>{t('digDibText')}</p>
+              <h3>{t(digTranslations.digDibTitle)}</h3>
+              <p>{t(digTranslations.digDibText)}</p>
             </article>
           </div>
         </section>
@@ -88,57 +89,57 @@ const Dig: React.FC = () => {
         <section id="dig-roadmap" className="dig-roadmap-section">
           <div className="dig-container">
             <div className="dig-section-heading">
-              <span>{t('digShortName')}</span>
-              <h2>{t('digManifestoRoadmapTitle')}</h2>
-              <p>{t('digManifestoRoadmapIntro')}</p>
+              <span>{t(digTranslations.digShortName)}</span>
+              <h2>{t(digTranslations.digManifestoRoadmapTitle)}</h2>
+              <p>{t(digTranslations.digManifestoRoadmapIntro)}</p>
             </div>
 
             <div className="dig-roadmap-list">
               <div className="dig-roadmap-item">
                 <strong>01</strong>
                 <div>
-                  <h3>{t('roadmapStep1Title')}</h3>
-                  <p>{t('roadmapStep1Description')}</p>
+                  <h3>{t(digTranslations.roadmapStep1Title)}</h3>
+                  <p>{t(digTranslations.roadmapStep1Description)}</p>
                 </div>
               </div>
 
               <div className="dig-roadmap-item">
                 <strong>02</strong>
                 <div>
-                  <h3>{t('roadmapStep2Title')}</h3>
-                  <p>{t('roadmapStep2Description')}</p>
+                  <h3>{t(digTranslations.roadmapStep2Title)}</h3>
+                  <p>{t(digTranslations.roadmapStep2Description)}</p>
                 </div>
               </div>
 
               <div className="dig-roadmap-item">
                 <strong>03</strong>
                 <div>
-                  <h3>{t('roadmapStep3Title')}</h3>
-                  <p>{t('roadmapStep3Description')}</p>
+                  <h3>{t(digTranslations.roadmapStep3Title)}</h3>
+                  <p>{t(digTranslations.roadmapStep3Description)}</p>
                 </div>
               </div>
 
               <div className="dig-roadmap-item">
                 <strong>04</strong>
                 <div>
-                  <h3>{t('roadmapStep4Title')}</h3>
-                  <p>{t('roadmapStep4Description')}</p>
+                  <h3>{t(digTranslations.roadmapStep4Title)}</h3>
+                  <p>{t(digTranslations.roadmapStep4Description)}</p>
                 </div>
               </div>
 
               <div className="dig-roadmap-item">
                 <strong>05</strong>
                 <div>
-                  <h3>{t('roadmapStep5Title')}</h3>
-                  <p>{t('roadmapStep5Description')}</p>
+                  <h3>{t(digTranslations.roadmapStep5Title)}</h3>
+                  <p>{t(digTranslations.roadmapStep5Description)}</p>
                 </div>
               </div>
 
               <div className="dig-roadmap-item">
                 <strong>06</strong>
                 <div>
-                  <h3>{t('roadmapStep6Title')}</h3>
-                  <p>{t('roadmapStep6Description')}</p>
+                  <h3>{t(digTranslations.roadmapStep6Title)}</h3>
+                  <p>{t(digTranslations.roadmapStep6Description)}</p>
                 </div>
               </div>
             </div>
@@ -148,8 +149,8 @@ const Dig: React.FC = () => {
         <section className="dig-disclaimer-section">
           <div className="dig-container">
             <div className="dig-disclaimer">
-              <h2>{t('digDisclaimerTitle')}</h2>
-              <p>{t('digDisclaimerText')}</p>
+              <h2>{t(digTranslations.digDisclaimerTitle)}</h2>
+              <p>{t(digTranslations.digDisclaimerText)}</p>
             </div>
           </div>
         </section>
