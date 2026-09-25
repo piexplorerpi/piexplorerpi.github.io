@@ -5,14 +5,6 @@ import axiosClient from '../lib/axiosClient';
 import { useTranslate } from '../i18n/useTranslate';
 import { piPaymentPanelTranslations } from '../i18n/translations/piPaymentPanel';
 
-declare global {
-  interface Window {
-    Pi?: any;
-    __PI_SDK_INITIALIZED__?: boolean;
-    __PI_SDK_SANDBOX__?: boolean;
-  }
-}
-
 const API_BASE_URL =
   (import.meta.env.VITE_API_URL || 'https://piexplorer.bonto.run/api').replace(
     /\/+$/,

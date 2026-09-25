@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import './ProductCard.css';
-import { useTranslate } from '../i18n/useTranslate'; // تغییر به هوک جدید
+import { useTranslate } from '../i18n/useTranslate';
+import { productCardTranslations } from '../i18n/translations/productCard'; // تغییر به هوک جدید
 
 export interface Product {
   id: string;
@@ -60,10 +61,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {loading ? (
             <>
               <span className="spinner"></span>
-              <span style={{ marginInlineStart: '8px' }}>{t('productCard.processing')}</span>
+              <span style={{ marginInlineStart: '8px' }}>{t(productCardTranslations.processing)}</span>
             </>
           ) : (
-            t('productCard.buyNow')
+            t(productCardTranslations.buyNow)
           )}
         </button>
       </div>

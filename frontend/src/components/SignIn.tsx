@@ -7,13 +7,6 @@ import { useI18n } from '../i18n/I18nContext';
 import { signInTranslations } from '../i18n/translations/signin';
 
 // افزایش تایپ‌های Window برای جلوگیری از خطاهای TypeScript
-declare global {
-  interface Window {
-    Pi?: any;
-    __PI_SDK_INITIALIZED__?: boolean;
-    __PI_SDK_SANDBOX__?: boolean;
-  }
-}
 
 const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
   if (value === undefined || value === null || value === '') return defaultValue;

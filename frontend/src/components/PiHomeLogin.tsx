@@ -3,14 +3,6 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslate } from '../i18n/useTranslate'; // تغییر از useI18n به useTranslate
 import { piHomeLoginTranslations } from '../i18n/translations/piHomeLogin';
 
-declare global {
-  interface Window {
-    Pi?: any;
-    __PI_SDK_INITIALIZED__?: boolean;
-    __PI_SDK_SANDBOX__?: boolean;
-  }
-}
-
 const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
   if (value === undefined || value === null || value === '') {
     return defaultValue;

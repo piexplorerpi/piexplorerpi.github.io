@@ -26,7 +26,7 @@ const Success: React.FC<SuccessProps> = ({ transactionId, onReset }) => {
       textAlign: 'center' as const,
       padding: '50px 20px',
       fontFamily: 'Tahoma, sans-serif',
-      direction: lang === 'fa' || lang === 'ar' ? 'rtl' : 'ltr',
+      direction: (lang === 'fa' || lang === 'ar' ? 'rtl' : 'ltr') as React.CSSProperties['direction'],
       minHeight: '100vh',
       background: '#f5f7fb',
       display: 'flex',
