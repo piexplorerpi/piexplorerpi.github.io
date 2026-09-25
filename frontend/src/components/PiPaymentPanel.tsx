@@ -30,7 +30,7 @@ const MAX_AMOUNT = Number(import.meta.env.VITE_MAX_PI_AMOUNT || '100');
 /** Official Pi app URL (pinet.com) — keep both origins for dual-domain setup */
 const REGISTERED_APP_URL = (
   import.meta.env.VITE_PI_APP_URL ||
-  'https://apppiexplorerrjk7732.pinet.com'
+  'https://explorer2786.pinet.com'
 ).replace(/\/+$/, '');
 
 
