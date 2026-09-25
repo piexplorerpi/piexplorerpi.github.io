@@ -288,7 +288,7 @@ app.use((req, res, next) => {
 
 const defaultAllowedOrigins = [
   'https://piexplorerpi.github.io',
-  'https://explorer2786.pinet.com,
+  'https://explorer2786.pinet.com',
   'https://apppiexplorerrjk7732.pinet.com',
   'https://piexplorer.bonto.run',
   'https://sandbox.minepi.com',
