@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
      * برای GitHub User Page مثل:
      * https://piexplorerpi.github.io
      * و همچنین دامنه PiNet:
-     * https://apppiexplorerrjk7732.pinet.com
+     * https://explorer2786.pinet.com
      * مقدار base باید '/' باشد.
      */
     base: '/',
