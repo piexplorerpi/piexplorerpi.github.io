@@ -9,11 +9,11 @@ export const digTranslations = {
     zh: "DIG",
   } as LocalizedString,
   digFullName: {
-    en: "Decentralized Identity & Governance",
-    fa: "هویت و حکمرانی غیرمتمرکز",
-    ar: "الهوية والحوكمة اللامركزية",
-    tr: "Merkeziyetsiz Kimlik ve Yönetişim",
-    zh: "去中心化身份与治理",
+    en: "Pi Ecosystem Insights",
+    fa: "بینش اکوسیستم پای",
+    ar: "رؤى نظام Pi البيئي",
+    tr: "Pi Ekosistem İçgörüleri",
+    zh: "Pi 生态洞察",
   } as LocalizedString,
   digPageTitle: {
     en: "Build trust. Govern together.",
