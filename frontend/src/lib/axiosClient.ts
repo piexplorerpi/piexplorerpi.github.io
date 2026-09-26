@@ -16,7 +16,7 @@ const axiosClient = axios.create({
   },
 
   // Bonto/server cold start may take more than 10 seconds.
-  timeout: 30000,
+  timeout: 45000,
 });
 
 /**
