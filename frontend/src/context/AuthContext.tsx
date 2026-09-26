@@ -5,7 +5,8 @@ import React, {
   useEffect,
   ReactNode,
 } from 'react';
-import axiosClient from '../lib/axiosClient';
+import axiosClient from '../lib/axiosClient'
+import { postWithRetry, PI_LOGIN_PATHS, warmUpBackend, isNetworkError } from '../lib/backendReady';
 
 export interface User {
   id: string;
@@ -122,6 +123,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     refreshAuth();
+    // Pre-warm backend so first login is less likely to hit Network Error
+    warmUpBackend(2).catch(() => {});
   }, []);
 
   const login = async (pi_user_id: string, username: string, accessToken?: string): Promise<User> => {
@@ -129,20 +132,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     try {
       if (!pi_user_id || !username) throw new Error('Invalid Pi user data.');
-      const response = await axiosClient.post('/auth/pi-login', { pi_user_id, username, accessToken });
-      const responseToken = response.data?.token;
-      const responseUser = response.data?.user;
-      const success = response.data?.success;
+
+      // Wake Bonto before first login (cold start causes Network Error)
+      await warmUpBackend(2);
+
+      const data: any = await postWithRetry(
+        axiosClient,
+        PI_LOGIN_PATHS,
+        { pi_user_id, username, accessToken },
+        {
+          maxAttempts: 4,
+          onRetry: (attempt, err) => {
+            console.warn(`pi-login retry ${attempt}:`, err?.message || err);
+          },
+        }
+      );
+
+      const responseToken = data?.token;
+      const responseUser = data?.user;
+      const success = data?.success;
 
       if ((success && responseToken && responseUser) || (responseToken && responseUser)) {
         return persistAuth(responseToken, responseUser);
       }
-      throw new Error(response.data?.message || 'Login failed');
+      throw new Error(data?.message || 'Login failed');
     } catch (err: any) {
-      const message = err?.response?.data?.message || err?.message || 'Login failed';
+      const message = isNetworkError(err)
+        ? 'Network Error (server waking up). Please try again in a moment.'
+        : err?.response?.data?.message || err?.message || 'Login failed';
       setError(message);
       clearAuth();
-      throw err;
+      // Re-throw with friendlier message for UI
+      const e = new Error(message);
+      (e as any).cause = err;
+      throw e;
     } finally {
       setLoading(false);
     }
