@@ -1,13 +1,17 @@
 // frontend/src/components/PiPaymentPanel.tsx
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axiosClient from '../lib/axiosClient';
+import axiosClient from '../lib/axiosClient'
+import { warmUpBackend as sharedWarmUp } from '../lib/backendReady';
 
-const API_BASE_URL =
-  (import.meta.env.VITE_API_URL || 'https://piexplorer.bonto.run/api').replace(
+const API_BASE_URL = (() => {
+  const raw = (import.meta.env.VITE_API_URL || 'https://piexplorer.bonto.run/api').replace(
     /\/+$/,
     ''
   );
+  // Normalize so payment paths can use /api/... or /pi/...
+  return raw;
+})();
 
 const parseBooleanEnv = (value: unknown, defaultValue = false): boolean => {
   if (value === undefined || value === null || value === '') {
@@ -25,12 +29,12 @@ const PI_SANDBOX = parseBooleanEnv(import.meta.env.VITE_PI_SANDBOX, false);
 
 const DEFAULT_AMOUNT = import.meta.env.VITE_DEFAULT_PI_AMOUNT || '0.01';
 const MIN_AMOUNT = Number(import.meta.env.VITE_MIN_PI_AMOUNT || '0.001');
-const MAX_AMOUNT = Number(import.meta.env.VITE_MAX_PI_AMOUNT || '10000000000');
+const MAX_AMOUNT = Number(import.meta.env.VITE_MAX_PI_AMOUNT || '100');
 
 /** Official Pi app URL (pinet.com) — keep both origins for dual-domain setup */
 const REGISTERED_APP_URL = (
   import.meta.env.VITE_PI_APP_URL ||
-  'https://explorer2786.pinet.com'
+  'https://apppiexplorerrjk7732.pinet.com'
 ).replace(/\/+$/, '');
 
 
@@ -110,7 +114,7 @@ const PiPaymentPanel: React.FC = () => {
 
     if (!paymentId) return;
 
-    // Only try to resolve (approve) stuck payment — do NOT auto-cancel
+    // Try to approve stuck payment so user can finish or clear the flow
     const resolveIncomplete = async () => {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -124,19 +128,22 @@ const PiPaymentPanel: React.FC = () => {
           headers,
           body: JSON.stringify({ paymentId }),
         });
-        const data = await res.json().catch(() => ({}));
-        console.log('Incomplete resolve:', data);
-        setStatus(
-          data?.success
-            ? 'Previous incomplete payment resolved. You can continue or start a new payment.'
-            : 'Incomplete payment noted. You can try a new payment.'
-        );
+        console.log('Incomplete resolve:', await res.json().catch(() => ({})));
       } catch (e) {
         console.warn('incomplete resolve failed', e);
-        setStatus(
-          'Incomplete payment found. You can try a new payment.'
-        );
       }
+      try {
+        await fetch(`${API_BASE_URL}/pi/cancel`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ paymentId }),
+        });
+      } catch (e) {
+        console.warn('cancel failed', e);
+      }
+      setStatus(
+        'Previous incomplete payment cleared. Try a new payment.'
+      );
     };
     resolveIncomplete();
   };
@@ -145,15 +152,9 @@ const PiPaymentPanel: React.FC = () => {
     if (!API_BASE_URL) {
       throw new Error('VITE_API_URL is not set.');
     }
-
-    const healthUrl = getHealthUrl();
-    if (!healthUrl) return;
-
-    console.log('Warming up backend:', healthUrl);
     setStatus('Warming up backend...');
-
     try {
-      await fetch(healthUrl, { method: 'GET' });
+      await sharedWarmUp(3);
     } catch (error) {
       console.warn('Backend warm-up failed:', error);
     }
@@ -221,7 +222,10 @@ const PiPaymentPanel: React.FC = () => {
         throw new Error('Invalid Pi user data received. Missing user id.');
       }
 
-      // Backend login via AuthContext (POST /auth/pi-login)
+      // Warm server then backend login (retries inside AuthContext)
+      setStatus('Connecting to server...');
+      await warmUpBackend();
+      setStatus('Signing in...');
       await auth.login(String(piUserId), String(piUsername), accessToken);
 
       setUsername(String(piUsername));
@@ -328,22 +332,26 @@ const PiPaymentPanel: React.FC = () => {
 
         console.log('Payment response', url, response.status, data);
 
-        if (response.status === 404) {
-          lastError = new Error(`404 ${url}`);
+        // Only treat Express "Route not found" as missing endpoint (try next path).
+        // Pi API also returns HTTP 404 for payment_not_found — that is a REAL error.
+        const routeMissing =
+          response.status === 404 &&
+          typeof data?.message === 'string' &&
+          /route not found/i.test(data.message);
+
+        if (routeMissing) {
+          lastError = new Error(`Route missing: ${url}`);
           continue;
         }
 
-        if (!response.ok) {
+        if (!response.ok || data?.success === false) {
           const msg =
             data?.message ||
+            data?.piError?.error ||
             data?.error?.message ||
             data?.error ||
             `HTTP ${response.status}`;
           throw new Error(String(msg));
-        }
-
-        if (data?.success === false) {
-          throw new Error(data?.message || `Request failed: ${url}`);
         }
 
         return data;
@@ -351,12 +359,11 @@ const PiPaymentPanel: React.FC = () => {
         lastError = error;
         const msg = error?.message || String(error);
         console.warn(`Endpoint ${url} failed:`, msg);
-        // network errors: try next path
-        if (/404/.test(msg)) continue;
-        // for non-404 HTTP errors thrown above, stop
-        if (error?.message && !/Failed to fetch|NetworkError|404/.test(error.message)) {
-          throw error;
+        if (/Route missing/i.test(msg)) continue;
+        if (/Failed to fetch|NetworkError|Network request failed/i.test(msg)) {
+          continue;
         }
+        throw error;
       }
     }
 
@@ -371,7 +378,7 @@ const PiPaymentPanel: React.FC = () => {
     paymentAmount: number
   ) => {
     return postPaymentEndpoint(
-      ['/pi/approve', '/payment/approve', '/payments/approve'],
+      ['/api/pi/approve', '/pi/approve', '/api/payment/approve', '/payment/approve'],
       {
         paymentId,
         orderId,
@@ -393,7 +400,7 @@ const PiPaymentPanel: React.FC = () => {
     paymentAmount: number
   ) => {
     return postPaymentEndpoint(
-      ['/pi/complete', '/payment/complete', '/payments/complete'],
+      ['/api/pi/complete', '/pi/complete', '/api/payment/complete', '/payment/complete'],
       {
         paymentId,
         txid,
